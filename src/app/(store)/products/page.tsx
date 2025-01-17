@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { categories, FilterIcon, Products } from "../../../data";
+import { categories, FilterIcon } from "@/app/data";
 import {
   Select,
   SelectContent,
@@ -20,17 +20,31 @@ import {
 import { ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
+import { Product } from "../../../../sanity.types";
+import { getAllProducts } from "@/sanity/products/getAllProducts";
+import { urlFor } from "@/sanity/lib/image";
 
 const genderOptions = ["Men", "Women", "Unisex"];
 const kidsOptions = ["Boys", "Girls"];
 const priceRanges = ["Under ₹2,500.00", "₹2,501.00 - ₹5,000.00", "₹5,001.00+"];
 
 const Page = () => {
+  const [Products, setProducts] = useState<Product[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const productsPerPage = 9;
   const totalPages = Math.ceil(Products.length / productsPerPage);
   const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const data = await getAllProducts();
+      setProducts(data);
+      setLoading(false);
+    };
+    fetchProducts();
+  }, []);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -48,6 +62,10 @@ const Page = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // Replace with a skeleton component if available
+  }
 
   const displayedProducts = Products.slice(
     (currentPage - 1) * productsPerPage,
@@ -176,30 +194,27 @@ const Page = () => {
                 <div key={index}>
                   <div className="p-1 relative">
                     <Link
-                      href={`/products/${product.id}`}
+                      href={`/products/${product._id}`}
                       className="absolute inset-0 z-10"
                     />
                     <div className="relative overflow-hidden group rounded transition-all duration-150">
                       <Image
-                        src={product.image}
-                        alt={product.name}
+                        src={product.image ? urlFor(product.image).url() : ""}
+                        alt={product.productName || "Product Image"}
                         height={1000}
                         width={1000}
                         className="h-[348px] w-[348px] object-cover"
                       />
                     </div>
                     <div className="py-4">
-                      <span className="text-[#9E3500] text-[15px] font-[500]">
-                        {product.tag}
-                      </span>
                       <div className="text-[15px] font-[500]">
-                        {product.name}
+                        {product.productName}
+                      </div>
+                      <div className="text-lightColor text-[15px] line-clamp-2">
+                        {product.description}
                       </div>
                       <div className="text-lightColor text-[15px]">
-                        {product.shortDescription}
-                      </div>
-                      <div className="text-lightColor text-[15px]">
-                        {product.colors.length} Color
+                        {product.colors ? product.colors.length: ""} Color
                       </div>
                       <div className="text-[15px] font-[600] mt-1">
                         MRP : <span>{product.price}</span>

@@ -1,4 +1,6 @@
-import React from "react";
+"use client"
+
+import React, { useState, useEffect } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -8,7 +10,8 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import Link from "next/link";
-import { Product, Products } from "../../../../data";
+import { Product } from "../../../../../sanity.types";
+import { urlFor } from "@/sanity/lib/image";
 
 const ProductSlider = ({
   heading,
@@ -23,6 +26,18 @@ const ProductSlider = ({
   half?: boolean;
   obj: Product[];
 }) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (obj.length > 0) {
+      setLoading(false);
+    }
+  }, [obj]);
+
+  if (loading) {
+    return <div>Loading...</div>; // Replace with a skeleton component if available
+  }
+
   return (
     <div className={`${half ? "w-full md:w-1/2" : "container"}`}>
       <div className="md:py-16 space-y-5 relative">
@@ -51,8 +66,8 @@ const ProductSlider = ({
                     <div className="p-1">
                       <div className="aspect-square relative overflow-hidden group rounded transition-all duration-150">
                         <Image
-                          src={item.image}
-                          alt={item.name}
+                          src={item.image ? urlFor(item.image).url() : ""}
+                          alt={item.productName || "Product Image"}
                           height={1000}
                           width={1000}
                           className="h-full w-full object-cover"
@@ -60,11 +75,11 @@ const ProductSlider = ({
                       </div>
                       <div className="py-4">
                         <div className="flex justify-between text-[15px] font-[500] pr-4">
-                          <p className="">{item.name}</p>
+                          <p className="">{item.productName}</p>
                           <p>{item.price}</p>
                         </div>
-                        <div className="text-lightColor text-[15px] w-[215px]">
-                          {item.shortDescription}
+                        <div className="text-lightColor text-[15px] w-[215px] line-clamp-2">
+                          {item.description}
                         </div>
                       </div>
                     </div>
@@ -90,8 +105,8 @@ const ProductSlider = ({
                     <div className="p-1">
                       <div className="aspect-square relative overflow-hidden group rounded transition-all duration-150">
                         <Image
-                          src={item.image}
-                          alt={item.name}
+                          src={item.image ? urlFor(item.image).url() : ""}
+                          alt={item.productName || "Product Image"}
                           height={1000}
                           width={1000}
                           className="h-full w-full object-cover"
@@ -99,11 +114,11 @@ const ProductSlider = ({
                       </div>
                       <div className="py-4">
                         <div className="flex justify-between text-[15px] font-[500] pr-4">
-                          <p className="">{item.name}</p>
+                          <p className="">{item.productName}</p>
                           <p>{item.price}</p>
                         </div>
-                        <div className="text-lightColor text-[15px]">
-                          {item.shortDescription}
+                        <div className="text-lightColor text-[15px] line-clamp-2 w-[80%]">
+                          {item.description}
                         </div>
                       </div>
                     </div>

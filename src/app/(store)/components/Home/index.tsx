@@ -2,18 +2,28 @@ import React from "react";
 import Banner from "./Banner";
 import Look from "./Look";
 import ProductSlider from "../ProductsSlider";
-import { Products } from "@/app/data";
+// import {  Product, Products } from "@/app/data";
 import ReuseableFunction from "./ReuseableFunction";
 import Essential from "./Essential";
+import { getAllProducts } from "@/sanity/products/getAllProducts";
+import { getMenProducts } from "@/sanity/products/getMenProducts";
+import { getWomenProducts } from "@/sanity/products/getWomenProducts";
 
-const HomePage = () => {
-  const menObj = Products.filter(
-    (item) => item.shortDescription.includes("Men") && !item.shortDescription.includes("Shoes")
-  );
-  const womenObj = Products.filter(
-    (item) =>
-      item.shortDescription.includes("Women") && !item.shortDescription.includes("Shoes")
-  );
+const HomePage = async () => {
+  const products = await getAllProducts();  
+  const menProducts = await getMenProducts();  
+  const womenProducts = await getWomenProducts();  
+
+
+  // const menObj = Products.filter(
+  //   (item) => item.shortDescription.includes("Men") && !item.shortDescription.includes("Shoes")
+  // );
+  // const womenObj = Products.filter(
+  //   (item) =>
+  //     item.shortDescription.includes("Women") && !item.shortDescription.includes("Shoes")
+  // );
+
+
 
   return (
     <div>
@@ -23,7 +33,7 @@ const HomePage = () => {
         heading="Best of Air Max"
         anchor="/shop"
         anchorText="Shop"
-        obj={Products}
+        obj={products}
       />
       <ReuseableFunction
         title="Featured"
@@ -41,13 +51,13 @@ const HomePage = () => {
             anchor="/shop"
             anchorText="Shop Men's"
             half={true}
-            obj={menObj}
+            obj={menProducts}
           />
           <ProductSlider
             anchor="/shop"
             anchorText="Shop Women's"
             half={true}
-            obj={womenObj}
+            obj={womenProducts}
           />
         </div>
       </div>
