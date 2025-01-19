@@ -10,10 +10,21 @@ import {
   TopLogo,
 } from "@/app/data";
 import Link from "next/link";
+import { searchProducts } from "@/sanity/products/searchProducts";
+import Image from "next/image";
+import { useBasketStore } from "../../../../store";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<
+    { productName: string; imageUrl: string }[]
+  >([]);
+  const [categoryResults, setCategoryResults] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [noResults, setNoResults] = useState(false);
+  const itemCount = useBasketStore((state) => state.items.reduce((acc, item) => acc + item.quantity, 0));
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -22,6 +33,27 @@ const Header = () => {
   const handleClickOutside = (event: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
       setIsMenuOpen(false);
+    }
+  };
+
+  const handleSearch = async (term: string) => {
+    setSearchTerm(term);
+    console.log(term);
+    if (term.length > 2) {
+      setLoading(true);
+      setNoResults(false);
+      const { productDetail, categoryDetail } = await searchProducts(term);
+      setLoading(false);
+      if (productDetail.length === 0 && categoryDetail.length === 0) {
+        setNoResults(true);
+      } else {
+        setSearchResults(productDetail);
+        setCategoryResults(categoryDetail as string[]);
+      }
+    } else {
+      setSearchResults([]);
+      setCategoryResults([]);
+      setNoResults(false);
     }
   };
 
@@ -40,16 +72,27 @@ const Header = () => {
             <span>{TopLogo}</span>
 
             <div className="flex divide-x-[1px] divide-black text-[11px] h-[26px] items-center  md:w-[272.81px] justify-between">
-              <Link href={"/products"} className="flex-1 px-2 md:px-3 whitespace-nowrap">
+              <Link
+                href={"/products"}
+                className="flex-1 px-2 md:px-3 whitespace-nowrap"
+              >
                 Find a Store
               </Link>
-              <Link href={"/contact"} className="flex-1 px-2 md:px-3 whitespace-nowrap">
+              <Link
+                href={"/contact"}
+                className="flex-1 px-2 md:px-3 whitespace-nowrap"
+              >
                 Help
               </Link>
-              <Link href={"/joinus"} className="flex-1 px-2 md:px-3 whitespace-nowrap">
+              <Link
+                href={"/joinus"}
+                className="flex-1 px-2 md:px-3 whitespace-nowrap"
+              >
                 Join Us
               </Link>
-              <Link href={"/login"} className="flex-1 pl-3 whitespace-nowrap">Sign In</Link>
+              <Link href={"/login"} className="flex-1 pl-3 whitespace-nowrap">
+                Sign In
+              </Link>
             </div>
           </div>
         </div>
@@ -62,7 +105,9 @@ const Header = () => {
       >
         <div className="container h-[60px] flex justify-between items-center  md:px-[40px]">
           <div className="logo scale-75 md:scale-100 -ml-2 md:ml-0">
-            <Link href={"/"} onClick={() => setIsMenuOpen(false)}>{Logo}</Link>
+            <Link href={"/"} onClick={() => setIsMenuOpen(false)}>
+              {Logo}
+            </Link>
           </div>
           <div className="hidden lg:flex ml-40">
             <ul className="flex text-base gap-5">
@@ -85,12 +130,79 @@ const Header = () => {
                 <input
                   type="search"
                   placeholder="Search"
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
                   className="bg-themeGray h-[40px] w-[180px] rounded-full p-2 pl-10"
                 />
+                {loading && (
+                  <ul className="absolute bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
+                    {Array.from({ length: 6 }, (_, index) => (
+                      <li key={index} className="p-2 flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gray-300 rounded-sm animate-pulse"></div>
+                        <div className="flex-1 h-4 bg-gray-300 rounded-sm animate-pulse"></div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {!loading && noResults && (
+                  <ul className="absolute bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
+                    <li className="p-2 text-center text-sm">
+                      No products found
+                    </li>
+                  </ul>
+                )}
+                {!loading && searchResults.length > 0 && (
+                  <ul className="absolute bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
+                    {searchResults.map((result, index) => (
+                      <li
+                        key={index}
+                        className="p-2 hover:bg-gray-200 flex items-center gap-2"
+                      >
+                        <Image
+                          src={result.imageUrl}
+                          alt={result.productName}
+                          height={1000}
+                          width={1000}
+                          className="w-8 h-8 object-cover rounded-sm"
+                        />
+                        <Link
+                          href={`/products/${result.productName}`}
+                          className="text-xs line-clamp-1"
+                          onClick={() => {
+                            setSearchResults([]);
+                            handleSearch("");
+                          }}
+                        >
+                          {result.productName}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {!loading && categoryResults.length > 0 && (
+                  <ul className="absolute bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
+                    <li className="p-2 text-start font-semibold">Categories</li>
+                    {categoryResults.map((category, index) => (
+                      <li key={index} className="p-2 hover:bg-gray-200 text-sm">
+                        <Link href={`/categories/${category}`} className="line-clamp-1"
+                        onClick={() => {
+                          setSearchResults([]);
+                          handleSearch("");
+                        }}
+                        >{category} </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
-            <span >{HeartIcon}</span>
-            <Link href={"/cart"} className="relative">{CartIcon}<span className="text-[10px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mt-0.5">2</span></Link>
+            <span>{HeartIcon}</span>
+            <Link href={"/cart"} className="relative">
+              {CartIcon}
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {itemCount}
+            </span>
+            </Link>
             <button className="lg:hidden" onClick={toggleMenu}>
               ☰
             </button>
@@ -105,6 +217,8 @@ const Header = () => {
               <input
                 type="search"
                 placeholder="Search"
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
                 className="bg-themeGray h-[40px] w-full rounded-full p-2 pl-10"
               />
             </div>
@@ -112,7 +226,9 @@ const Header = () => {
               {HeaderLinks.map((link, index) => {
                 return (
                   <li key={index}>
-                    <Link href={link.link} onClick={() => setIsMenuOpen(false)}>{link.title}</Link>
+                    <Link href={link.link} onClick={() => setIsMenuOpen(false)}>
+                      {link.title}
+                    </Link>
                   </li>
                 );
               })}

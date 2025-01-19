@@ -5,6 +5,7 @@ export const productSchema = defineType({
   name: "product",
   title: "Product",
   type: "document",
+  icon: TrolleyIcon,
   fields: [
     defineField({
       name: "productName",

@@ -1,18 +1,28 @@
+"use client";
+
 import Image from "next/image";
 import React from "react";
-import { DeleteIcon, HeartIcon, Products } from "../../../../data";
+import { DeleteIcon, HeartIcon } from "@/app/data";
 import Link from "next/link";
+import { useBasketStore } from "../../../../../store";
+import { urlFor } from "@/sanity/lib/image";
 
 const Cart = () => {
-  const product1 = Products.find(
-    (product) => product.name === "Nike Dri-FIT ADV TechKnit Ultra"
-  );
-  const product2 = Products.find(
-    (product) => product.name === "Nike Air Max 97 SE"
-  );
+  
+  const groupItems = useBasketStore((state) => state.getGroupedItems());
+  const removeItem = useBasketStore((state) => state.removeItem);
+
+  if (groupItems.length === 0) {
+    return (
+      <div className="container mx-auto p-4 flex flex-col justify-center items-center min-h-screen">
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">Your Basket</h1>
+        <p className="text-gray-600 text-lg">Your basket is empty</p>
+      </div>
+    );
+  }
 
   return (
-    <>
+    
       <div className="max-w-[1100px] mx-auto px-2">
         <div className="flex flex-col lg:flex-row lg:space-x-8">
           {/* Bag Section */}
@@ -26,44 +36,42 @@ const Cart = () => {
                 </span>
               </p>
             </div>
-            <h2 className="text-xl font-bold my-6">Bag</h2>
+            <h2 className="text-xl font-bold my-6">Cart</h2>
 
-            {/* PRoducts */}
-            {[product1, product2].map((product, index) => (
-              product && (
-                <div
-                  key={index} // Always provide a unique key when mapping over arrays
-                  className="flex items-start justify-between border-b pb-4 mb-6"
-                >
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    className="w-[150px] h-[150px] object-cover"
-                    height={1000}
-                    width={1000}
-                  />
-                  <div className="flex-1 ml-4 space-y-1">
-                    <p className="text-[15px] font-medium">{product.name}</p>
-                    <p className="text-[15px] text-[#757575]">
-                      {product.shortDescription}
-                    </p>
-                    <p className="text-[15px] text-[#757575]">
-                      {product.colors.join("/")}
-                    </p>
-                    <p className="price text-[15px] lg:hidden">MRP: {product.price}.00</p>
-                    <div className="flex gap-10">
-                      <p className="text-[15px] text-[#757575]">Size: L</p>
-                      <p className="text-[15px] text-[#757575]">Quantity: 1</p>
-                    </div>
-                    <div className="flex gap-4 items-center pt-6">
-                      <span>{HeartIcon}</span> {/* Ensure HeartIcon is defined */}
-                      <span>{DeleteIcon}</span>{" "}
-                      {/* Ensure DeleteIcon is defined */}
-                    </div>
+            {/* Products */}
+            {groupItems.map((item, index) => (
+              <div
+                key={index} // Always provide a unique key when mapping over arrays
+                className="flex items-start justify-between border-b pb-4 mb-6"
+              >
+                <Image
+                  src={item.product.image ? urlFor(item.product.image).url(): ""}
+                  alt={item.product.productName || "Product Image"}
+                  className="w-[150px] h-[150px] object-cover"
+                  height={1000}
+                  width={1000}
+                />
+                <div className="flex-1 ml-4 space-y-1">
+                  <p className="text-[15px] font-medium">{item.product.productName}</p>
+                  <p className="text-[15px] text-[#757575]">
+                    {item.product.description}
+                  </p>
+                  <p className="text-[15px] text-[#757575]">
+                    {item.product.colors}
+                  </p>
+                  <p className="price text-[15px] lg:hidden">MRP: {item.product.price}.00</p>
+                  <div className="flex gap-10">
+                    <p className="text-[15px] text-[#757575]">Size: L</p>
+                    <p className="text-[15px] text-[#757575]">Quantity: {item.quantity}</p>
                   </div>
-                  <p className="price text-[15px] hidden lg:block">MRP: {product.price}.00</p>
+                  <div className="flex gap-4 items-center pt-6">
+                    <span>{HeartIcon}</span> {/* Ensure HeartIcon is defined */}
+                    <span className="cursor-pointer" onClick={() => removeItem(item.product)}>{DeleteIcon}</span>{" "}
+                    {/* Ensure DeleteIcon is defined */}
+                  </div>
                 </div>
-              )
+                <p className="price text-[15px] hidden lg:block">MRP: {item.product.price}</p>
+              </div>
             ))}
 
             <p className="text-start text-[21px] text-black font-medium mt-10">
@@ -97,31 +105,6 @@ const Cart = () => {
           </div>
         </div>
       </div>
-      <div className="pt-10">
-        <h1 className="text-[19px] font-medium">You Might Also Like</h1>
-        <div className="mt-6">
-          <Image
-            src={Products[16].image}
-            alt="Nike Dri-FIT ADV TechKnit Ultra"
-            height={1000}
-            width={1000}
-            className="w-[431.78px] h-[431.78px] rounded object-cover"
-          />
-          <div className="py-4">
-            <span className="text-[#9E3500] text-[15px] font-[500]">
-              {Products[16].tag}
-            </span>
-            <div className="text-[15px] font-[500]">{Products[16].name}</div>
-            <div className="text-lightColor text-[15px]">
-              {Products[16].shortDescription}
-            </div>
-            <div className="text-[15px] font-[500] mt-1">
-              MRP : <span>{Products[16].price}.00</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
   );
 };
 

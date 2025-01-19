@@ -7,8 +7,8 @@ const Checkout = () => {
     <div className='py-10 mb-8'>
             <div className="max-w-[880px] mx-auto">
                 <div className="flex flex-col px-2 gap-6 lg:flex-row lg:gap-0 lg:px-0">
-                    <Left />
-                    <Right />
+                    {/* <Left />
+                    <Right /> */}
                 </div>
             </div>
     </div>

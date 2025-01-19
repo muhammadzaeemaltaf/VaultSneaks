@@ -217,6 +217,93 @@ export type MEN_PRODUCTS_QUERYResult = Array<{
   description?: string;
 }>;
 
+// Source: ./src/sanity/products/getProductByCategory.ts
+// Variable: PRODUCT_BY_CATEGORY_QUERY
+// Query: *[                     _type == "product"                     && category == $slug                 ] | order(name asc)
+export type PRODUCT_BY_CATEGORY_QUERYResult = Array<{
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  productName?: string;
+  category?: string;
+  price?: number;
+  inventory?: number;
+  colors?: Array<string>;
+  status?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  description?: string;
+}>;
+
+// Source: ./src/sanity/products/getProductByName.ts
+// Variable: PRODUCT_BY_NAME_QUERY
+// Query: *[                 _type == "product"                && productName == $name             ][0]
+export type PRODUCT_BY_NAME_QUERYResult = {
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  productName?: string;
+  category?: string;
+  price?: number;
+  inventory?: number;
+  colors?: Array<string>;
+  status?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  description?: string;
+} | null;
+
+// Source: ./src/sanity/products/getRelatedProducts.ts
+// Variable: RELATED_PRODUCT_BY_CATEGORY_QUERY
+// Query: *[_type == "product" && category == $category && _id != $excludeProductId]
+export type RELATED_PRODUCT_BY_CATEGORY_QUERYResult = Array<{
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  productName?: string;
+  category?: string;
+  price?: number;
+  inventory?: number;
+  colors?: Array<string>;
+  status?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  description?: string;
+}>;
+
 // Source: ./src/sanity/products/getWomenProducts.ts
 // Variable: WOMEN_PRODUCTS_QUERY
 // Query: *[_type=="product" && category match "Women*"] | order(name asc)
@@ -252,6 +339,9 @@ declare module "@sanity/client" {
   interface SanityQueries {
     "*[_type==\"product\"] | order(name asc)": All_PRODUCTS_QUERYResult;
     "*[_type==\"product\" && category match \"Men*\"] | order(name asc)": MEN_PRODUCTS_QUERYResult;
+    "\n                *[\n                     _type == \"product\"\n                     && category == $slug\n                 ] | order(name asc)\n            ": PRODUCT_BY_CATEGORY_QUERYResult;
+    "\n             *[\n                 _type == \"product\"\n                && productName == $name\n             ][0]\n        \n        ": PRODUCT_BY_NAME_QUERYResult;
+    "\n       *[_type == \"product\" && category == $category && _id != $excludeProductId]\n\n  ": RELATED_PRODUCT_BY_CATEGORY_QUERYResult;
     "*[_type==\"product\" && category match \"Women*\"] | order(name asc)": WOMEN_PRODUCTS_QUERYResult;
   }
 }

@@ -194,7 +194,7 @@ const Page = () => {
                 <div key={index}>
                   <div className="p-1 relative">
                     <Link
-                      href={`/products/${product._id}`}
+                      href={`/products/${product.productName}`}
                       className="absolute inset-0 z-10"
                     />
                     <div className="relative overflow-hidden group rounded transition-all duration-150">

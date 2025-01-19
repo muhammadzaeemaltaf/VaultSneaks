@@ -49,7 +49,12 @@ const ProductSlider = ({
 
         <div>
           {half ? (
-            <Carousel className="w-full">
+            <Carousel className="w-full"
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            >
               <div className="flex gap-3  absolute right-5 -top-10">
                 <Link href={anchor} className="-mt-2.5 text-[15px] font-[500]">
                   {anchorText}
@@ -63,7 +68,7 @@ const ProductSlider = ({
                     key={index}
                     className="pl-1 basis-full lg:basis-1/2"
                   >
-                    <div className="p-1">
+                    <Link href={`/products/${item.productName}`} className="p-1">
                       <div className="aspect-square relative overflow-hidden group rounded transition-all duration-150">
                         <Image
                           src={item.image ? urlFor(item.image).url() : ""}
@@ -82,13 +87,18 @@ const ProductSlider = ({
                           {item.description}
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </CarouselItem>
                 ))}
               </CarouselContent>
             </Carousel>
           ) : (
-            <Carousel className="w-full ">
+            <Carousel className="w-full "
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            >
               <div className="flex gap-3  absolute right-5 -top-10">
                 <Link href={anchor} className="-mt-2.5 text-[15px] font-[500]">
                   {anchorText}
@@ -100,9 +110,9 @@ const ProductSlider = ({
                 {obj.map((item, index) => (
                   <CarouselItem
                     key={index}
-                    className="pl-1 md:basis-1/2 lg:basis-1/3"
+                    className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/4"
                   >
-                    <div className="p-1">
+                    <Link href={`/products/${item.productName}`} className="p-1">
                       <div className="aspect-square relative overflow-hidden group rounded transition-all duration-150">
                         <Image
                           src={item.image ? urlFor(item.image).url() : ""}
@@ -121,7 +131,7 @@ const ProductSlider = ({
                           {item.description}
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </CarouselItem>
                 ))}
               </CarouselContent>
