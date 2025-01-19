@@ -1,29 +1,32 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Banner from "./Banner";
 import Look from "./Look";
 import ProductSlider from "../ProductsSlider";
-// import {  Product, Products } from "@/app/data";
 import ReuseableFunction from "./ReuseableFunction";
 import Essential from "./Essential";
 import { getAllProducts } from "@/sanity/products/getAllProducts";
 import { getMenProducts } from "@/sanity/products/getMenProducts";
 import { getWomenProducts } from "@/sanity/products/getWomenProducts";
+import { Product } from "../../../../../sanity.types";
 
-const HomePage = async () => {
-  const products = await getAllProducts();  
-  const menProducts = await getMenProducts();  
-  const womenProducts = await getWomenProducts();  
+const HomePage = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [menProducts, setMenProducts] = useState<Product[]>([]);
+  const [womenProducts, setWomenProducts] = useState<Product[]>([]);
 
-
-  // const menObj = Products.filter(
-  //   (item) => item.shortDescription.includes("Men") && !item.shortDescription.includes("Shoes")
-  // );
-  // const womenObj = Products.filter(
-  //   (item) =>
-  //     item.shortDescription.includes("Women") && !item.shortDescription.includes("Shoes")
-  // );
-
-
+  useEffect(() => {
+    const fetchData = async () => {
+      const products = await getAllProducts();
+      const menProducts = await getMenProducts();
+      const womenProducts = await getWomenProducts();
+      setProducts(products);
+      setMenProducts(menProducts);
+      setWomenProducts(womenProducts);
+    };
+    fetchData();
+  }, []);
 
   return (
     <div>

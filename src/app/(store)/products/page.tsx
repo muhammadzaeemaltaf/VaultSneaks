@@ -28,6 +28,49 @@ const genderOptions = ["Men", "Women", "Unisex"];
 const kidsOptions = ["Boys", "Girls"];
 const priceRanges = ["Under ₹2,500.00", "₹2,501.00 - ₹5,000.00", "₹5,001.00+"];
 
+const SkeletonLoader = () => (
+  <div className="animate-pulse">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {Array.from({ length: 9 }).map((_, index) => (
+        <div key={index} className="p-1">
+          <div className="relative overflow-hidden group rounded transition-all duration-150 h-[348px] bg-gray-300"></div>
+          <div className="py-4 space-y-2">
+            <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/4"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/3"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const SidebarSkeletonLoader = () => (
+  <div className="animate-pulse space-y-4">
+    <div className="h-8 bg-gray-300 rounded w-1/2 mb-4"></div>
+    <div className="space-y-2">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div key={index} className="h-4 bg-gray-300 rounded w-full"></div>
+      ))}
+    </div>
+    <hr />
+    <div className="h-8 bg-gray-300 rounded w-1/2 mb-4"></div>
+    <div className="space-y-2">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div key={index} className="h-4 bg-gray-300 rounded w-full"></div>
+      ))}
+    </div>
+    <hr />
+    <div className="h-8 bg-gray-300 rounded w-1/2 mb-4"></div>
+    <div className="space-y-2">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div key={index} className="h-4 bg-gray-300 rounded w-full"></div>
+      ))}
+    </div>
+  </div>
+);
+
 const Page = () => {
   const [Products, setProducts] = useState<Product[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -64,7 +107,20 @@ const Page = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>; // Replace with a skeleton component if available
+    return (
+      <div className="container">
+        <div className="py-10 relative">
+          <div className="flex mt-6">
+            <div className="w-[260px] filterMenu fixed z-20 top-0 pt-20 lg:pt-0 pl-3 lg:pl-0 bg-white lg:relative lg:!left-0 transition-all duration-300 overflow-y-scroll h-screen pb-[400px]">
+              <SidebarSkeletonLoader />
+            </div>
+            <div className="lg:w-[1092px] lg:pl-10">
+              <SkeletonLoader />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const displayedProducts = Products.slice(

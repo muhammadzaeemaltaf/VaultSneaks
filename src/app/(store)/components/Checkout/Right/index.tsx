@@ -1,14 +1,14 @@
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
-import { Products } from "../../../../../data";
+// import { Products } from "../../../../../data";
 
 export default function OrderSummary() {
-  const product1 = Products.find(
-    (product) => product.name === "Nike Dri-FIT ADV TechKnit Ultra"
-  );
-  const product2 = Products.find(
-    (product) => product.name === "Nike Air Max 97 SE"
-  );
+  // const product1 = Products.find(
+  //   (product) => product.name === "Nike Dri-FIT ADV TechKnit Ultra"
+  // );
+  // const product2 = Products.find(
+  //   (product) => product.name === "Nike Air Max 97 SE"
+  // );
   return (
     <div className="max-w-[320px] lg:ml-auto">
       <div>
@@ -41,7 +41,7 @@ export default function OrderSummary() {
             Arrives Mon, 27 Mar - Wed, 12 Apr
           </p>
         </div>
-        <div className="space-y-4">
+        {/* <div className="space-y-4">
           {[product1, product2].map(
             (product, index) =>
               product && (
@@ -64,7 +64,7 @@ export default function OrderSummary() {
                 </div>
               )
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

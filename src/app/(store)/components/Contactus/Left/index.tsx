@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import React from 'react'
-import { DislikeIcon, LikeIcon } from '../../../../../data'
+import { DislikeIcon, LikeIcon } from '@/app/data'
 
 const Left = () => {
   return (

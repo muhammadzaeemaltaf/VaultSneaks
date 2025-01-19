@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import React from "react";
-import { SearchIcon } from "../../../../data";
+import { SearchIcon } from "@/app/data";
 import Left from "./Left";
 import Right from "./Right";
 

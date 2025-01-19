@@ -13,6 +13,20 @@ import Link from "next/link";
 import { Product } from "../../../../../sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 
+const SkeletonLoader = ({ half }: { half?: boolean }) => (
+  <div className="animate-pulse">
+    <div className="h-8 bg-gray-300 rounded w-[150px] mb-4 ml-auto"></div>
+    <div className="space-y-4">
+      <div className={`flex gap-4 `}>
+        <div className={`h-64 bg-gray-300 rounded ${half ? "w-full lg:w-1/2" : "w-full md:w-1/3 lg:w-1/4"} mb-4`}></div>
+        <div className={`h-64 bg-gray-300 rounded ${half ? "w-full hidden" : "w-full md:w-1/3 lg:w-1/4 hidden md:block"} mb-4`}></div>
+        <div className={`h-64 bg-gray-300 rounded ${half ? "w-full hidden" : "w-full md:w-1/3 lg:w-1/4 hidden lg:block"} mb-4`}></div>
+        <div className={`h-64 bg-gray-300 rounded ${half ? "w-full hidden lg:block lg:w-1/2" : "w-full md:w-1/3 lg:w-1/4"} mb-4`}></div>
+      </div>
+    </div>
+  </div>
+);
+
 const ProductSlider = ({
   heading,
   anchor,
@@ -35,7 +49,16 @@ const ProductSlider = ({
   }, [obj]);
 
   if (loading) {
-    return <div>Loading...</div>; // Replace with a skeleton component if available
+    return (
+      <div className={`${half ? "w-full md:w-1/2" : "container"}`}>
+        <div className="md:py-16 space-y-5 relative">
+          <div className={`mb-20 md:mb-0`}>
+            {heading && <div className="h-8 bg-gray-300 rounded w-[150px] mb-4"></div>}
+          </div>
+          <SkeletonLoader half={half} />
+        </div>
+      </div>
+    );
   }
 
   return (

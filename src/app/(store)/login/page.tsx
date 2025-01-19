@@ -1,5 +1,5 @@
 import React from "react";
-import { Logo } from "../../../data";
+import { Logo } from "@/app/data";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";

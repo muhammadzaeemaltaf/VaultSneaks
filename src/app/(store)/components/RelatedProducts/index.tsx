@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import { Product } from "../../../../../sanity.types";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
@@ -8,8 +10,43 @@ interface RelatedProductsProps {
   products: Product[];
 }
 
-const RelatedProducts: React.FC<RelatedProductsProps> = ({ products }) => {
-  if (products.length === 0) {
+const SkeletonLoader = () => (
+  <div className="animate-pulse">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-6 md:p-10">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div key={index} className="p-1">
+          <div className="relative overflow-hidden group rounded transition-all duration-150 h-[250px] bg-gray-300"></div>
+          <div className="py-4 space-y-2">
+            <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/4"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const RelatedProducts = ({ products }: RelatedProductsProps) => {
+  const [loading, setLoading] = useState(true);
+  const [showNoProductsMessage, setShowNoProductsMessage] = useState(false);
+
+  useEffect(() => {
+    if (products.length > 0) {
+      setLoading(false);
+    } else {
+      setTimeout(() => {
+        setLoading(false);
+        setShowNoProductsMessage(true);
+      }, 2000); // Show loader for 2 seconds
+    }
+  }, [products]);
+
+  if (loading) {
+    return <SkeletonLoader />;
+  }
+
+  if (showNoProductsMessage) {
     return (
       <div className="py-10">
         <h2 className="text-2xl font-bold mb-6">Related Products</h2>
@@ -20,7 +57,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ products }) => {
 
   return (
     <div className="py-10">
-      <h2 className="text-2xl font-bold mb-6">Related Products</h2>
+      <h2 className="text-2xl font-bold mb-6 px-4">Related Products</h2>
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-6 md:p-10">
         {products.map((product, index) => (
           <div key={index}>

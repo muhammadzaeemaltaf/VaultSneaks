@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import { useState } from "react";
-import { Logo } from "../../../data";
+import { Logo } from "@/app/data";
 export default function Login() {
   const [country, setCountry] = useState("India"); // Default value
 

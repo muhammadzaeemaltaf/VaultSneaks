@@ -151,47 +151,51 @@ const Header = () => {
                     </li>
                   </ul>
                 )}
-                {!loading && searchResults.length > 0 && (
+                {!loading && (searchResults.length > 0 || categoryResults.length > 0) && (
                   <ul className="absolute bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
-                    {searchResults.map((result, index) => (
-                      <li
-                        key={index}
-                        className="p-2 hover:bg-gray-200 flex items-center gap-2"
-                      >
-                        <Image
-                          src={result.imageUrl}
-                          alt={result.productName}
-                          height={1000}
-                          width={1000}
-                          className="w-8 h-8 object-cover rounded-sm"
-                        />
-                        <Link
-                          href={`/products/${result.productName}`}
-                          className="text-xs line-clamp-1"
-                          onClick={() => {
-                            setSearchResults([]);
-                            handleSearch("");
-                          }}
-                        >
-                          {result.productName}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {!loading && categoryResults.length > 0 && (
-                  <ul className="absolute bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
-                    <li className="p-2 text-start font-semibold">Categories</li>
-                    {categoryResults.map((category, index) => (
-                      <li key={index} className="p-2 hover:bg-gray-200 text-sm">
-                        <Link href={`/categories/${category}`} className="line-clamp-1"
-                        onClick={() => {
-                          setSearchResults([]);
-                          handleSearch("");
-                        }}
-                        >{category} </Link>
-                      </li>
-                    ))}
+                    {searchResults.length > 0 && (
+                      <>
+                        {searchResults.map((result, index) => (
+                          <li
+                            key={index}
+                            className="p-2 hover:bg-gray-200 flex items-center gap-2"
+                          >
+                            <Image
+                              src={result.imageUrl}
+                              alt={result.productName}
+                              height={1000}
+                              width={1000}
+                              className="w-8 h-8 object-cover rounded-sm"
+                            />
+                            <Link
+                              href={`/products/${result.productName}`}
+                              className="text-xs line-clamp-1"
+                              onClick={() => {
+                                setSearchResults([]);
+                                handleSearch("");
+                              }}
+                            >
+                              {result.productName}
+                            </Link>
+                          </li>
+                        ))}
+                      </>
+                    )}
+                    {categoryResults.length > 0 && (
+                      <>
+                        <li className="p-2 text-start font-semibold">Categories</li>
+                        {categoryResults.map((category, index) => (
+                          <li key={index} className="p-2 hover:bg-gray-200 text-sm">
+                            <Link href={`/categories/${category}`} className="line-clamp-1"
+                            onClick={() => {
+                              setSearchResults([]);
+                              handleSearch("");
+                            }}
+                            >{category} </Link>
+                          </li>
+                        ))}
+                      </>
+                    )}
                   </ul>
                 )}
               </div>
@@ -221,6 +225,70 @@ const Header = () => {
                 onChange={(e) => handleSearch(e.target.value)}
                 className="bg-themeGray h-[40px] w-full rounded-full p-2 pl-10"
               />
+                {loading && (
+                  <ul className="absolute bg-white border border-gray-300 mt-1 w-[95%] rounded-md shadow-lg top-15 left-1/2 -translate-x-1/2">
+                    {Array.from({ length: 6 }, (_, index) => (
+                      <li key={index} className="p-2 flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gray-300 rounded-sm animate-pulse"></div>
+                        <div className="flex-1 h-4 bg-gray-300 rounded-sm animate-pulse"></div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {!loading && noResults && (
+                  <ul className="absolute bg-white border border-gray-300 mt-1 w-[95%] rounded-md shadow-lg top-15 left-1/2 -translate-x-1/2">
+                    <li className="p-2 text-center text-sm">
+                      No products found
+                    </li>
+                  </ul>
+                )}
+                {!loading && (searchResults.length > 0 || categoryResults.length > 0) && (
+                  <ul className="absolute bg-white border border-gray-300 mt-1 w-[95%] rounded-md shadow-lg top-15 left-1/2 -translate-x-1/2">
+                    {searchResults.length > 0 && (
+                      <>
+                        {searchResults.map((result, index) => (
+                          <li
+                            key={index}
+                            className="p-2 hover:bg-gray-200 flex items-center gap-2"
+                          >
+                            <Image
+                              src={result.imageUrl}
+                              alt={result.productName}
+                              height={1000}
+                              width={1000}
+                              className="w-8 h-8 object-cover rounded-sm"
+                            />
+                            <Link
+                              href={`/products/${result.productName}`}
+                              className="text-xs line-clamp-1 flex-1"
+                              onClick={() => {
+                                setSearchResults([]);
+                                handleSearch("");
+                              }}
+                            >
+                              {result.productName}
+                            </Link>
+                          </li>
+                        ))}
+                      </>
+                    )}
+                    {categoryResults.length > 0 && (
+                      <>
+                        <li className="p-2 text-start font-semibold">Categories</li>
+                        {categoryResults.map((category, index) => (
+                          <li key={index} className="p-2 hover:bg-gray-200 text-sm">
+                            <Link href={`/categories/${category}`} className="line-clamp-1 flex-1"
+                            onClick={() => {
+                              setSearchResults([]);
+                              handleSearch("");
+                            }}
+                            >{category} </Link>
+                          </li>
+                        ))}
+                      </>
+                    )}
+                  </ul>
+                )}
             </div>
             <ul className="flex flex-col text-base gap-2 p-4">
               {HeaderLinks.map((link, index) => {
