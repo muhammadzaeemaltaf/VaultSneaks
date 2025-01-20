@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Check, X } from "lucide-react";
+import { Check, X, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -14,10 +14,11 @@ import {
 import { getAllProducts } from "@/sanity/products/getAllProducts";
 import { getProductByName } from "@/sanity/products/getProductByName";
 import { urlFor } from "@/sanity/lib/image";
-import { Product } from "../../../../sanity.types";
+import { Product, Review } from "../../../../sanity.types";
 import { CartIcon2 } from "@/app/data";
 import { useBasketStore } from "../../../../store";
 import { getProductByCategory } from "@/sanity/products/getProductByCategory";
+import { getProductReviews } from "@/sanity/reviews/getProductReviews";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -78,6 +79,50 @@ const SkeletonLoader = ({ single }: { single: boolean }) => (
   </div>
 );
 
+const renderStars = (rating: number) => {
+  const stars = [];
+  for (let i = 0; i < 5; i++) {
+    stars.push(
+      <span key={i} className={i < rating ? "text-yellow-500" : "text-gray-300"}>
+        ★
+      </span>
+    );
+  }
+  return stars;
+};
+
+const renderReviews = (reviews: Review[]) => {
+  return reviews.length > 0 ? (
+    reviews.map((review) => (
+      <div key={review._id} className="mb-4">
+        <p className="text-center mt-2 text-xl">
+           {renderStars(review.rating ?? 0)}
+        </p>
+      </div>
+    ))
+  ) : (
+    <p className="text-center font-bold">-</p>
+  );
+};
+
+const renderPriceComparison = (price1: number, price2: number) => {
+  if (price1 > price2) {
+    return (
+      <span className="flex justify-center items-center gap-3  w-full">
+        ${price1} <ArrowUp className="inline-block text-green-500" />
+      </span>
+    );
+  } else if (price1 < price2) {
+    return (
+      <span className="flex justify-center items-center gap-3  w-full">
+        ${price1} <ArrowDown className="inline-block text-red-500" />
+      </span>
+    );
+  } else {
+    return <span>${price1}</span>;
+  }
+};
+
 export default function ComparePage({
   searchParams,
 }: {
@@ -93,6 +138,8 @@ export default function ComparePage({
   const [loading, setLoading] = useState(true);
   const [loadingSelectedProduct, setLoadingSelectedProduct] = useState(false);
   const addItem = useBasketStore((state) => state.addItem);
+  const [reviewsCompareTo, setReviewsCompareTo] = useState<Review[]>([]);
+  const [reviewsCompareWith, setReviewsCompareWith] = useState<Review[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -100,6 +147,8 @@ export default function ComparePage({
       const productsWith: Product[] = await getProductByCategory(productTo?.category || "");
       setProductCompareTo(productTo as Product);
       setProductCompareWith(productsWith);
+      const reviewsTo = await getProductReviews(productTo._id);
+      setReviewsCompareTo(reviewsTo);
       setLoading(false);
     };
     fetchProducts();
@@ -112,6 +161,10 @@ export default function ComparePage({
         setLoadingSelectedProduct(true);
         const productData = await getProductByName(selectedProduct);
         setSelectedProductData(productData as Product);
+        if (productData && '_id' in productData) {
+          const reviewsWith = await getProductReviews(productData._id);
+          setReviewsCompareWith(reviewsWith);
+        }
         setLoadingSelectedProduct(false);
       }
     };
@@ -211,7 +264,9 @@ export default function ComparePage({
           {loadingSelectedProduct ? (
             <SkeletonLoader single={true} />
           ) : (
-            renderProductDetails(selectedProductData)
+            <>
+              {renderProductDetails(selectedProductData)}
+            </>
           )}
         </div>
       </div>
@@ -235,19 +290,30 @@ export default function ComparePage({
                     key={index}
                     className={index % 2 === 0 ? "bg-gray-50" : ""}
                   >
-                    <td className="border p-2">{feature}</td>
+                    <td className="border p-2">{feature.charAt(0).toUpperCase() + feature.slice(1).toLowerCase()}</td>
                     <td className="border p-2 text-center">
                       {feature === "price"
-                        ? `$${productCompareTo[feature as keyof Product]}`
+                        ? renderPriceComparison(
+                            productCompareTo.price,
+                            selectedProductData.price
+                          )
                         : productCompareTo[feature as keyof Product]}
                     </td>
                     <td className="border p-2 text-center">
                       {feature === "price"
-                        ? `$${selectedProductData[feature as keyof Product]}`
+                        ? renderPriceComparison(
+                            selectedProductData.price,
+                            productCompareTo.price
+                          )
                         : selectedProductData[feature as keyof Product]}
                     </td>
                   </tr>
                 ))}
+                <tr className="bg-gray-100">
+                  <td className="border p-2">Reviews</td>
+                  <td className="border p-2">{renderReviews(reviewsCompareTo)}</td>
+                  <td className="border p-2">{renderReviews(reviewsCompareWith)}</td>
+                </tr>
               </tbody>
             </table>
           </div>

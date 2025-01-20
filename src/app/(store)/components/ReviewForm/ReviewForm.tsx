@@ -1,27 +1,38 @@
-import { useState } from 'react'
-import { Star } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
+import { useState } from 'react';
+import { Star } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Review } from '../../../../../sanity.types';
 
 interface ReviewFormProps {
-  onSubmit: (review: { username: string; rating: number; comment: string }) => void
+  onSubmit: (review: Review) => void;
 }
 
 export function ReviewForm({ onSubmit }: ReviewFormProps) {
-  const [username, setUsername] = useState('')
-  const [rating, setRating] = useState(0)
-  const [comment, setComment] = useState('')
+  const [username, setUsername] = useState('');
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (username && rating && comment) {
-      onSubmit({ username, rating, comment })
-      setUsername('')
-      setRating(0)
-      setComment('')
+      onSubmit({ 
+        _type: "review",
+        reviewerName: username, 
+        rating, 
+        reviewText: comment, 
+        reviewDate: new Date().toISOString(),
+        _id: '',
+        _createdAt: '',
+        _updatedAt: '',
+        _rev: ''
+      });
+      setUsername('');
+      setRating(0);
+      setComment('');
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -62,6 +73,6 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
       </div>
       <Button type="submit">Submit Review</Button>
     </form>
-  )
+  );
 }
 

@@ -51,5 +51,11 @@ export const productSchema = defineType({
       title: "Description",
       type: "text",
     }),
+    defineField({
+      name: "reviews",
+      title: "Reviews",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "review" }] }],
+    }),
   ],
 });

@@ -13,8 +13,32 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-const Left = () => {
-  const [country, setCountry] = useState("India"); // Default value
+
+const Left = ({ onFormChange }: { onFormChange: (data: any) => void }) => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    addressLine1: "",
+    addressLine2: "",
+    addressLine3: "",
+    postalCode: "",
+    locality: "",
+    country: "India",
+    email: "",
+    phoneNumber: "",
+    pan: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    onFormChange({ ...formData, [name]: value });
+  };
+
+  const handleCountryChange = (value: string) => {
+    setFormData((prevData) => ({ ...prevData, country: value }));
+    onFormChange({ ...formData, country: value });
+  };
 
   return (
     <div className="space-y-10">
@@ -45,17 +69,26 @@ const Left = () => {
           <Input
             type="text"
             placeholder="First Name"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
             className=" h-[56px] rounded shadow-none"
           />
           <Input
             type="text"
             placeholder="Last Name"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
             className=" h-[56px] rounded shadow-none"
           />
           <div>
             <Input
               type="text"
               placeholder="Address Line 1"
+              name="addressLine1"
+              value={formData.addressLine1}
+              onChange={handleChange}
               className=" h-[56px] rounded shadow-none"
             />
             <p className="text-[11px] text-[#757575] px-4">
@@ -65,22 +98,34 @@ const Left = () => {
           <Input
             type="text"
             placeholder="Address Line 2"
+            name="addressLine2"
+            value={formData.addressLine2}
+            onChange={handleChange}
             className=" h-[56px] rounded shadow-none"
           />
           <Input
             type="text"
             placeholder="Address Line 3"
+            name="addressLine3"
+            value={formData.addressLine3}
+            onChange={handleChange}
             className=" h-[56px] rounded shadow-none"
           />
           <div className="flex gap-4">
             <Input
               type="number"
               placeholder="Postal Code"
+              name="postalCode"
+              value={formData.postalCode}
+              onChange={handleChange}
               className=" h-[56px] rounded shadow-none"
             />
             <Input
               type="text"
               placeholder="Locality"
+              name="locality"
+              value={formData.locality}
+              onChange={handleChange}
               className=" h-[56px] rounded shadow-none"
             />
           </div>
@@ -88,8 +133,8 @@ const Left = () => {
           <div className="flex gap-4">
             <div className="flex-1">
               <Select
-                value={country}
-                onValueChange={(value: string) => setCountry(value)}
+                value={formData.country}
+                onValueChange={handleCountryChange}
               >
                 <SelectTrigger className="border border-gray-300 p-2 w-full rounded h-[56px] ">
                   <SelectValue placeholder="Select a Country" />
@@ -108,7 +153,7 @@ const Left = () => {
               <Input
                 type="text"
                 placeholder="India"
-                value={country}
+                value={formData.country}
                 readOnly
                 className=" h-[56px] rounded shadow-none"
               />
@@ -145,6 +190,9 @@ const Left = () => {
             <Input
               type="text"
               placeholder="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               className=" h-[56px] rounded shadow-none"
             />
             <p className="text-[11px] text-[#757575] px-4">
@@ -155,6 +203,9 @@ const Left = () => {
             <Input
               type="text"
               placeholder="Phone Number"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
               className=" h-[56px] rounded shadow-none"
             />
             <p className="text-[11px] text-[#757575] px-4">
@@ -170,8 +221,11 @@ const Left = () => {
         <div className="space-y-4 mt-6">
           <div>
             <Input
-              type="number"
+              type="text"
               placeholder="PAN"
+              name="pan"
+              value={formData.pan}
+              onChange={handleChange}
               className=" h-[56px] rounded shadow-none"
             />
             <p className="text-[12px] leading-[24px] text-[#757575] pl-4 pr-14">

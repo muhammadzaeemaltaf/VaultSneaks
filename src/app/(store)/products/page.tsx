@@ -22,10 +22,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { Product } from "../../../../sanity.types";
 import { getAllProducts } from "@/sanity/products/getAllProducts";
+import { getProductByCategory } from "@/sanity/products/getProductByCategory";
+import { getProductsUnderPriceRange } from "@/sanity/products/getProductsUnderPriceRange";
 import { urlFor } from "@/sanity/lib/image";
 
 const genderOptions = ["Men", "Women", "Unisex"];
-const kidsOptions = ["Boys", "Girls"];
 const priceRanges = ["Under ₹2,500.00", "₹2,501.00 - ₹5,000.00", "₹5,001.00+"];
 
 const SkeletonLoader = () => (
@@ -76,18 +77,36 @@ const Page = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [sortLoading, setSortLoading] = useState(true);
+  const [sortBy, setSortBy] = useState("name");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
+  const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const productsPerPage = 9;
   const totalPages = Math.ceil(Products.length / productsPerPage);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const data = await getAllProducts();
-      setProducts(data);
-      setLoading(false);
+      setSortLoading(true);
+      let data;
+      if (selectedCategory) {
+        data = await getProductByCategory(selectedCategory);
+      } else if (selectedPriceRange) {
+        data = await getProductsUnderPriceRange(selectedPriceRange);
+      } else if (selectedGender) {
+        data = await getProductByCategory(selectedGender);
+      } else {
+        data = await getAllProducts(sortBy);
+      }
+      setTimeout(() => {
+        setProducts(data);
+        setLoading(false);
+        setSortLoading(false);
+      }, 500); // Show loader for 500ms
     };
     fetchProducts();
-  }, []);
+  }, [sortBy, selectedCategory, selectedPriceRange, selectedGender]);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -97,6 +116,36 @@ const Page = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleCategoryChange = (value: string | null) => {
+    if (selectedCategory === value) {
+      setSelectedCategory(null);
+    } else {
+      setSelectedCategory(value);
+      setSelectedPriceRange(null);
+      setSelectedGender(null);
+    }
+  };
+
+  const handlePriceRangeChange = (value: string | null) => {
+    if (selectedPriceRange === value) {
+      setSelectedPriceRange(null);
+    } else {
+      setSelectedPriceRange(value);
+      setSelectedCategory(null);
+      setSelectedGender(null);
+    }
+  };
+
+  const handleGenderChange = (value: string | null) => {
+    if (selectedGender === value) {
+      setSelectedGender(null);
+    } else {
+      setSelectedGender(value);
+      setSelectedCategory(null);
+      setSelectedPriceRange(null);
+    }
   };
 
   useEffect(() => {
@@ -137,24 +186,29 @@ const Page = () => {
         {/* Header Section */}
         <div className="flex justify-end lg:justify-between items-center">
           <div className="w-[260px] text-2xl font-medium hidden lg:block">
-            New (500)
+            New ({Products.length})
           </div>
           <div className="flex gap-3">
             <p
-              className="flex items-center gap-2 text-base cursor-pointer lg:pointer-events-none"
+              className="flex items-center gap-2 text-base cursor-pointer lg:hidden"
               onClick={() => setIsFilterOpen(!isFilterOpen)}
             >
               {isFilterOpen ? "Hide Filter" : "Show Filter"}{" "}
               <span>{FilterIcon}</span>
             </p>
-            <Select>
+            <Select
+              onValueChange={(value) => {
+                setSortBy(value);
+                setSortLoading(false);
+              }}
+            >
               <SelectTrigger className="w-[100px] border-none shadow-none focus:ring-0">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
+                  <SelectItem value="productName">Name</SelectItem>
                   <SelectItem value="category">Category</SelectItem>
-                  <SelectItem value="name">Name</SelectItem>
                   <SelectItem value="price">Price</SelectItem>
                 </SelectGroup>
               </SelectContent>
@@ -173,16 +227,32 @@ const Page = () => {
           >
             <div className="w-[192px] space-y-4 ">
               <div className="text-2xl font-medium block lg:hidden">
-                New (500)
+                New ({Products.length})
               </div>
 
-              {categories.map((category, index) => (
-                <ul key={`${category}-${index}`}>
-                  <li className="text-[15px] space-y-1 pr-6">{category}</li>
-                </ul>
-              ))}
-
               <hr />
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between py-2 text-sm">
+                  Categories
+                  <ChevronDown className="h-4 w-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-4 py-2">
+                    {Array.from(new Set(Products.map((product) => product.category))).map((category, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <Checkbox
+                      id={category || ""}
+                      checked={selectedCategory === category}
+                      onCheckedChange={() => handleCategoryChange(category || null)}
+                      />
+                      <label htmlFor={category || ""} className="text-sm">
+                      {category}
+                      </label>
+                    </div>
+                    ))}
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* <hr />
               <Collapsible defaultOpen>
                 <CollapsibleTrigger className="flex items-center justify-between py-2 text-sm">
                   Gender
@@ -191,32 +261,17 @@ const Page = () => {
                 <CollapsibleContent className="space-y-4 py-2">
                   {genderOptions.map((option) => (
                     <div key={option} className="flex items-center space-x-2">
-                      <Checkbox id={option} />
+                      <Checkbox
+                        id={option}
+                        onCheckedChange={() => handleGenderChange(option)}
+                      />
                       <label htmlFor={option} className="text-sm">
                         {option}
                       </label>
                     </div>
                   ))}
                 </CollapsibleContent>
-              </Collapsible>
-
-              <hr />
-              <Collapsible defaultOpen>
-                <CollapsibleTrigger className="flex items-center justify-between py-2 text-sm">
-                  Kids
-                  <ChevronDown className="h-4 w-4" />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-4 py-2">
-                  {kidsOptions.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <Checkbox id={option} />
-                      <label htmlFor={option} className="text-sm">
-                        {option}
-                      </label>
-                    </div>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
+              </Collapsible> */}
 
               <hr />
               <Collapsible defaultOpen>
@@ -227,7 +282,11 @@ const Page = () => {
                 <CollapsibleContent className="space-y-4 py-2">
                   {priceRanges.map((range) => (
                     <div key={range} className="flex items-center space-x-2">
-                      <Checkbox id={range} />
+                      <Checkbox
+                        id={range}
+                        checked={selectedPriceRange === range}
+                        onCheckedChange={() => handlePriceRangeChange(range)}
+                      />
                       <label htmlFor={range} className="text-sm">
                         {range}
                       </label>
@@ -244,42 +303,52 @@ const Page = () => {
             <div className="text-sm">
               Showing {startProduct}-{endProduct} of {Products.length} items
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {/* Product cards */}
-              {displayedProducts.map((product, index) => (
-                <div key={index}>
-                  <div className="p-1 relative">
-                    <Link
-                      href={`/products/${product.productName}`}
-                      className="absolute inset-0 z-10"
-                    />
-                    <div className="relative overflow-hidden group rounded transition-all duration-150">
-                      <Image
-                        src={product.image ? urlFor(product.image).url() : ""}
-                        alt={product.productName || "Product Image"}
-                        height={1000}
-                        width={1000}
-                        className="h-[348px] w-[348px] object-cover"
+            {sortLoading ? (
+              <SkeletonLoader />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {/* Product cards */}
+                {displayedProducts.map((product, index) => (
+                  <div key={index}>
+                    <div className="p-1 relative">
+                      <Link
+                        href={`/products/${product.productName}`}
+                        className="absolute inset-0 z-10"
                       />
-                    </div>
-                    <div className="py-4">
-                      <div className="text-[15px] font-[500]">
-                        {product.productName}
+                      <div className="relative overflow-hidden group rounded transition-all duration-150">
+                        <Image
+                          src={product.image ? urlFor(product.image).url() : ""}
+                          alt={product.productName || "Product Image"}
+                          height={1000}
+                          width={1000}
+                          className="h-[348px] w-[348px] object-cover"
+                        />
+                        {sortBy === "category" && (
+                          <div className="text-lightColor text-[15px] absolute z-10 top-2 left-2 bg-white px-2 py-1 rounded">
+                            {product.category}
+                          </div>
+                        )}
                       </div>
-                      <div className="text-lightColor text-[15px] line-clamp-2">
-                        {product.description}
-                      </div>
-                      <div className="text-lightColor text-[15px]">
-                        {product.colors ? product.colors.length: ""} Color
-                      </div>
-                      <div className="text-[15px] font-[600] mt-1">
-                        MRP : <span>{product.price}</span>
+                      <div className="py-4">
+                        <div className="text-[15px] font-[500]">
+                          {product.productName}
+                        </div>
+
+                        <div className="text-lightColor text-[15px] line-clamp-2">
+                          {product.description}
+                        </div>
+                        <div className="text-lightColor text-[15px]">
+                          {product.colors ? product.colors.length : ""} Color
+                        </div>
+                        <div className="text-[15px] font-[600] mt-1">
+                          MRP : <span>{product.price}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         {/* Pagination */}

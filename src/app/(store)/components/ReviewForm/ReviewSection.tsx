@@ -3,14 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { ReviewForm } from "./ReviewForm";
 import { ReviewList } from "./ReviewList";
-
-export interface Review {
-  id: number;
-  username: string;
-  rating: number;
-  comment: string;
-  date: string;
-}
+import { getProductReviews } from "@/sanity/reviews/getProductReviews";
+import { Review } from "../../../../../sanity.types";
+import { client } from "@/sanity/lib/client";
 
 const SkeletonLoader = () => (
   <div className="animate-pulse max-w-6xl mx-auto p-4 mt-10 border-t border-gray-200">
@@ -30,37 +25,48 @@ const SkeletonLoader = () => (
   </div>
 );
 
-export function ReviewSection() {
-  const [reviews, setReviews] = useState<Review[]>([
-    {
-      id: 1,
-      username: "John Doe",
-      rating: 4,
-      comment: "Great shoes! Very comfortable and stylish.",
-      date: "2023-05-15",
-    },
-    {
-      id: 2,
-      username: "Jane Smith",
-      rating: 5,
-      comment: "Absolutely love these! Perfect fit and amazing quality.",
-      date: "2023-05-14",
-    },
-  ]);
+export function ReviewSection({ productId }: { productId: string }) {
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [activeTab, setActiveTab] = useState("read");
   const [loading, setLoading] = useState(true);
   const tabsRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
 
-  const addReview = (newReview: Omit<Review, "id" | "date">) => {
+  const addReview = async (newReview: Omit<Review, "_id" | "date" | "productId">) => {
     const review: Review = {
       ...newReview,
-      id: reviews.length + 1,
-      date: new Date().toISOString().split("T")[0],
+      _id: `${productId}-${Date.now()}`,
+      reviewDate: new Date().toISOString(),
+      productId,
     };
-    setReviews([review, ...reviews]);
-    setActiveTab("read");
+
+    try {
+      await client.create({
+        _type: "review",
+        product: { _type: "reference", _ref: productId },
+        productId: productId,
+        reviewerName: review.reviewerName,
+        rating: review.rating,
+        reviewText: review.reviewText,
+        reviewDate: review.reviewDate,
+      });
+      setReviews([review, ...reviews]);
+      setActiveTab("read");
+    } catch (error) {
+      console.error("Failed to create review:", error);
+    }
   };
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      const fetchedReviews = await getProductReviews(productId);
+      console.log(fetchedReviews)
+      setReviews(fetchedReviews);
+      setLoading(false);
+    };
+
+    fetchReviews();
+  }, [productId]);
 
   useEffect(() => {
     const setIndicatorPosition = () => {
@@ -84,10 +90,6 @@ export function ReviewSection() {
       window.removeEventListener("resize", setIndicatorPosition);
     };
   }, [activeTab]);
-
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000); // Simulate loading delay
-  }, []);
 
   if (loading) {
     return <SkeletonLoader />;
@@ -119,7 +121,11 @@ export function ReviewSection() {
         />
       </div>
       {activeTab === "read" ? (
-        <ReviewList reviews={reviews} />
+        reviews.length > 0 ? (
+          <ReviewList reviews={reviews} />
+        ) : (
+          <p>No reviews for this product.</p>
+        )
       ) : (
         <ReviewForm onSubmit={addReview} />
       )}

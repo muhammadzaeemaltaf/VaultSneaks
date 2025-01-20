@@ -1,21 +1,17 @@
-import { Review } from './ReviewSection'
-import { ReviewItem } from './ReviewItem'
+import { ReviewItem } from "./ReviewItem";
+import { Review } from '../../../../../sanity.types';
 
 interface ReviewListProps {
-  reviews: Review[]
+  reviews: Review[];
 }
 
 export function ReviewList({ reviews }: ReviewListProps) {
   return (
-    <div className="space-y-4">
-      {reviews.length === 0 ? (
-        <p className="text-gray-500">No reviews yet. Be the first to leave a review!</p>
-      ) : (
-        reviews.map((review) => (
-          <ReviewItem key={review.id} review={review} />
-        ))
-      )}
+    <div>
+      {reviews.map((review) => (
+        <ReviewItem key={review._id} review={review} />
+      ))}
     </div>
-  )
+  );
 }
 

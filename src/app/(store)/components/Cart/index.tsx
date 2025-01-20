@@ -66,6 +66,10 @@ const Cart = () => {
   const increaseQuantity = useBasketStore((state) => state.increaseQuantity);
   const decreaseQuantity = useBasketStore((state) => state.decreaseQuantity);
 
+  const calculateTotalPrice = () => {
+    return groupItems.reduce((total, item) => total + (item.product.price || 0) * item.quantity, 0);
+  };
+
   useEffect(() => {
     if (groupItems.length > 0) {
       setLoading(false);
@@ -185,9 +189,25 @@ const Cart = () => {
         {/* Summary Section */}
         <div className="w-full lg:w-[350.67px] bg-white p-6 mt-6 lg:mt-0">
           <h2 className="text-[21px] font-medium mb-4">Summary</h2>
+          {groupItems.map((item, index) => (
+            <div className="flex justify-between items-center mb-4" key={index}>
+            <div className="flex items-center gap-3">
+            <Image
+                src={item.product.image ? urlFor(item.product.image).url() : ""}
+                alt={item.product.productName || "Product Image"}
+                className="w-[50px] h-[50px] object-cover"
+                height={50}
+                width={50}
+              />
+              {/* <p className="text-[15px]">{item.product.productName}</p> */}
+              <p className="text-[15px]">x{item.quantity}</p>
+            </div>
+              <p className="text-[15px]">₹{item.product.price ? item.product.price * item.quantity : 0}</p>
+            </div>
+          ))}
           <div className="flex justify-between text-[15px] mb-4 ">
             <p>Subtotal</p>
-            <p>₹20,890.00</p>
+            <p>₹{calculateTotalPrice()}</p>
           </div>
           <div className="flex justify-between text-[15px] mb-4 border-b pb-4">
             <p>Estimated Delivery & Handling</p>
@@ -195,7 +215,7 @@ const Cart = () => {
           </div>
           <div className="flex justify-between text-[14px] mb-6 border-b pb-6">
             <p>Total</p>
-            <p className="font-medium">₹ 20,890.00</p>
+            <p className="font-medium">₹{calculateTotalPrice()}</p>
           </div>
           <button className="w-full h-[60px] py-2 bg-black text-[15px] text-white font-medium rounded-full">
             <Link href={"/checkout"}>Member Checkout</Link>

@@ -121,6 +121,9 @@ const Page = ({ params }: { params: { name: string } }) => {
               <p className="text-sm/relaxed text-muted-foreground text-balance">
                 {product.description}
               </p>
+              <p className="text-lg text-muted-foreground text-balance mt-2">
+               Category: <strong>{product.category}</strong>
+              </p>
             </div>
             <div className="space-y-4">
               <div className="flex items-baseline gap-2">
@@ -150,7 +153,7 @@ const Page = ({ params }: { params: { name: string } }) => {
           </div>
         </div>
 
-        <ReviewSection />
+        <ReviewSection productId={product._id}/>
 
         <RelatedProducts products={relatedProducts} />
         <ToastContainer />
