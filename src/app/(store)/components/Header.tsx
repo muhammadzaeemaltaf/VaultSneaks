@@ -135,7 +135,7 @@ const Header = () => {
                   className="bg-themeGray h-[40px] w-[180px] rounded-full p-2 pl-10"
                 />
                 {loading && (
-                  <ul className="absolute bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
+                  <ul className="absolute z-10 bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
                     {Array.from({ length: 6 }, (_, index) => (
                       <li key={index} className="p-2 flex items-center gap-2">
                         <div className="w-8 h-8 bg-gray-300 rounded-sm animate-pulse"></div>
@@ -145,14 +145,14 @@ const Header = () => {
                   </ul>
                 )}
                 {!loading && noResults && (
-                  <ul className="absolute bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
+                  <ul className="absolute z-10 bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
                     <li className="p-2 text-center text-sm">
                       No products found
                     </li>
                   </ul>
                 )}
                 {!loading && (searchResults.length > 0 || categoryResults.length > 0) && (
-                  <ul className="absolute bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
+                  <ul className="absolute z-10 bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
                     {searchResults.length > 0 && (
                       <>
                         {searchResults.map((result, index) => (
