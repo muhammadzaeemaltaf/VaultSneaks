@@ -32,28 +32,20 @@ export const Logo = (
 
 export const HeaderLinks = [
   {
-    title: "New & Featured",
+    title: "Store",
     link: "/products",
   },
   {
     title: "Men",
-    link: "#",
+    link: "/categories/Men's Shoes",
   },
   {
     title: "Women",
-    link: "#",
+    link: "/categories/Women's Shoes",
   },
   {
-    title: "Kids",
-    link: "#",
-  },
-  {
-    title: "Sale",
-    link: "#",
-  },
-  {
-    title: "SNKRS",
-    link: "#",
+    title: "Help",
+    link: "/contact",
   },
 ];
 

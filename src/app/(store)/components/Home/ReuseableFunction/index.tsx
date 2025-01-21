@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 const ReuseableFunction = ({
@@ -8,12 +9,14 @@ const ReuseableFunction = ({
   heading,
   paragraph,
   buttonText,
+  buttonLink,
 }: {
   title: string;
   image: string;
   heading: string;
   paragraph: string;
   buttonText: string;
+  buttonLink: string;
 }) => {
   return (
     <div>
@@ -33,7 +36,7 @@ const ReuseableFunction = ({
           <p className="text-[15px] text-center md:mt-6">
            {paragraph}
           </p>
-          <Button className="bg-black rounded-full mt-3">{buttonText}</Button>
+          <Button className="bg-black rounded-full mt-3"><Link href={buttonLink}>{buttonText}</Link></Button>
         </div>
       </div>
     </div>

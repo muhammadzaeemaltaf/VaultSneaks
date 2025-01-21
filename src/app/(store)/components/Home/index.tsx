@@ -44,6 +44,7 @@ const HomePage = () => {
         heading="STEP INTO WHAT FEELS GOOD"
         paragraph=" Cause everyone should know the feeling of running in that perfect pair."
         buttonText="Find Your Shoe"
+        buttonLink="/products"
       />
       <div className="flex flex-col gap-2 container !mt-10 md:mt-0">
         <div>
@@ -70,6 +71,7 @@ const HomePage = () => {
           heading="FLIGHT ESSENTIALS"
           paragraph=" Your built-to-last, all-week wears—but with style only Jordan Brand can deliver."
           buttonText="Shop"
+          buttonLink="/shop"
         />
         <Essential />
     </div>
