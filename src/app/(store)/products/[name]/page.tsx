@@ -45,10 +45,15 @@ const Page = ({ params }: { params: { name: string } }) => {
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [selectedColor, setSelectedColor] = useState<string>("");
   const addItem = useBasketStore((state) => state.addItem);
 
   const handleAddToCart = (product: Product) => {
-    addItem(product);
+    if (!selectedColor) {
+      toast.error("Please select a color");
+      return;
+    }
+    addItem(product, selectedColor);
     toast.success(`${product.productName} added to cart!`);
   };
 
@@ -121,9 +126,24 @@ const Page = ({ params }: { params: { name: string } }) => {
               <p className="text-sm/relaxed text-muted-foreground text-balance">
                 {product.description}
               </p>
-              <p className="text-lg text-muted-foreground text-balance mt-2">
-               Category: <strong>{product.category}</strong>
+              <p className="">
+                Category: <strong>{product.category}</strong>
               </p>
+            </div>
+            <div className="flex items-center gap-1 mt-2">
+              <span className="text-lg text-muted-foreground text-balance mt-2">Colors:</span>
+              {product.colors?.map((color, colorIndex) => (
+                <span
+                  key={colorIndex}
+                  className={`flex justify-center items-center w-6 h-6 rounded-full border mt-1 cursor-pointer ${selectedColor === color ? 'border-black' : ''}`}
+                  onClick={() => setSelectedColor(color)}
+                >
+                  <span
+                    className="w-5 h-5 rounded-full"
+                    style={{ backgroundColor: color }}
+                  ></span>
+                </span>
+              ))}
             </div>
             <div className="space-y-4">
               <div className="flex items-baseline gap-2">
@@ -153,7 +173,7 @@ const Page = ({ params }: { params: { name: string } }) => {
           </div>
         </div>
 
-        <ReviewSection productId={product._id}/>
+        <ReviewSection productId={product._id} />
 
         <RelatedProducts products={relatedProducts} />
         <ToastContainer />

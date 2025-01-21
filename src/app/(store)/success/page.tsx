@@ -10,14 +10,14 @@ import { useBasketStore } from "../../../../store";
 
 const page = () => {
   const searchParams = useSearchParams();
-  const orderNumber = searchParams.get("orderNumber");
+  const orderId = searchParams.get("orderId");
   const clearBasket = useBasketStore((state) => state.clearBasket);
 
   useEffect(() => {
-    if (orderNumber) {
+    if (orderId) {
       clearBasket();
     }
-  }, [orderNumber, clearBasket]);
+  }, [orderId, clearBasket]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -31,11 +31,11 @@ const page = () => {
           Your order has been confirmed and will be shipped shortly.
         </p>
         <div className="space-y-2">
-          {orderNumber && (
+          {orderId && (
             <p className="text-gray-680 flex items-center space-x-5">
               <span>Order Number:</span>
               <span className="font-mono text-sm text-black-600">
-                {orderNumber}
+                {orderId}
               </span>
             </p>
           )}

@@ -42,7 +42,7 @@ const Left = ({ onFormChange }: { onFormChange: (data: any) => void }) => {
 
   return (
     <div className="space-y-10">
-      <div className="max-w-[440px] space-y-4">
+      <div className="lg:max-w-[440px] space-y-4">
         <h1 className="text-[21px] font-medium">
           How would you like to get your order?
         </h1>
@@ -61,7 +61,7 @@ const Left = ({ onFormChange }: { onFormChange: (data: any) => void }) => {
         </div>
       </div>
 
-      <div className="max-w-[440px]">
+      <div className="lg:max-w-[440px]">
         <h1 className="text-[21px] font-medium">
           Enter your name and address:
         </h1>
@@ -180,7 +180,7 @@ const Left = ({ onFormChange }: { onFormChange: (data: any) => void }) => {
         </div>
       </div>
 
-      <div className="max-w-[440px]">
+      <div className="lg:max-w-[440px]">
         <h1 className="text-[21px] font-medium">
           What's your contact information?
         </h1>
@@ -215,7 +215,7 @@ const Left = ({ onFormChange }: { onFormChange: (data: any) => void }) => {
         </div>
       </div>
 
-      <div className="max-w-[440px]">
+      <div className="lg:max-w-[440px]">
         <h1 className="text-[21px] font-medium">What's your PAN?</h1>
 
         <div className="space-y-4 mt-6">
@@ -245,7 +245,7 @@ const Left = ({ onFormChange }: { onFormChange: (data: any) => void }) => {
         </div>
       </div>
 
-      <div className="max-w-[440px]">
+      <div className="lg:max-w-[440px]">
         <div className="space-y-4 mt-6">
           <div className="flex gap-2">
             <Checkbox id="desc" className="border-[#CCCCCC] shadow-none" />
@@ -264,12 +264,12 @@ const Left = ({ onFormChange }: { onFormChange: (data: any) => void }) => {
       </div>
 
       <div className="border-b pb-6">
-        <Button className="bg-[#F5F5F5] hover:bg-gray-100 text-[15px] text-[#757575] font-medium max-w-[440px] w-full rounded-full shadow-none h-[60px]">
+        <Button className="bg-[#F5F5F5] hover:bg-gray-100 text-[15px] text-[#757575] font-medium lg:max-w-[440px] w-full rounded-full shadow-none h-[60px]">
           Continue
         </Button>
       </div>
 
-      <div className="max-w-[440px] text-[21px] font-medium space-y-3">
+      <div className="lg:max-w-[440px] text-[21px] font-medium space-y-3">
         <p className="border-b pb-6">Delievery</p>
         <p className="text-[#757575] border-b pb-6">Shipping</p>
         <p className="text-[#757575] border-b pb-6">Billing</p>

@@ -25,13 +25,14 @@ import { getAllProducts } from "@/sanity/products/getAllProducts";
 import { getProductByCategory } from "@/sanity/products/getProductByCategory";
 import { getProductsUnderPriceRange } from "@/sanity/products/getProductsUnderPriceRange";
 import { urlFor } from "@/sanity/lib/image";
+import { getAllCategories } from "@/sanity/category/getAllCategories";
 
 const genderOptions = ["Men", "Women", "Unisex"];
 const priceRanges = ["Under ₹2,500.00", "₹2,501.00 - ₹5,000.00", "₹5,001.00+"];
 
 const SkeletonLoader = () => (
-  <div className="animate-pulse">
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+  <div className="animate-pulse w-full">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {Array.from({ length: 9 }).map((_, index) => (
         <div key={index} className="p-1">
           <div className="relative overflow-hidden group rounded transition-all duration-150 h-[348px] bg-gray-300"></div>
@@ -80,6 +81,7 @@ const Page = () => {
   const [sortLoading, setSortLoading] = useState(true);
   const [sortBy, setSortBy] = useState("name");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [Categories, setCategories] = useState<string[] | null>(null);
   const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const productsPerPage = 9;
@@ -107,6 +109,15 @@ const Page = () => {
     };
     fetchProducts();
   }, [sortBy, selectedCategory, selectedPriceRange, selectedGender]);
+
+useEffect(() => {
+    const fetchCategories = async () => {
+      const data = await getAllCategories();
+      setCategories(data);
+    };
+    fetchCategories();
+  
+}, []);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -163,7 +174,7 @@ const Page = () => {
             <div className="w-[260px] filterMenu fixed z-20 top-0 pt-20 lg:pt-0 pl-3 lg:pl-0 bg-white lg:relative lg:!left-0 transition-all duration-300 overflow-y-scroll h-screen pb-[400px]">
               <SidebarSkeletonLoader />
             </div>
-            <div className="lg:w-[1092px] lg:pl-10">
+            <div className="lg:w-[1092px] lg:pl-10 w-full">
               <SkeletonLoader />
             </div>
           </div>
@@ -237,7 +248,7 @@ const Page = () => {
                   <ChevronDown className="h-4 w-4" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-4 py-2">
-                    {Array.from(new Set(Products.map((product) => product.category))).map((category, index) => (
+                    {Categories && Categories.map((category, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <Checkbox
                       id={category || ""}
@@ -297,7 +308,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="lg:w-[1092px] lg:pl-10">
+          <div className="lg:w-[1092px] lg:pl-10 w-full">
             {" "}
             {/* Products Section */}
             <div className="text-sm">
@@ -306,7 +317,7 @@ const Page = () => {
             {sortLoading ? (
               <SkeletonLoader />
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {/* Product cards */}
                 {displayedProducts.map((product, index) => (
                   <div key={index}>
@@ -321,7 +332,7 @@ const Page = () => {
                           alt={product.productName || "Product Image"}
                           height={1000}
                           width={1000}
-                          className="h-[348px] w-[348px] object-cover"
+                          className="sm:h-[348px] sm:w-[348px] object-cover"
                         />
                         {sortBy === "category" && (
                           <div className="text-lightColor text-[15px] absolute z-10 top-2 left-2 bg-white px-2 py-1 rounded">

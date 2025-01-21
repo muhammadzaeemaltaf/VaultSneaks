@@ -98,6 +98,11 @@ export const orderSchema = defineType({
               to: [{ type: "product" }],
             }),
             defineField({
+              name: "color",
+              title: "Product Color",
+              type: "string",
+            }),
+            defineField({
               name: "quantity",
               title: "Quantity Purchased",
               type: "number",

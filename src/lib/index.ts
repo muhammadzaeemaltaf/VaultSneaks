@@ -24,6 +24,7 @@ export async function createOrderInSanity(orderData: any) {
       _key: uuidv4(),
       product: { _type: "reference", _ref: product.product },
       quantity: product.quantity,
+      color: product.color,
     })),
     totalPrice: orderData.totalPrice,
     status: orderData.status,

@@ -8,7 +8,9 @@ export const createOrder = async (orderData: any) => {
       products: orderData.products.map((item: any) => ({
         _type: "object",
         product: { _type: "reference", _ref: item.product },
+        color: item.color,
         quantity: item.quantity,
+        selectedColor: item.selectedColor,
       })),
     });
     return order._id;

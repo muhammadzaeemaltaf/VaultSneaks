@@ -5,11 +5,12 @@ import { Product } from "./sanity.types";
 export interface BasketItem {
   product: Product;
   quantity: number;
+  selectedColor: string; // New property for selected color
 }
 
 interface BasketState {
   items: BasketItem[];
-  addItem: (product: Product) => void;
+  addItem: (product: Product, color: string) => void;
   removeItem: (product: Product) => void;
   clearBasket: () => void;
   getTotalPrice: () => number;
@@ -23,22 +24,22 @@ export const useBasketStore = create<BasketState>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product) =>
+      addItem: (product, color) =>
         set((state) => {
           const existingItem = state.items.find(
-            (item) => item.product._id === product._id
+            (item) => item.product._id === product._id && item.selectedColor === color
           );
           if (existingItem) {
             return {
               items: state.items.map((item) => {
-                if (item.product._id === product._id) {
+                if (item.product._id === product._id && item.selectedColor === color) {
                   return { ...item, quantity: item.quantity + 1 };
                 }
                 return item;
               }),
             };
           } else {
-            return { items: [...state.items, { product, quantity: 1 }] };
+            return { items: [...state.items, { product, quantity: 1, selectedColor: color }] };
           }
         }),
       removeItem: (product) =>
@@ -91,6 +92,5 @@ export const useBasketStore = create<BasketState>()(
     }),
     {
       name: "basket-store",
-    }
-  )
+    })
 );

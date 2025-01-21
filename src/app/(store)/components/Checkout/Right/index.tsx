@@ -21,6 +21,7 @@ export default function OrderSummary({ formData }: { formData: any }) {
       ...formData,
       products: groupItems.map(item => ({
         product: item.product._id,
+        color: item.selectedColor,
         quantity: item.quantity,
       })),
       totalPrice: calculateTotalPrice(),
@@ -33,14 +34,14 @@ export default function OrderSummary({ formData }: { formData: any }) {
 
     try {
       const orderId = await createOrderInSanity(orderData);
-      router.push(`/success?orderId=${orderId}`);
+      router.push(`/success?orderId=${orderId._id}`);
     } catch (error) {
       console.error("Failed to create order:", error);
     }
   };
 
   return (
-    <div className="max-w-[320px] lg:ml-auto">
+    <div className="lg:max-w-[320px] lg:ml-auto">
       <div>
         <h2 className="text-[21px] font-medium">Order Summary</h2>
       </div>
@@ -55,6 +56,10 @@ export default function OrderSummary({ formData }: { formData: any }) {
                 height={50}
                 width={50}
               />
+                <span
+                className="w-4 h-4 rounded-full border"
+                style={{ backgroundColor: item.selectedColor }}
+              ></span>
               <p className="text-[15px]">x{item.quantity}</p>
             </div>
             <p className="text-[15px]">₹{item.product.price ? item.product.price * item.quantity : 0}</p>

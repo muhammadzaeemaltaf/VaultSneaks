@@ -6,18 +6,22 @@ import { Input } from "@/components/ui/input";
 import { Review } from '../../../../../sanity.types';
 
 interface ReviewFormProps {
-  onSubmit: (review: Review) => void;
+  onSubmit: (review: Review, pictures: File[], video: File | null) => void;
 }
 
 export function ReviewForm({ onSubmit }: ReviewFormProps) {
   const [username, setUsername] = useState('');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [pictures, setPictures] = useState<File[]>([]);
+  const [video, setVideo] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (username && rating && comment) {
-      onSubmit({ 
+      setIsSubmitting(true);
+      await onSubmit({ 
         _type: "review",
         reviewerName: username, 
         rating, 
@@ -27,10 +31,13 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
         _createdAt: '',
         _updatedAt: '',
         _rev: ''
-      });
+      }, pictures, video);
       setUsername('');
       setRating(0);
       setComment('');
+      setPictures([]);
+      setVideo(null);
+      setIsSubmitting(false);
     }
   };
 
@@ -71,7 +78,19 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
           required
         />
       </div>
-      <Button type="submit">Submit Review</Button>
+      <div>
+        <label htmlFor="pictures" className="block text-sm font-medium text-gray-700">Upload Pictures</label>
+        <Input
+          id="pictures"
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={(e) => setPictures(e.target.files ? Array.from(e.target.files) : [])}
+        />
+      </div>
+      <Button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Submitting..." : "Submit Review"}
+      </Button>
     </form>
   );
 }

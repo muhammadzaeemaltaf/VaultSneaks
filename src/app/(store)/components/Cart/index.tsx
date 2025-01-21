@@ -161,6 +161,13 @@ const Cart = () => {
                     </button>
                   </div>
                 </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[15px] text-[#757575]">Color:</span>
+                  <span
+                    className="w-6 h-6 rounded-full border"
+                    style={{ backgroundColor: item.selectedColor }}
+                  ></span>
+                </div>
                 <div className="flex gap-4 items-center pt-6">
                   <span>{HeartIcon}</span> {/* Ensure HeartIcon is defined */}
                   <span
@@ -200,6 +207,10 @@ const Cart = () => {
                 width={50}
               />
               {/* <p className="text-[15px]">{item.product.productName}</p> */}
+              <span
+                className="w-4 h-4 rounded-full border"
+                style={{ backgroundColor: item.selectedColor }}
+              ></span>
               <p className="text-[15px]">x{item.quantity}</p>
             </div>
               <p className="text-[15px]">₹{item.product.price ? item.product.price * item.quantity : 0}</p>

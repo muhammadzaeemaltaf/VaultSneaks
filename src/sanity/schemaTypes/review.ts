@@ -44,5 +44,11 @@ export const reviewSchema = defineType({
       title: "Review Date",
       type: "datetime",
     }),
+    defineField({
+      name: "reviewPicture",
+      title: "Review Pictures",
+      type: "array",
+      of: [{ type: "image" }],
+    }),
   ],
 });

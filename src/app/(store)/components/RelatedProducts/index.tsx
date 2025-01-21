@@ -82,8 +82,18 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
                 <div className="text-lightColor text-[15px] line-clamp-2">
                   {product.description}
                 </div>
-                <div className="text-lightColor text-[15px]">
-                  {product.colors ? product.colors.length : ""} Color
+                <div className="flex space-x-1 mt-2">
+                  {product.colors?.map((color, colorIndex) => (
+                    <span
+                      key={colorIndex}
+                      className="flex justify-center items-center w-4 h-4 rounded-full border"
+                    >
+                      <span
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: color }}
+                      ></span>
+                    </span>
+                  ))}
                 </div>
                 <div className="text-[15px] font-[600] mt-1">
                   MRP : <span>{product.price}</span>

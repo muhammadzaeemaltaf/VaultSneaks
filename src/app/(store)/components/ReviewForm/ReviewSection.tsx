@@ -6,6 +6,8 @@ import { ReviewList } from "./ReviewList";
 import { getProductReviews } from "@/sanity/reviews/getProductReviews";
 import { Review } from "../../../../../sanity.types";
 import { client } from "@/sanity/lib/client";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SkeletonLoader = () => (
   <div className="animate-pulse max-w-6xl mx-auto p-4 mt-10 border-t border-gray-200">
@@ -29,10 +31,11 @@ export function ReviewSection({ productId }: { productId: string }) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [activeTab, setActiveTab] = useState("read");
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
 
-  const addReview = async (newReview: Omit<Review, "_id" | "date" | "productId">) => {
+  const addReview = async (newReview: Omit<Review, "_id" | "date" | "productId">, pictures: File[]) => {
     const review: Review = {
       ...newReview,
       _id: `${productId}-${Date.now()}`,
@@ -41,26 +44,42 @@ export function ReviewSection({ productId }: { productId: string }) {
     };
 
     try {
-      await client.create({
+      setUploading(true);
+      const reviewData: any = {
         _type: "review",
         product: { _type: "reference", _ref: productId },
         productId: productId,
+        reviewId: `${review.reviewId}-${Date.now()}`,
         reviewerName: review.reviewerName,
         rating: review.rating,
         reviewText: review.reviewText,
         reviewDate: review.reviewDate,
-      });
-      setReviews([review, ...reviews]);
+      };
+
+      if (pictures.length > 0) {
+        const pictureAssets = await Promise.all(pictures.map(picture => client.assets.upload('image', picture)));
+        reviewData.reviewPicture = pictureAssets.map(asset => ({
+          _type: 'image',
+          asset: { _type: 'reference', _ref: asset._id },
+          _key: `${asset._id}-${Date.now()}`
+        }));
+      }
+
+      await client.create(reviewData);
+      toast.success("Review added successfully!");
+      const fetchedReviews = await getProductReviews(productId);
+      setReviews(fetchedReviews);
       setActiveTab("read");
     } catch (error) {
       console.error("Failed to create review:", error);
+    } finally {
+      setUploading(false);
     }
   };
 
   useEffect(() => {
     const fetchReviews = async () => {
       const fetchedReviews = await getProductReviews(productId);
-      console.log(fetchedReviews)
       setReviews(fetchedReviews);
       setLoading(false);
     };
@@ -91,7 +110,7 @@ export function ReviewSection({ productId }: { productId: string }) {
     };
   }, [activeTab]);
 
-  if (loading) {
+  if (loading || uploading) {
     return <SkeletonLoader />;
   }
 
