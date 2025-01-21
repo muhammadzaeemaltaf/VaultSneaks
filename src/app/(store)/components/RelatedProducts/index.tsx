@@ -5,6 +5,8 @@ import { Product } from "../../../../../sanity.types";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
+import { useWishlistStore } from "../../../../../store";
+import { HeartIcon } from "lucide-react";
 
 interface RelatedProductsProps {
   products: Product[];
@@ -30,6 +32,17 @@ const SkeletonLoader = () => (
 const RelatedProducts = ({ products }: RelatedProductsProps) => {
   const [loading, setLoading] = useState(true);
   const [showNoProductsMessage, setShowNoProductsMessage] = useState(false);
+
+  const { addItem, removeItem, getItems } = useWishlistStore();
+  const wishlistItems = getItems();
+
+  const toggleWishlist = (product: Product) => {
+    if (wishlistItems.find((item) => item._id === product._id)) {
+      removeItem(product._id);
+    } else {
+      addItem(product);
+    }
+  };
 
   useEffect(() => {
     if (products.length > 0) {
@@ -74,6 +87,18 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
                   width={1000}
                   className="object-cover"
                 />
+                <span className="absolute top-2 right-2 z-[100] cursor-pointer w-6 h-6">
+                  <HeartIcon
+                    className={` active:animate-ping ${
+                      wishlistItems.find(
+                        (wishlistItem) => wishlistItem._id === product._id
+                      )
+                        ? "fill-gray-500 "
+                        : "text-gray-500"
+                    }`}
+                    onClick={() => toggleWishlist(product)}
+                  />
+                </span>
               </div>
               <div className="py-4">
                 <div className="text-[15px] font-[500]">
@@ -96,7 +121,7 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
                   ))}
                 </div>
                 <div className="text-[15px] font-[600] mt-1">
-                  MRP : <span>{product.price}</span>
+                Rs: <span>{product.price}</span>
                 </div>
               </div>
             </div>

@@ -6,9 +6,9 @@ import { DislikeIcon, LikeIcon } from '@/app/data'
 const Left = () => {
   return (
     <div className="px-6 text-[#111111] max-w-[939.75px]">
-    <h1 className="text-[28px] font-[500] mb-6">WHAT PAYMENT OPTIONS CAN I USE ON NIKE ORDERS?</h1>
+    <h1 className="text-[28px] font-[500] mb-6">WHAT PAYMENT OPTIONS CAN I USE ON VAULTSNEAK ORDERS?</h1>
     <p className="text-[15px] mb-4">
-      We want to make buying your favorite Nike shoes and gear online fast and easy, and we accept the following
+      We want to make buying your favorite VAULTSNEAK shoes and gear online fast and easy, and we accept the following
       payment options:
     </p>
     <ul className="mb-4 space-y-4 pl-8">
@@ -20,12 +20,12 @@ const Left = () => {
       <li>Apple Pay</li>
     </ul>
     <p className="text-base mb-4">
-      <span className='font-[500] underline'>Nike Members</span> can store multiple debit or credit cards in their profile for faster checkout. If you’re not
+      <span className='font-[500] underline'>VAULTSNEAK Members</span> can store multiple debit or credit cards in their profile for faster checkout. If you’re not
       already a Member, <Link href="#" className="font-[500] underline">join us</Link>{" "}today.
     </p>
     <div className="flex gap-4 mb-8">
       <Button className="bg-black text-white w-[106.13px] h-[39px] py-2 rounded-full">JOIN US</Button>
-      <Button className="bg-black text-white w-[129.84px] h-[39px] py-2 rounded-full">SHOP NIKE</Button>
+      <Button className="bg-black text-white  h-[39px] py-2 rounded-full">SHOP VAULTSNEAK</Button>
     </div>
     <h2 className="text-xl font-[500] mb-4">FAQs</h2>
     <div className="space-y-4">
@@ -45,15 +45,15 @@ const Left = () => {
       <div>
         <h3 className="font-bold text-base mb-2">What payment methods are accepted for SNKRS orders?</h3>
         <p className='text-base'>
-          We use the same payment methods accepted on Nike orders.
+          We use the same payment methods accepted on VAULTSNEAK orders.
         </p>
       </div>
       <div>
         <h3 className="font-bold text-base mb-2">Why can’t I see Apple Pay as an option?</h3>
         <p className='text-base'>
-          To use Apple Pay as an option in the Nike App or on Nike.com, you’ll need to use a compatible Apple device
+          To use Apple Pay as an option in the VAULTSNEAK App or on VAULTSNEAK.com, you’ll need to use a compatible Apple device
           running the latest version of iOS or macOS and have a supported card in your Wallet. Additionally, you need
-          to use Safari to use Apple Pay on Nike.com.
+          to use Safari to use Apple Pay on VAULTSNEAK.com.
         </p>
       </div>
     </div>
@@ -67,8 +67,8 @@ const Left = () => {
     <div className="mt-8 space-y-2">
       <h3 className="text-base font-[500] text-[#757575]">RELATED</h3>
       <ul className=" underline pl-8 space-y-4">
-        <li><a href="#" className='text-base font-medium text-black'>WHAT ARE NIKE’S DELIVERY OPTIONS?</a></li>
-        <li><a href="#" className='text-base font-medium text-black'>HOW DO I GET FREE DELIVERY ON NIKE ORDERS?</a></li>
+        <li><a href="#" className='text-base font-medium text-black'>WHAT ARE VAULTSNEAK’S DELIVERY OPTIONS?</a></li>
+        <li><a href="#" className='text-base font-medium text-black'>HOW DO I GET FREE DELIVERY ON VAULTSNEAK ORDERS?</a></li>
       </ul>
     </div>
   </div>  )

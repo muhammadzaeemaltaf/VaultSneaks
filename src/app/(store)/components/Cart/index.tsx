@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
-import { DeleteIcon, HeartIcon } from "@/app/data";
+import { DeleteIcon} from "@/app/data";
 import Link from "next/link";
-import { useBasketStore } from "../../../../../store";
+import { useBasketStore, useWishlistStore } from "../../../../../store";
 import { urlFor } from "@/sanity/lib/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { HeartIcon } from "lucide-react";
 
 const SkeletonLoader = () => (
   <div className="animate-pulse container">
@@ -65,6 +66,7 @@ const Cart = () => {
   const removeItem = useBasketStore((state) => state.removeItem);
   const increaseQuantity = useBasketStore((state) => state.increaseQuantity);
   const decreaseQuantity = useBasketStore((state) => state.decreaseQuantity);
+  const wishlistItems = useWishlistStore((state) => state.getItems());
 
   const calculateTotalPrice = () => {
     return groupItems.reduce((total, item) => total + (item.product.price || 0) * item.quantity, 0);
@@ -107,7 +109,7 @@ const Cart = () => {
           <div className="bg-[#F7F7F7] h-[62.89px] flex flex-col justify-center gap-1 px-4">
             <h1 className="text-[13px] font-medium ">Free Delivery</h1>
             <p className="text-sm text-gray-600">
-              Applies to orders of ₹14,000.00 or more.{" "}
+              Applies to orders of Rs 14,000.00 or more.{" "}
               <span className="text-black underline cursor-pointer mx-4">
                 View details
               </span>
@@ -139,7 +141,7 @@ const Cart = () => {
                   {item.product.colors}
                 </p>
                 <p className="price text-[15px] lg:hidden">
-                  MRP: {item.product.price}.00
+                Rs: {item.product.price}
                 </p>
                 <div className="flex gap-10">
                   <p className="text-[15px] text-[#757575]">Size: L</p>
@@ -169,7 +171,7 @@ const Cart = () => {
                   ></span>
                 </div>
                 <div className="flex gap-4 items-center pt-6">
-                  <span>{HeartIcon}</span> {/* Ensure HeartIcon is defined */}
+                  <span><HeartIcon/></span> {/* Ensure HeartIcon is defined */}
                   <span
                     className="cursor-pointer"
                     onClick={() => handleRemoveItem(item.product)}
@@ -180,17 +182,10 @@ const Cart = () => {
                 </div>
               </div>
               <p className="price text-[15px] hidden lg:block">
-                MRP: {item.product.price}
+              Rs: {item.product.price}
               </p>
             </div>
           ))}
-
-          <p className="text-start text-[21px] text-black font-medium mt-10">
-            Favourites
-          </p>
-          <p className="text-start text-[15px] text-gray-500">
-            There are no items saved to your favourites.
-          </p>
         </div>
 
         {/* Summary Section */}
@@ -220,10 +215,6 @@ const Cart = () => {
             <p>Subtotal</p>
             <p>₹{calculateTotalPrice()}</p>
           </div>
-          <div className="flex justify-between text-[15px] mb-4 border-b pb-4">
-            <p>Estimated Delivery & Handling</p>
-            <p>Free</p>
-          </div>
           <div className="flex justify-between text-[14px] mb-6 border-b pb-6">
             <p>Total</p>
             <p className="font-medium">₹{calculateTotalPrice()}</p>
@@ -233,6 +224,56 @@ const Cart = () => {
           </button>
         </div>
       </div>
+
+      <p className="text-start text-[21px] text-black font-medium mt-10">
+        Favourites
+      </p>
+      {wishlistItems.length === 0 ? (
+        <p className="text-start text-[15px] text-gray-500">
+          There are no items saved to your favourites.
+        </p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-6">
+          {wishlistItems.map((product, index) => (
+            <div key={index} className="p-1 relative">
+              <Link href={`/products/${product.productName}`} className="absolute inset-0 z-10" />
+              <div className="relative overflow-hidden group rounded transition-all duration-150">
+                <Image
+                  src={product.image ? urlFor(product.image).url() : ""}
+                  alt={product.productName || "Product Image"}
+                  height={1000}
+                  width={1000}
+                  className="object-cover"
+                />
+                <span className="absolute top-2 right-2 cursor-pointer w-6 h-6">
+                  <HeartIcon className="fill-gray-500" />
+                </span>
+              </div>
+              <div className="py-4">
+                <div className="text-[15px] font-[500]">
+                  {product.productName}
+                </div>
+                <div className="flex gap-2">
+                  {product.colors?.map((color, colorIndex) => (
+                    <span
+                      key={colorIndex}
+                      className={`flex justify-center items-center w-4 h-4 rounded-full border mt-1 cursor-pointer`}
+                    >
+                      <span
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: color }}
+                      ></span>
+                    </span>
+                  ))}
+                </div>
+                <div className="text-[15px] font-[600] mt-1">
+                Rs: <span>{product.price}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

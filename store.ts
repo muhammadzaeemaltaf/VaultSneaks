@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Product } from "./sanity.types";
+import { toast } from "react-toastify"; // Import toast
 
 export interface BasketItem {
   product: Product;
@@ -18,13 +19,14 @@ interface BasketState {
   getGroupedItems: () => BasketItem[];
   increaseQuantity: (product: Product) => void;
   decreaseQuantity: (product: Product) => void;
+  showToast: (message: string) => void; // New method to show toast
 }
 
 export const useBasketStore = create<BasketState>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product, color) =>
+      addItem: (product, color) => {
         set((state) => {
           const existingItem = state.items.find(
             (item) => item.product._id === product._id && item.selectedColor === color
@@ -41,8 +43,10 @@ export const useBasketStore = create<BasketState>()(
           } else {
             return { items: [...state.items, { product, quantity: 1, selectedColor: color }] };
           }
-        }),
-      removeItem: (product) =>
+        });
+        
+      },
+      removeItem: (product) => {
         set((state) => ({
           items: state.items.reduce((acc, item) => {
             if (item.product._id === product._id) {
@@ -54,7 +58,9 @@ export const useBasketStore = create<BasketState>()(
             }
             return acc;
           }, [] as BasketItem[]),
-        })),
+        }));
+        
+      },
       clearBasket: () => set({ items: [] }),
       getTotalPrice: () => {
         return get().items.reduce((total, item) => {
@@ -89,8 +95,38 @@ export const useBasketStore = create<BasketState>()(
             return acc;
           }, [] as BasketItem[]),
         })),
+      showToast: (message) => {
+        toast(message); // Implement toast method
+      },
     }),
     {
       name: "basket-store",
     })
+);
+
+interface WishlistState {
+  items: Product[];
+  addItem: (product: Product) => void;
+  removeItem: (productId: string) => void;
+  getItems: () => Product[];
+}
+
+export const useWishlistStore = create<WishlistState>()(
+  persist(
+    (set, get) => ({
+      items: [],
+      addItem: (product) =>
+        set((state) => ({
+          items: [...state.items, product],
+        })),
+      removeItem: (productId) =>
+        set((state) => ({
+          items: state.items.filter((item) => item._id !== productId),
+        })),
+      getItems: () => get().items,
+    }),
+    {
+      name: "wishlist-store",
+    }
+  )
 );

@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { Star } from "lucide-react";
 
 interface ReviewItemProps {
   review: Review;
@@ -35,6 +36,14 @@ export function ReviewItem({ review }: ReviewItemProps) {
         <p className="text-sm text-gray-600">
           {new Date(review.reviewDate ?? 0).toDateString()}
         </p>
+      </div>
+      <div className="flex items-center mt-2">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`w-4 h-4 ${star <= (review.rating ?? 0) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+          />
+        ))}
       </div>
       <p className="mt-2">{review.reviewText}</p>
       <div className="flex flex-wrap gap-2 w-fit relative">
@@ -71,6 +80,14 @@ export function ReviewItem({ review }: ReviewItemProps) {
               <p className="text-sm text-gray-600">
                 {new Date(review.reviewDate ?? 0).toDateString()}
               </p>
+            </div>
+            <div className="flex items-center mt-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-4 h-4 ${star <= (review.rating ?? 0) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                />
+              ))}
             </div>
             <p className="mt-2">{review.reviewText}</p>
             <hr className="my-5" />

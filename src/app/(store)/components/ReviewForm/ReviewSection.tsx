@@ -6,7 +6,7 @@ import { ReviewList } from "./ReviewList";
 import { getProductReviews } from "@/sanity/reviews/getProductReviews";
 import { Review } from "../../../../../sanity.types";
 import { client } from "@/sanity/lib/client";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const SkeletonLoader = () => (
@@ -67,9 +67,11 @@ export function ReviewSection({ productId }: { productId: string }) {
 
       await client.create(reviewData);
       toast.success("Review added successfully!");
-      const fetchedReviews = await getProductReviews(productId);
-      setReviews(fetchedReviews);
-      setActiveTab("read");
+      setTimeout(async () => {
+        const fetchedReviews = await getProductReviews(productId);
+        setReviews(fetchedReviews);
+        setActiveTab("read");
+      }, 5000);
     } catch (error) {
       console.error("Failed to create review:", error);
     } finally {
@@ -143,11 +145,13 @@ export function ReviewSection({ productId }: { productId: string }) {
         reviews.length > 0 ? (
           <ReviewList reviews={reviews} />
         ) : (
-          <p>No reviews for this product.</p>
+          <p>No reviews for this product. Be the first one to review!</p>
         )
       ) : (
         <ReviewForm onSubmit={addReview} />
       )}
+
+      <ToastContainer/>
     </div>
   );
 }

@@ -4,17 +4,18 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { CartIcon2 } from "@/app/data";
-import { Info } from "lucide-react";
+import { Info, HeartIcon, Star } from "lucide-react";
 import Link from "next/link";
 import { getProductByName } from "@/sanity/products/getProductByName";
 import { getRelatedProducts } from "@/sanity/products/getRelatedProducts";
 import { urlFor } from "@/sanity/lib/image";
-import { Product } from "../../../../../sanity.types";
+import { Product, Review } from "../../../../../sanity.types";
 import RelatedProducts from "../../components/RelatedProducts";
-import { useBasketStore } from "../../../../../store";
+import { useBasketStore, useWishlistStore } from "../../../../../store";
 import { ReviewSection } from "../../components/ReviewForm/ReviewSection";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getProductReviews } from "@/sanity/reviews/getProductReviews";
 
 const SkeletonLoader = () => (
   <div className="py-10">
@@ -47,6 +48,14 @@ const Page = ({ params }: { params: { name: string } }) => {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const addItem = useBasketStore((state) => state.addItem);
+  const {
+    addItem: addWishlistItem,
+    removeItem: removeWishlistItem,
+    getItems: getWishlistItems,
+  } = useWishlistStore();
+  const wishlistItems = getWishlistItems();
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [averageRating, setAverageRating] = useState<number | null>(null);
 
   const handleAddToCart = (product: Product) => {
     if (!selectedColor) {
@@ -55,6 +64,14 @@ const Page = ({ params }: { params: { name: string } }) => {
     }
     addItem(product, selectedColor);
     toast.success(`${product.productName} added to cart!`);
+  };
+
+  const toggleWishlist = (product: Product) => {
+    if (wishlistItems.find((item) => item._id === product._id)) {
+      removeWishlistItem(product._id);
+    } else {
+      addWishlistItem(product);
+    }
   };
 
   useEffect(() => {
@@ -70,6 +87,18 @@ const Page = ({ params }: { params: { name: string } }) => {
           productData._id
         );
         setRelatedProducts(relatedProductsData);
+
+        const fetchedReviews = await getProductReviews(productData._id);
+        setReviews(fetchedReviews);
+        if (fetchedReviews.length > 0) {
+          const totalRating = fetchedReviews.reduce(
+            (sum, review) => sum + (review.rating ?? 0),
+            0
+          );
+          setAverageRating(totalRating / fetchedReviews.length);
+        } else {
+          setAverageRating(null);
+        }
       } else {
         setProduct(null);
       }
@@ -109,7 +138,7 @@ const Page = ({ params }: { params: { name: string } }) => {
     <div className="py-10">
       <div className="max-w-[1200px] mx-auto pr-3">
         <div className="flex justify-between flex-wrap gap-8 items-start ">
-          <div className="bg-[#F8F8F8] mx-auto  md:w-[600px] md:h-[600px] rounded-lg flex items-center justify-center">
+          <div className="bg-[#F8F8F8] mx-auto  md:w-[600px] md:h-[600px] rounded-lg flex items-center justify-center relative">
             <Image
               src={product.image ? urlFor(product.image).url() : ""}
               alt={product.productName || "Product Image"}
@@ -130,12 +159,26 @@ const Page = ({ params }: { params: { name: string } }) => {
                 Category: <strong>{product.category}</strong>
               </p>
             </div>
-            <div className="flex items-center gap-1 mt-2">
-              <span className="text-lg text-muted-foreground text-balance mt-2">Colors:</span>
+            <span className="block cursor-pointer w-6 h-6 mt-5">
+              <HeartIcon
+                className={`active:animate-ping ${
+                  wishlistItems.find(
+                    (wishlistItem) => wishlistItem._id === product._id
+                  )
+                    ? "fill-gray-500"
+                    : "text-gray-500"
+                }`}
+                onClick={() => toggleWishlist(product)}
+              />
+            </span>
+            <div className="flex items-center gap-1">
+              <span className="text-lg text-muted-foreground text-balance mt-2">
+                Colors:
+              </span>
               {product.colors?.map((color, colorIndex) => (
                 <span
                   key={colorIndex}
-                  className={`flex justify-center items-center w-6 h-6 rounded-full border mt-1 cursor-pointer ${selectedColor === color ? 'border-black' : ''}`}
+                  className={`flex justify-center items-center w-6 h-6 rounded-full border mt-1 cursor-pointer ${selectedColor === color ? "border-black" : ""}`}
                   onClick={() => setSelectedColor(color)}
                 >
                   <span
@@ -145,10 +188,28 @@ const Page = ({ params }: { params: { name: string } }) => {
                 </span>
               ))}
             </div>
+            {averageRating !== null && (
+              <div className="flex items-center gap-1 mt-2">
+                <span className="text-lg text-muted-foreground text-balance">
+                  Rating:
+                </span>
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`w-4 h-4 ${star <= averageRating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                    />
+                  ))}
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  ({reviews.length} reviews)
+                </span>
+              </div>
+            )}
             <div className="space-y-4">
               <div className="flex items-baseline gap-2">
                 <span className="text-[36px] font-[500]">
-                  MRP : <span>{product.price}</span>
+                  Rs: <span>{product.price}</span>
                 </span>
               </div>
               <Button

@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 import { searchProducts } from "@/sanity/products/searchProducts";
 import Image from "next/image";
-import { useBasketStore } from "../../../../store";
+import { useBasketStore, useWishlistStore } from "../../../../store";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,6 +25,7 @@ const Header = () => {
   const [loading, setLoading] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const itemCount = useBasketStore((state) => state.items.reduce((acc, item) => acc + item.quantity, 0));
+  const wishlistCount = useWishlistStore((state) => state.items.length);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -205,7 +206,12 @@ const Header = () => {
                 )}
               </div>
             </div>
-            <span>{HeartIcon}</span>
+            <Link href={"/wishlist"} className="relative">
+              {HeartIcon}
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {wishlistCount}
+              </span>
+            </Link>
             <Link href={"/cart"} className="relative">
               {CartIcon}
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">

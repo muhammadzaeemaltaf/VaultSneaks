@@ -345,7 +345,7 @@ const Checkout = () => {
               <div className="space-y-2">
                 <div className="flex justify-between text-[14px] text-[#8D8D8D]">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>₹{calculateTotalPrice()}</span>
+                  <span>Rs {calculateTotalPrice()}</span>
                 </div>
                 <div className="flex justify-between text-[14px] text-[#8D8D8D]">
                   <span className="text-muted-foreground">Delivery/Shipping</span>
@@ -365,7 +365,7 @@ const Checkout = () => {
 
               <div className="space-y-1 text-sm">
                 <p className="font-bold text-[15px]">
-                  Arrives Mon, 27 Mar - Wed, 12 Apr
+                  Arrives {new Date().toDateString()} - {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toDateString()}
                 </p>
               </div>
               <button 

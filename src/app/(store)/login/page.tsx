@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 const page = () => {
   return (
@@ -12,12 +13,18 @@ const page = () => {
       <div className="py-14">
         <div className="max-w-[380px] h-[489px] mx-auto space-y-6">
           <div className="flex justify-center">
-            <span>{Logo}</span>
+            <Image
+              src={"/VaultSneak_Logo-01.png"}
+              alt="Logo"
+              height={1000}
+              width={1000}
+              className="w-40"
+            />
           </div>
           <div>
             <div className="w-[186.5px] mx-auto">
               <h1 className="text-lg font-[700] text-center">
-                YOUR ACCOUNT FOR EVERYTHING NIKE
+                YOUR ACCOUNT FOR EVERYTHING VAULTSNEAK
               </h1>
             </div>
           </div>
@@ -41,7 +48,7 @@ const page = () => {
             </div>
             <div className="max-w-[280px] mx-auto">
               <div className="text-[12px] text-center">
-                By logging in, you agree to Nike's{" "}
+                By logging in, you agree to VAULTSNEAK's{" "}
                 <Link href={"#"} className="underline">
                   Privacy Policy
                 </Link>{" "}

@@ -12,21 +12,30 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "@/app/data";
+import Image from "next/image";
 export default function Login() {
   const [country, setCountry] = useState("India"); // Default value
 
   return (
     <div className="max-w-[380px] mx-auto py-10 flex items-center justify-center">
       <div className="px-4 md:px-8 rounded-lg w-full max-w-md">
-        {/*The Nike Logo */}
-        <div className="flex justify-center mb-4">{Logo}</div>
+        {/*The VAULTSNEAK Logo */}
+        <div className="flex justify-center mb-4">
+          <Image 
+            src={"/VaultSneak_Logo-01.png"}
+            alt="Logo"
+            height={1000}
+            width={1000}
+            className="w-40"
+          />
+        </div>
         {/*Our Heading */}
         <h1 className="text-2xl font-bold text-center mb-4">
-          BECOME A NIKE MEMBERS
+          BECOME A VAULTSNEAK MEMBERS
         </h1>
         <p className="text-[14px] font-[22px] max-w-[315px] text-balance  mx-auto text-[#8D8D8D] text-center mb-6">
-          Create your Nike Member profile and get first access to the very best
-          of Nike products, inspiration and community.{" "}
+          Create your VAULTSNEAK Member profile and get first access to the very best
+          of VAULTSNEAK products, inspiration and community.{" "}
         </p>
         {/*The Login Form */}
         <div className="space-y-4">
@@ -67,7 +76,7 @@ export default function Login() {
             />
             {/*The Birthday Question */}
             <div className="text-[11px] text-center text-[#8D8D8D] mt-2">
-              Get a Nike Member Reward every year on your Birthday.
+              Get a VAULTSNEAK Member Reward every year on your Birthday.
             </div>
           </div>
 
@@ -107,7 +116,7 @@ export default function Login() {
           {/*The Terms and Conditions */}
           <div className="max-w-[280px] mx-auto text-[#8D8D8D]">
             <div className="text-[12px] text-center">
-              By logging in, you agree to Nike's{" "}
+              By logging in, you agree to VAULTSNEAK's{" "}
               <Link href={"#"} className="underline">
                 Privacy Policy
               </Link>{" "}

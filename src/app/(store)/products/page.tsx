@@ -17,7 +17,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, HeartIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { Product } from "../../../../sanity.types";
@@ -26,9 +26,10 @@ import { getProductByCategory } from "@/sanity/products/getProductByCategory";
 import { getProductsUnderPriceRange } from "@/sanity/products/getProductsUnderPriceRange";
 import { urlFor } from "@/sanity/lib/image";
 import { getAllCategories } from "@/sanity/category/getAllCategories";
+import { useWishlistStore } from "../../../../store";
 
 const genderOptions = ["Men", "Women", "Unisex"];
-const priceRanges = ["Under ₹2,500.00", "₹2,501.00 - ₹5,000.00", "₹5,001.00+"];
+const priceRanges = ["Under Rs 2,500.00", "Rs 2,501.00 - Rs 5,000.00", "Rs 5,001.00+"];
 
 const SkeletonLoader = () => (
   <div className="animate-pulse w-full">
@@ -82,11 +83,24 @@ const Page = () => {
   const [sortBy, setSortBy] = useState("name");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [Categories, setCategories] = useState<string[] | null>(null);
-  const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
+  const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(
+    null
+  );
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const productsPerPage = 9;
   const totalPages = Math.ceil(Products.length / productsPerPage);
   const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const { addItem, removeItem, getItems } = useWishlistStore();
+  const wishlistItems = getItems();
+
+  const toggleWishlist = (product: Product) => {
+    if (wishlistItems.find((item) => item._id === product._id)) {
+      removeItem(product._id);
+    } else {
+      addItem(product);
+    }
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -105,19 +119,18 @@ const Page = () => {
         setProducts(data);
         setLoading(false);
         setSortLoading(false);
-      }, 500); // Show loader for 500ms
+      }, 500);
     };
     fetchProducts();
   }, [sortBy, selectedCategory, selectedPriceRange, selectedGender]);
 
-useEffect(() => {
+  useEffect(() => {
     const fetchCategories = async () => {
       const data = await getAllCategories();
       setCategories(data);
     };
     fetchCategories();
-  
-}, []);
+  }, []);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -248,17 +261,20 @@ useEffect(() => {
                   <ChevronDown className="h-4 w-4" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-4 py-2">
-                    {Categories && Categories.map((category, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <Checkbox
-                      id={category || ""}
-                      checked={selectedCategory === category}
-                      onCheckedChange={() => handleCategoryChange(category || null)}
-                      />
-                      <label htmlFor={category || ""} className="text-sm">
-                      {category}
-                      </label>
-                    </div>
+                  {Categories &&
+                    Categories.map((category, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={category || ""}
+                          checked={selectedCategory === category}
+                          onCheckedChange={() =>
+                            handleCategoryChange(category || null)
+                          }
+                        />
+                        <label htmlFor={category || ""} className="text-sm">
+                          {category}
+                        </label>
+                      </div>
                     ))}
                 </CollapsibleContent>
               </Collapsible>
@@ -334,25 +350,53 @@ useEffect(() => {
                           width={1000}
                           className="sm:h-[348px] sm:w-[348px] object-cover"
                         />
+
+                        <span className="absolute top-2 right-2 z-10  cursor-pointer w-6 h-6">
+                          <HeartIcon
+                            className={` active:animate-ping ${
+                              wishlistItems.find(
+                                (wishlistItem) =>
+                                  wishlistItem._id === product._id
+                              )
+                                ? "fill-gray-500 "
+                                : "text-gray-500"
+                            }`}
+                            onClick={() => toggleWishlist(product)}
+                          />
+                        </span>
+
                         {sortBy === "category" && (
                           <div className="text-lightColor text-[15px] absolute z-10 top-2 left-2 bg-white px-2 py-1 rounded">
                             {product.category}
                           </div>
                         )}
                       </div>
-                      <div className="py-4">
-                        <div className="text-[15px] font-[500]">
+                      <div className="py-2">
+                      <span className="text-[#9E3500] text-[15px] font-[500]">
+                        {product.status}
+                      </span>
+                        <div className="text-[15px] font-[600] mt-2">
                           {product.productName}
                         </div>
 
                         <div className="text-lightColor text-[15px] line-clamp-2">
                           {product.description}
                         </div>
-                        <div className="text-lightColor text-[15px]">
-                          {product.colors ? product.colors.length : ""} Color
+                        <div className="flex gap-2">
+                          {product.colors?.map((color, colorIndex) => (
+                            <span
+                              key={colorIndex}
+                              className={`flex justify-center items-center w-4 h-4 rounded-full border mt-1 cursor-pointe`}
+                            >
+                              <span
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: color }}
+                              ></span>
+                            </span>
+                          ))}
                         </div>
                         <div className="text-[15px] font-[600] mt-1">
-                          MRP : <span>{product.price}</span>
+                          PKR : <span>{product.price}</span>
                         </div>
                       </div>
                     </div>
@@ -364,12 +408,19 @@ useEffect(() => {
         </div>
         {/* Pagination */}
         <div className="flex justify-center items-center mt-6">
-          <div className="flex">
+          <div className="flex gap-2">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              className="w-6 h-6 rounded-full text-xs bg-gray-200 flex items-center justify-center"
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft  className="h-5 w-5"/>
+            </button>
             {Array.from({ length: totalPages }, (_, index) => (
               <button
                 key={index}
                 onClick={() => handlePageChange(index + 1)}
-                className={`px-4 py-2 mx-1 ${
+                className={`w-6 h-6 rounded-full text-xs ${
                   currentPage === index + 1
                     ? "bg-black text-white"
                     : "bg-gray-200"
@@ -378,6 +429,13 @@ useEffect(() => {
                 {index + 1}
               </button>
             ))}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="w-6 h-6 rounded-full text-xs bg-gray-200 flex items-center justify-center"
+              disabled={currentPage === totalPages}
+            >
+              <ChevronRight className="h-5 w-5"/>
+            </button>
           </div>
         </div>
       </div>
