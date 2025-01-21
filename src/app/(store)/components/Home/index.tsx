@@ -33,7 +33,7 @@ const HomePage = () => {
       <Banner />
       <Look />
       <ProductSlider
-        heading="Best of Air Max"
+        heading="Best of VaultSneaks"
         anchor="/shop"
         anchorText="Shop"
         obj={products}

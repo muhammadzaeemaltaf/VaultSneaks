@@ -68,25 +68,24 @@ const Header = () => {
     <div>
       <nav className="bg-themeGray">
         <div className="h-9 container  md:px-[40px]">
-          <div className="flex justify-between items-center h-full">
-            <span>{TopLogo}</span>
+          <div className="flex justify-end items-center h-full">
 
             <div className="flex divide-x-[1px] divide-black text-[11px] h-[26px] items-center  md:w-[272.81px] justify-between">
               <Link
                 href={"/products"}
-                className="flex-1 px-2 md:px-3 whitespace-nowrap"
+                className="flex-1 text-center px-2 md:px-3 whitespace-nowrap"
               >
-                Find a Store
+                Store
               </Link>
               <Link
                 href={"/contact"}
-                className="flex-1 px-2 md:px-3 whitespace-nowrap"
+                className="flex-1 text-center px-2 md:px-3 whitespace-nowrap"
               >
                 Help
               </Link>
               <Link
                 href={"/joinus"}
-                className="flex-1 px-2 md:px-3 whitespace-nowrap"
+                className="flex-1 text-center px-2 md:px-3 whitespace-nowrap"
               >
                 Join Us
               </Link>
@@ -99,14 +98,20 @@ const Header = () => {
       </nav>
 
       <header
-        className="relative"
+        className="relative py-3"
         ref={menuRef}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="container h-[60px] flex justify-between items-center  md:px-[40px]">
           <div className="logo scale-75 md:scale-100 -ml-2 md:ml-0">
             <Link href={"/"} onClick={() => setIsMenuOpen(false)}>
-              {Logo}
+              <Image
+              src={'/VaultSneak_Logo-01.png'}
+              alt="Logo"
+              height={1000}
+              width={1000}
+              className="w-20"
+              />
             </Link>
           </div>
           <div className="hidden lg:flex ml-40">

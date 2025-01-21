@@ -176,7 +176,11 @@ export default function ComparePage({
   };
 
   const handleAddToCart = (product: Product) => {
-    addItem(product);
+    if (product.colors && product.colors.length > 0) {
+      addItem(product, product.colors[0]);
+    } else {
+      toast.error("Product colors are not available.");
+    }
     toast.success(`${product.productName} added to cart!`);
   };
 

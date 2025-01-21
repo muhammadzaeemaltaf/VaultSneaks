@@ -78,12 +78,6 @@ export const orderSchema = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "pan",
-      title: "PAN",
-      type: "string",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
       name: "products",
       title: "Products",
       type: "array",

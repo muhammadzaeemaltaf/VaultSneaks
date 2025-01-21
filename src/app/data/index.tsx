@@ -313,7 +313,7 @@ export const DeliveredIcon = (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <g clip-path="url(#clip0_1_5558)">
+    <g clipPath="url(#clip0_1_5558)">
       <path
         d="M23.4538 10.9198L20.8077 3.41211H4.19228L1.60767 10.7352V22.4275H23.4538V10.9198ZM4.8692 4.33519H20.1307L22.2846 10.4275H2.71536L4.8692 4.33519ZM22.4692 21.566H2.53074V11.3506H22.5307L22.4692 21.566Z"
         fill="#111111"
