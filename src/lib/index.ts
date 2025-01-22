@@ -16,13 +16,11 @@ export async function createOrderInSanity(orderData: any) {
     locality: orderData.locality,
     country: orderData.country,
     phoneNumber: orderData.phoneNumber,
-    pan: orderData.pan,
     currency: orderData.currency,
     amountDiscount: orderData.amountDiscount,
-    products: orderData.products.filter((product: any) => product.quantity > 0).map((product: any) => ({
-      _type: "object",
+    products: orderData.products.map((product: any) => ({
       _key: uuidv4(),
-      product: { _type: "reference", _ref: product.product },
+      product: { _type: "reference", _ref: product.product._ref },
       quantity: product.quantity,
       color: product.color,
     })),

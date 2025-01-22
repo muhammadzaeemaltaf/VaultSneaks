@@ -104,11 +104,11 @@ export const orderSchema = defineType({
           ],
           preview: {
             select: {
-              title: "product.name",
+              title: "product.productName",
               media: "product.image",
               quantity: "quantity",
               price: "product.price",
-              currency: "product.currency",
+              currency: "currency",
             },
           },
         }),
@@ -177,7 +177,9 @@ export const orderSchema = defineType({
       email: "email",
     },
     prepare(select) {
-      const orderIdSnippet = `${select.orderId.slice(0, 5)}...${select.orderId.slice(-5)}`;
+      const orderIdSnippet = select.orderId
+        ? `${select.orderId.slice(0, 5)}...${select.orderId.slice(-5)}`
+        : "N/A";
       return {
         title: `${select.name} - ${orderIdSnippet}`,
         subtitle: `${select.amount} ${select.currency} - ${select.email}`,

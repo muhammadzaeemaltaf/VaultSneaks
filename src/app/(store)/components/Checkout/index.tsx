@@ -110,7 +110,11 @@ const Checkout = () => {
       orderNumber: `ORD-${Date.now()}`,
       ...formData,
       products: groupItems.map(item => ({
-        product: item.product._id,
+        _key: crypto.randomUUID(),
+        product: {
+          _type: "reference",
+          _ref: item.product._id,
+        },
         color: item.selectedColor,
         quantity: item.quantity,
       })),
@@ -365,9 +369,6 @@ const Checkout = () => {
               </div>
 
               <div className="space-y-1 text-sm">
-                <p className="font-bold text-[15px]">
-                  Arrives {new Date().toDateString()} - {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toDateString()}
-                </p>
                 <p className="font-bold text-[15px]">
                   Estimated Delivery Date: {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toDateString()}
                 </p>

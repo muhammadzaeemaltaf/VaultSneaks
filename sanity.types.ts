@@ -245,7 +245,7 @@ export type ALL_CATEGORIES_QUERYResult = Array<{
 
 // Source: ./src/sanity/orders/getAllOrders.ts
 // Variable: ORDER_QUERY
-// Query: *[_type == "order" ] | order(orderDate asc)
+// Query: *[_type == "order" ] {     ...,                products[] {                    ...,                    product->                }}
 export type ORDER_QUERYResult = Array<{
   _id: string;
   _type: "order";
@@ -264,17 +264,43 @@ export type ORDER_QUERYResult = Array<{
   locality?: string;
   country?: string;
   phoneNumber?: string;
-  products?: Array<{
-    product?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "product";
-    };
+  products: Array<{
+    product: {
+      _id: string;
+      _type: "product";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      productName?: string;
+      category?: string;
+      price?: number;
+      inventory?: number;
+      colors?: Array<string>;
+      status?: string;
+      image?: {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+      };
+      description?: string;
+      reviews?: Array<{
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        _key: string;
+        [internalGroqTypeReferenceTo]?: "review";
+      }>;
+    } | null;
     color?: string;
     quantity?: number;
     _key: string;
-  }>;
+  }> | null;
   totalPrice?: number;
   currency?: string;
   amountDiscount?: number;
@@ -324,6 +350,42 @@ export type MEN_PRODUCTS_QUERYResult = Array<{
 // Variable: PRODUCT_BY_CATEGORY_QUERY
 // Query: *[                     _type == "product"                     && category == $slug                 ] | order(name asc)
 export type PRODUCT_BY_CATEGORY_QUERYResult = Array<{
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  productName?: string;
+  category?: string;
+  price?: number;
+  inventory?: number;
+  colors?: Array<string>;
+  status?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  description?: string;
+  reviews?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "review";
+  }>;
+}>;
+
+// Source: ./src/sanity/products/getProductById.ts
+// Variable: GET_PRODUCTS_BY_ID_QUERY
+// Query: *[_type=="product" && _id == $id]
+export type GET_PRODUCTS_BY_ID_QUERYResult = Array<{
   _id: string;
   _type: "product";
   _createdAt: string;
@@ -469,9 +531,10 @@ import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
     "*[_type == \"product\" && defined(category)] {\n            \"category\": category\n        } | order(category asc)": ALL_CATEGORIES_QUERYResult;
-    "*[_type == \"order\" ] | order(orderDate asc)": ORDER_QUERYResult;
+    "*[_type == \"order\" ] {\n     ...,\n                products[] {\n                    ...,\n                    product->\n                }}": ORDER_QUERYResult;
     "*[_type==\"product\" && category match \"Men*\"] | order(name asc)": MEN_PRODUCTS_QUERYResult;
     "\n                *[\n                     _type == \"product\"\n                     && category == $slug\n                 ] | order(name asc)\n            ": PRODUCT_BY_CATEGORY_QUERYResult;
+    "*[_type==\"product\" && _id == $id]": GET_PRODUCTS_BY_ID_QUERYResult;
     "\n             *[\n                 _type == \"product\"\n                && productName == $name\n             ][0]\n        \n        ": PRODUCT_BY_NAME_QUERYResult;
     "\n       *[_type == \"product\" && category == $category && _id != $excludeProductId]\n\n  ": RELATED_PRODUCT_BY_CATEGORY_QUERYResult;
     "*[_type==\"product\" && category match \"Women*\"] | order(name asc)": WOMEN_PRODUCTS_QUERYResult;

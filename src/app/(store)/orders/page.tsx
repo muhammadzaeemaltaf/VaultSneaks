@@ -7,32 +7,25 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { getAllOrders } from "@/sanity/orders/getAllOrders";
-import { Order } from "../../../../sanity.types";
-// import { Skeleton } from "@/components/ui/skeleton";
-import { getProductByID } from "@/sanity/products/getProductById";
+import { Order, ORDER_QUERYResult } from "../../../../sanity.types";
+import Image from "next/image";
+import { urlFor } from "@/sanity/lib/image";
+import Link from "next/link";
 
 export default function OrderPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<ORDER_QUERYResult>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchOrders() {
-      const fetchedOrders = await getAllOrders();
-      const ordersWithProducts = await Promise.all(
-        fetchedOrders.map(async (order: Order) => {
-          const products = await Promise.all(
-            (order.products ?? []).map(async (product) => {
-              const productRef = product && product.product!._ref ; 
-              if (!productRef) return product;
-              const productDetails = await getProductByID(productRef);
-              return { ...product, ...productDetails[0] };
-            })
-          );
-          return { ...order, products };
-        })
-      );
-      setOrders(ordersWithProducts);
-      setLoading(false);
+      try {
+        const fetchedOrders = await getAllOrders();
+        setOrders(fetchedOrders);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchOrders();
   }, []);
@@ -45,12 +38,12 @@ export default function OrderPage() {
         <p className="text-muted-foreground">Track and manage your orders</p>
       </div>
 
-      {/* Orders list */}
-      <div className="grid gap-6">
-        {loading ? (
-          <p>Loading</p>
-        ) : (
-          orders.map((order) => (
+      {/* Orders List */}
+      {loading ? (
+        <p>Loading...</p>
+      ) : orders.length > 0 ? (
+        <div className="grid gap-6">
+          {orders.map((order) => (
             <Card key={order._id} className="p-6">
               <div className="flex flex-col gap-6">
                 <div className="flex justify-between items-start flex-wrap gap-3">
@@ -63,7 +56,9 @@ export default function OrderPage() {
                     </div>
                     <p className="text-muted-foreground text-sm">
                       Placed on{" "}
-                      {new Date(order.orderDate ?? 0).toLocaleDateString()}
+                      {order.orderDate
+                        ? new Date(order.orderDate).toDateString()
+                        : "Unknown"}
                     </p>
                   </div>
                   <Button variant="outline">Track Order</Button>
@@ -72,7 +67,9 @@ export default function OrderPage() {
                 <div className="flex gap-4 items-center text-sm flex-wrap">
                   <div className="flex items-center gap-2">
                     <Package className="h-4 w-4" />
-                    <span className="whitespace-nowrap">{order.products && order.products.length} items</span>
+                    <span className="whitespace-nowrap">
+                      {order.products?.length || 0} items
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Truck className="h-4 w-4" />
@@ -82,52 +79,66 @@ export default function OrderPage() {
                     <Clock className="h-4 w-4" />
                     <span className="whitespace-nowrap">
                       Estimated delivery:{" "}
-                      {new Date(
-                        order.estimatedDeliveryDate ?? 0
-                      ).toLocaleDateString()}
+                      {order.estimatedDeliveryDate
+                        ? new Date(order.estimatedDeliveryDate).toDateString()
+                        : "Unknown"}
                     </span>
                   </div>
                 </div>
 
                 <Separator />
 
-                {/* <div className="grid gap-4">
-                  {order.products &&
-                    order.products.map((product, index) => (
-                      // <div key={index} className="flex gap-4">
-                      //   <img
-                      //     src={product.product?.image || ""}
-                      //     alt={product.product?.name || ""}
-                      //     className="w-[100px] h-[100px] object-cover rounded-md"
-                      //   />
-                      //   <h4 className="font-medium">
-                      //     {product.product?.name || "Unknown Product"}
-                      //   </h4>
-                      //   <p className="text-muted-foreground text-sm">
-                      //     Quantity: {product.quantity || 0}
-                      //   </p>
-                      //   <p className="font-medium mt-1">
-                      //     {product.product?.currency || "USD"}{" "}
-                      //     {product.product?.price || 0}
-                      //   </p>
-                      // </div>
-                      <p></p>
-                    ))}
+                {/* Products Section */}
+                <div className="grid gap-4">
+                  {order.products?.map((product) => (
+                    <div key={product.product?._id} className="flex gap-4 items-center">
+                     {product.product?.image && (
+                            <div className="relative h-14 w-14 sm:h-16 sm:w-16 flex-shrink-0 rounded-md overflow-hidden">
+                              <Image
+                                src={urlFor(product.product.image).url()}
+                                alt={product.product.productName ?? ""}
+                                layout="fill"
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                      <div className="flex-1">
+                        <h4 className="font-medium">
+                          {product.product?.productName || "Unknown Product"}
+                        </h4>
+                        <p className="text-muted-foreground text-sm">
+                          Quantity: {product.quantity || 0}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
-                <Separator /> */}
+                <Separator />
 
                 <div className="flex justify-between text-sm">
                   <div className="grid gap-1">
+                    {
+                      order.amountDiscount! > 0 && (
+                        <p className="text-red-600 font-bold">Discount</p>
+                      )
+                    }
                     <p>Subtotal</p>
                     <p>Shipping</p>
+                    <p>Payment Method</p>
                     <p className="font-medium">Total</p>
                   </div>
                   <div className="grid gap-1 text-right">
+                    {
+                      order.amountDiscount! > 0 && (
+                        <p className="text-red-600 font-bold">{order.amountDiscount} %</p>
+                      )
+                    }
                     <p>
                       {order.currency} {order.totalPrice}
                     </p>
                     <p>Free</p>
+                    <p>{order.paymentMethod}</p>
                     <p className="font-medium">
                       {order.currency} {order.totalPrice}
                     </p>
@@ -135,18 +146,16 @@ export default function OrderPage() {
                 </div>
               </div>
             </Card>
-          ))
-        )}
-      </div>
-
-      {/* Empty state */}
-      {!loading && orders.length === 0 && (
+          ))}
+        </div>
+      ) : (
+        /* Empty State */
         <div className="text-center py-12">
           <h2 className="text-xl font-semibold mb-2">No orders yet</h2>
           <p className="text-muted-foreground mb-4">
-            When you place an order, it will appear here
+            When you place an order, it will appear here.
           </p>
-          <Button>Start Shopping</Button>
+          <Button><Link href={'/products'}>Start Shopping</Link></Button>
         </div>
       )}
     </div>
