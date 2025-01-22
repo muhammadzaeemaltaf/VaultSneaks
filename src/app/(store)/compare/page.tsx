@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Check, X, ArrowUp, ArrowDown } from "lucide-react";
+import {ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAllProducts } from "@/sanity/products/getAllProducts";
 import { getProductByName } from "@/sanity/products/getProductByName";
 import { urlFor } from "@/sanity/lib/image";
 import { Product, Review } from "../../../../sanity.types";
@@ -91,17 +90,21 @@ const renderStars = (rating: number) => {
   return stars;
 };
 
-const renderReviews = (reviews: Review[]) => {
-  return reviews.length > 0 ? (
-    reviews.map((review) => (
-      <div key={review._id} className="mb-4">
-        <p className="text-center mt-2 text-xl">
-           {renderStars(review.rating ?? 0)}
-        </p>
-      </div>
-    ))
-  ) : (
-    <p className="text-center font-bold">-</p>
+const renderAverageRating = (reviews: Review[]) => {
+  if (reviews.length === 0) return <p className="text-center font-bold">-</p>;
+
+  const totalRating = reviews.reduce((sum, review) => sum + (review.rating ?? 0), 0);
+  const averageRating = totalRating / reviews.length;
+
+  return (
+    <div className="flex justify-center items-center">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span key={star} className={star <= averageRating ? "text-yellow-500" : "text-gray-300"}>
+          ★
+        </span>
+      ))}
+      <span className="ml-2">({averageRating.toFixed(1)})</span>
+    </div>
   );
 };
 
@@ -128,46 +131,78 @@ export default function ComparePage({
 }: {
   searchParams: { product: string };
 }) {
-  const [productCompareTo, setProductCompareTo] = useState<Product | any>(
-    null
-  );
+  const [productCompareTo, setProductCompareTo] = useState<Product | any>(null);
   const [productCompareWith, setProductCompareWith] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<string>("");
-  const [selectedProductData, setSelectedProductData] =
-    useState<Product | any>(null);
+  const [selectedProductData, setSelectedProductData] = useState<Product | any>(null);
   const [loading, setLoading] = useState(true);
   const [loadingSelectedProduct, setLoadingSelectedProduct] = useState(false);
+  const [showTable, setShowTable] = useState(false);
   const addItem = useBasketStore((state) => state.addItem);
   const [reviewsCompareTo, setReviewsCompareTo] = useState<Review[]>([]);
   const [reviewsCompareWith, setReviewsCompareWith] = useState<Review[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
-        const productTo: Product | any = await getProductByName(decodeURIComponent(searchParams.product));
-      const productsWith: Product[] = await getProductByCategory(productTo?.category || "");
-      setProductCompareTo(productTo as Product);
-      setProductCompareWith(productsWith);
-      const reviewsTo = await getProductReviews(productTo._id);
-      setReviewsCompareTo(reviewsTo);
-      setLoading(false);
+      try {
+        setLoading(true); 
+        const productTo = await getProductByName(decodeURIComponent(searchParams.product));
+        const productsWith = await getProductByCategory((productTo as Product)?.category || "");
+        const reviewsTo = await getProductReviews((productTo as Product)?._id);
+  
+        if (productTo) {
+          setProductCompareTo(productTo);
+        } else {
+          toast.error("Product not found");
+        }
+  
+        if (productsWith) {
+          setProductCompareWith(productsWith);
+        } else {
+          toast.error("No related products found");
+        }
+  
+        if (reviewsTo) {
+          setReviewsCompareTo(reviewsTo);
+        }
+  
+        setLoading(false); 
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        toast.error("Failed to load products");
+        setLoading(false);
+      }
     };
+  
     fetchProducts();
   }, [searchParams.product]);
 
   useEffect(() => {
     const fetchSelectedProduct = async () => {
-        setSelectedProductData(null);
-      if (selectedProduct) {
+      if (!selectedProduct) return;
+  
+      try {
         setLoadingSelectedProduct(true);
+        setShowTable(false);
         const productData = await getProductByName(selectedProduct);
-        setSelectedProductData(productData as Product);
-        if (productData && '_id' in productData) {
-          const reviewsWith = await getProductReviews(productData._id);
-          setReviewsCompareWith(reviewsWith);
+  
+        if (productData) {
+          setSelectedProductData(productData);
+          const reviewsWith = await getProductReviews((productData as Product)._id);
+          setReviewsCompareWith(reviewsWith || []);
+          setShowTable(true);
+        } else {
+          toast.error("Selected product not found");
         }
+  
+        setLoadingSelectedProduct(false);
+      } catch (error) {
+        console.error("Error fetching selected product:", error);
+        toast.error("Failed to load selected product");
         setLoadingSelectedProduct(false);
       }
     };
+  
     fetchSelectedProduct();
   }, [selectedProduct]);
 
@@ -199,8 +234,8 @@ export default function ComparePage({
           height={300}
           className="mb-4 rounded-lg shadow-md object-cover"
         />
-        <h2 className="text-2xl font-semibold mb-2">{product.productName}</h2>
-        <p className="text-xl font-bold mb-4">${product.price}</p>
+        <h2 className="text-xl sm:text-2xl font-semibold mb-2">{product.productName}</h2>
+        <p className="text-lg sm:text-xl font-bold mb-4">${product.price}</p>
         <div className="w-full max-w-md space-y-2">
           <p>
             <strong>Category:</strong> {product.category}
@@ -224,18 +259,18 @@ export default function ComparePage({
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-3xl font-bold mb-8 text-center">
+      <h1 className="text-xl sm:text-3xl font-bold mb-8 text-center">
         Product Comparison
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <h2 className="text-2xl font-semibold mb-4">Product to Compare</h2>
+          <h2 className="sm:text-2xl font-semibold mb-4">Product to Compare</h2>
           {renderProductDetails(productCompareTo)}
         </div>
         <div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             {" "}
-            <h2 className="text-2xl font-semibold mb-4">Compare With</h2>
+            <h2 className="sm:text-2xl font-semibold mb-4">Compare With</h2>
             <Select value={selectedProduct} onValueChange={handleProductChange}>
               <SelectTrigger className="w-[250px] mb-4">
                 <SelectValue placeholder="Select a product" />
@@ -274,17 +309,17 @@ export default function ComparePage({
           )}
         </div>
       </div>
-      {productCompareTo && selectedProductData && (
+      {productCompareTo && selectedProductData && showTable && (
         <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-4">Feature Comparison</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">Feature Comparison</h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="border p-2">Feature</th>
-                  <th className="border p-2">{productCompareTo.productName}</th>
-                  <th className="border p-2">
-                    {selectedProductData.productName}
+                  <th className="border text-sm p-2">Feature</th>
+                  <th className="border text-sm p-2"><span className="line-clamp-2">{productCompareTo.productName}</span></th>
+                  <th className="border text-sm p-2">
+                    <span className="line-clamp-2">{selectedProductData.productName}</span>
                   </th>
                 </tr>
               </thead>
@@ -294,8 +329,8 @@ export default function ComparePage({
                     key={index}
                     className={index % 2 === 0 ? "bg-gray-50" : ""}
                   >
-                    <td className="border p-2">{feature.charAt(0).toUpperCase() + feature.slice(1).toLowerCase()}</td>
-                    <td className="border p-2 text-center">
+                    <td className="border text-sm sm:text-base p-2">{feature.charAt(0).toUpperCase() + feature.slice(1).toLowerCase()}</td>
+                    <td className="border p-2 text-sm sm:text-base text-center">
                       {feature === "price"
                         ? renderPriceComparison(
                             productCompareTo.price,
@@ -303,7 +338,7 @@ export default function ComparePage({
                           )
                         : productCompareTo[feature as keyof Product]}
                     </td>
-                    <td className="border p-2 text-center">
+                    <td className="border p-2 text-sm sm:text-base text-center">
                       {feature === "price"
                         ? renderPriceComparison(
                             selectedProductData.price,
@@ -314,9 +349,9 @@ export default function ComparePage({
                   </tr>
                 ))}
                 <tr className="bg-gray-100">
-                  <td className="border p-2">Reviews</td>
-                  <td className="border p-2">{renderReviews(reviewsCompareTo)}</td>
-                  <td className="border p-2">{renderReviews(reviewsCompareWith)}</td>
+                  <td className="border text-sm sm:text-base p-2">Average Rating</td>
+                  <td className="border p-2 text-sm sm:text-base">{renderAverageRating(reviewsCompareTo)}</td>
+                  <td className="border p-2 text-sm sm:text-base">{renderAverageRating(reviewsCompareWith)}</td>
                 </tr>
               </tbody>
             </table>

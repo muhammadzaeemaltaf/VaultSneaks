@@ -74,6 +74,12 @@ const Page = ({ params }: { params: { name: string } }) => {
     }
   };
 
+  const handleNewReview = (newReview: Review) => {
+    setReviews(prevReviews => [...prevReviews, newReview]);
+    const totalRating = reviews.reduce((sum, review) => sum + (review.rating ?? 0), 0) + (newReview.rating ?? 0);
+    setAverageRating(totalRating / (reviews.length + 1));
+  };
+
   useEffect(() => {
     const fetchProduct = async () => {
       const productData = await getProductByName(
@@ -202,7 +208,7 @@ const Page = ({ params }: { params: { name: string } }) => {
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  ({reviews.length} reviews)
+                  ({averageRating.toFixed(1)})
                 </span>
               </div>
             )}
@@ -234,7 +240,7 @@ const Page = ({ params }: { params: { name: string } }) => {
           </div>
         </div>
 
-        <ReviewSection productId={product._id} />
+        <ReviewSection productId={product._id} onNewReview={handleNewReview} />
 
         <RelatedProducts products={relatedProducts} />
         <ToastContainer />

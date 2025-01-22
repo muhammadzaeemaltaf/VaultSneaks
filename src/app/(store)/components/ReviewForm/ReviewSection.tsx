@@ -27,7 +27,7 @@ const SkeletonLoader = () => (
   </div>
 );
 
-export function ReviewSection({ productId }: { productId: string }) {
+export function ReviewSection({ productId, onNewReview }: { productId: string, onNewReview?: (review: Review) => void }) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [activeTab, setActiveTab] = useState("read");
   const [loading, setLoading] = useState(true);
@@ -49,7 +49,7 @@ export function ReviewSection({ productId }: { productId: string }) {
         _type: "review",
         product: { _type: "reference", _ref: productId },
         productId: productId,
-        reviewId: `${review.reviewId}-${Date.now()}`,
+        reviewId: `RW-${Date.now()}`,
         reviewerName: review.reviewerName,
         rating: review.rating,
         reviewText: review.reviewText,
@@ -63,15 +63,16 @@ export function ReviewSection({ productId }: { productId: string }) {
           asset: { _type: 'reference', _ref: asset._id },
           _key: `${asset._id}-${Date.now()}`
         }));
+        review.reviewPicture = reviewData.reviewPicture; // Include reviewPicture in review object
       }
 
       await client.create(reviewData);
       toast.success("Review added successfully!");
-      setTimeout(async () => {
-        const fetchedReviews = await getProductReviews(productId);
-        setReviews(fetchedReviews);
-        setActiveTab("read");
-      }, 5000);
+      setReviews(prevReviews => [...prevReviews, review]); // Update reviews state
+      if (onNewReview) {
+        onNewReview(review); // Call the callback function
+      }
+      setActiveTab("read");
     } catch (error) {
       console.error("Failed to create review:", error);
     } finally {

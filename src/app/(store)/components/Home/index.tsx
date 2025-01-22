@@ -34,7 +34,7 @@ const HomePage = () => {
       <Look />
       <ProductSlider
         heading="Best of VaultSneaks"
-        anchor="/shop"
+        anchor="/products"
         anchorText="Shop"
         obj={products}
       />
@@ -52,13 +52,13 @@ const HomePage = () => {
         </div>
         <div className="flex flex-col md:flex-row md:gap-6">
           <ProductSlider
-            anchor="/shop"
+            anchor="/products"
             anchorText="Shop Men's"
             half={true}
             obj={menProducts}
           />
           <ProductSlider
-            anchor="/shop"
+            anchor="/products"
             anchorText="Shop Women's"
             half={true}
             obj={womenProducts}
@@ -71,7 +71,7 @@ const HomePage = () => {
           heading="FLIGHT ESSENTIALS"
           paragraph=" Your built-to-last, all-week wears—but with style only Jordan Brand can deliver."
           buttonText="Shop"
-          buttonLink="/shop"
+          buttonLink="/products"
         />
         <Essential />
     </div>

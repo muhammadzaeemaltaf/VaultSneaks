@@ -87,7 +87,7 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
                   width={1000}
                   className="object-cover"
                 />
-                <span className="absolute top-2 right-2 z-[100] cursor-pointer w-6 h-6">
+                <span className="absolute top-2 right-2 z-10 cursor-pointer w-6 h-6">
                   <HeartIcon
                     className={` active:animate-ping ${
                       wishlistItems.find(

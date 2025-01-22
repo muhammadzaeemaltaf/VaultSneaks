@@ -58,13 +58,13 @@ export function ReviewItem({ review }: ReviewItemProps) {
             alt={`Review Picture ${index + 1}`}
             height={1000}
             width={1000}
-            className="mt-4 h-20 w-20 cursor-pointer"
+            className="mt-4 h-12 w-12 cursor-pointer"
             onClick={() => openCarousel(index)}
           />
         ))}
         {review.reviewPicture && review.reviewPicture.length > 3 && (
           <button
-        className="mt-4 h-20 w-20 flex items-center justify-center bg-black/40 text-white text-xs line-clamp-2 absolute bottom-0 right-0"
+        className="mt-4 h-12 w-12 flex items-center justify-center bg-black/60 text-white text-[10px] line-clamp-2 absolute bottom-0 right-0"
         onClick={() => openCarousel(0)}
           >
         View all images
@@ -113,8 +113,8 @@ export function ReviewItem({ review }: ReviewItemProps) {
                     </CarouselItem>
                   ))}
               </CarouselContent>
-              <CarouselPrevious className="hidden md:block"/>
-              <CarouselNext className="hidden md:block"/>
+              <CarouselPrevious className="hidden md:flex"/>
+              <CarouselNext className="hidden md:flex"/>
             </Carousel>
           </div>
         </DialogContent>

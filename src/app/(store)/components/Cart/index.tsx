@@ -73,10 +73,12 @@ const Cart = () => {
   };
 
   useEffect(() => {
-    if (groupItems.length > 0) {
+    const timer = setTimeout(() => {
       setLoading(false);
-    }
-  }, [groupItems]);
+    }, 2000); // Show loader for 2 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleRemoveItem = (product: any) => {
     removeItem(product);
@@ -93,9 +95,9 @@ const Cart = () => {
 
   if (groupItems.length === 0) {
     return (
-      <div className="container mx-auto p-4 flex flex-col justify-center items-center min-h-screen">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Your Basket</h1>
-        <p className="text-gray-600 text-lg">Your basket is empty</p>
+      <div className="container mx-auto p-4 flex flex-col justify-center items-center min-h-[60vh]">
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">Your Cart</h1>
+        <p className="text-gray-600 text-lg">Your Cart is empty</p>
       </div>
     );
   }

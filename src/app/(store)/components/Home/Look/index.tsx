@@ -15,7 +15,7 @@ const Look = () => {
         </p>
         <div className="flex gap-2 mt-2">
             <Button className="rounded-full bg-black">Notify me</Button>
-            <Button className="rounded-full bg-black"><Link href={'/shop'}>Shop Air Max</Link></Button>
+            <Button className="rounded-full bg-black"><Link href={'/products'}>Shop Air Max</Link></Button>
         </div>
       </div>
     </div>
