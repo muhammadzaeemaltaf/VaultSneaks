@@ -1,11 +1,11 @@
-# Nike-Themed E-Commerce Site
+# VaultSneaks E-Commerce Site
 
-This is a modern e-commerce site built with **Next.js** and **Tailwind CSS**, based on a Nike-themed Figma template. The project demonstrates responsive design, dynamic functionality, and a clean UI.
+This is a modern e-commerce site built with **Next.js** and **Tailwind CSS**, based on a sneaker-themed Figma template. The project demonstrates responsive design, dynamic functionality, and a clean UI.
 
 ## Features
 
 - **Responsive Design:** Optimized for desktop, tablet, and mobile devices.
-- **Modern UI:** Sleek and clean user interface inspired by the Nike brand.
+- **Modern UI:** Sleek and clean user interface inspired by popular sneaker brands.
 - **Fast Performance:** Built with Next.js for server-side rendering and optimized performance.
 - **Reusable Components:** Modular components styled with Tailwind CSS.
 - **Dynamic Functionality:** Interactive elements like product cards, carousels, and more.
@@ -20,8 +20,9 @@ This is a modern e-commerce site built with **Next.js** and **Tailwind CSS**, ba
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd <project-directory>
+   git clone https://github.com/muhammadzaeemaltaf/VaultSneaks.git
+   cd VaultSneaks
+   ```
 
 ## Getting Started
 
@@ -57,3 +58,4 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+````
