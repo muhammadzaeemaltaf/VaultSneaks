@@ -1,0 +1,11 @@
+Test Case ID,Description,Steps,Expected Result,Actual Result,Status,Remarks
+TC001,Validate product listing,Open product page > Verify products,Products displayed,Products displayed,Passed,No issues found
+TC002,Test API error handling,Disconnect API > Refresh page,Show fallback message,Fallback message shown,Passed,Handled gracefully
+TC003,Check cart functionality,Add item to cart > Verify cart,Cart updates correctly,Cart updates correctly,Passed,Works as expected
+TC004,Validate responsiveness for mobile,Open site on mobile > Verify layout,Layout adjusts for mobile,Layout adjusts for mobile,Passed,No issues found
+TC005,Validate responsiveness for tablet,Open site on tablet > Verify layout,Layout adjusts for tablet,Layout adjusts for tablet,Passed,No issues found
+TC006,Check search functionality,Enter query > Click search,Relevant results displayed,Relevant results displayed,Passed,Search works as expected
+TC007,Validate user login,Enter credentials > Click login,User logged in successfully,User logged in successfully,Passed,No issues found
+TC008,Test logout functionality,Click logout button,User logged out successfully,User logged out successfully,Passed,No issues found
+TC009,Verify password reset,Click forgot password > Reset password,Password reset email sent,Password reset email sent,Passed,Handled correctly
+TC010,Validate checkout process,Add items to cart > Proceed to checkout,Order placed successfully,Order placed successfully,Passed,Smooth transaction
