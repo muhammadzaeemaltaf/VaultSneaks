@@ -474,13 +474,6 @@
         },
         "optional": true
       },
-      "pan": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
       "products": {
         "type": "objectAttribute",
         "value": {
@@ -515,6 +508,13 @@
                     }
                   },
                   "dereferencesTo": "product"
+                },
+                "optional": true
+              },
+              "color": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
                 },
                 "optional": true
               },
@@ -605,6 +605,13 @@
         "optional": true
       },
       "orderDate": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "estimatedDeliveryDate": {
         "type": "objectAttribute",
         "value": {
           "type": "string"

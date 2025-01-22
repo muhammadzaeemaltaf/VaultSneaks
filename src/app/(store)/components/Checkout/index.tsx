@@ -120,6 +120,7 @@ const Checkout = () => {
       status: "pending",
       paymentMethod: "COD",
       orderDate: new Date().toISOString(),
+      estimatedDeliveryDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
     };
 
     try {
@@ -339,13 +340,13 @@ const Checkout = () => {
                     ></span>
                     <p className="text-[15px]">x{item.quantity}</p>
                   </div>
-                  <p className="text-[15px]">₹{item.product.price ? item.product.price * item.quantity : 0}</p>
+                  <p className="text-[15px]">{currency} {item.product.price ? item.product.price * item.quantity : 0}</p>
                 </div>
               ))}
               <div className="space-y-2">
                 <div className="flex justify-between text-[14px] text-[#8D8D8D]">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>Rs {calculateTotalPrice()}</span>
+                  <span>{currency} {calculateTotalPrice()}</span>
                 </div>
                 <div className="flex justify-between text-[14px] text-[#8D8D8D]">
                   <span className="text-muted-foreground">Delivery/Shipping</span>
@@ -366,6 +367,9 @@ const Checkout = () => {
               <div className="space-y-1 text-sm">
                 <p className="font-bold text-[15px]">
                   Arrives {new Date().toDateString()} - {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toDateString()}
+                </p>
+                <p className="font-bold text-[15px]">
+                  Estimated Delivery Date: {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toDateString()}
                 </p>
               </div>
               <button 

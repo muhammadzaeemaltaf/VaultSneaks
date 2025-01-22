@@ -106,7 +106,7 @@ const Cart = () => {
       <div className="flex flex-col lg:flex-row lg:space-x-8">
         {/* Bag Section */}
         <div className="flex-1">
-          <div className="bg-[#F7F7F7] h-[62.89px] flex flex-col justify-center gap-1 px-4">
+          <div className="bg-[#F7F7F7] min-h-[62.89px] flex flex-col py-2 justify-center gap-1 px-4">
             <h1 className="text-[13px] font-medium ">Free Delivery</h1>
             <p className="text-sm text-gray-600">
               Applies to orders of Rs 14,000.00 or more.{" "}
@@ -126,7 +126,7 @@ const Cart = () => {
               <Image
                 src={item.product.image ? urlFor(item.product.image).url() : ""}
                 alt={item.product.productName || "Product Image"}
-                className="w-[150px] h-[150px] object-cover"
+                className="h-24 w-24 sm:w-[150px] sm:h-[150px] object-cover"
                 height={1000}
                 width={1000}
               />
@@ -143,8 +143,7 @@ const Cart = () => {
                 <p className="price text-[15px] lg:hidden">
                 Rs: {item.product.price}
                 </p>
-                <div className="flex gap-10">
-                  <p className="text-[15px] text-[#757575]">Size: L</p>
+                <div className="flex gap-4 flex-wrap">
                   <p className="text-[15px] text-[#757575]">
                     Quantity: {item.quantity}
                   </p>

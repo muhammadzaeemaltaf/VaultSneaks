@@ -30,6 +30,7 @@ export async function createOrderInSanity(orderData: any) {
     status: orderData.status,
     orderDate: orderData.orderDate,
     paymentMethod: orderData.paymentMethod,
+    estimatedDeliveryDate: orderData.estimatedDeliveryDate,
   });
 
   return order;

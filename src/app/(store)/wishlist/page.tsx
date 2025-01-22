@@ -42,15 +42,15 @@ export default function WishlistPage() {
                       item.image ? urlFor(item.image).url() : "/placeholder.svg"
                     }
                     alt={item.productName || "Product Image"}
-                    width={150}
-                    height={150}
-                    className="w-[150px] h-[150px] object-cover rounded-md"
+                    width={1000}
+                    height={1000}
+                    className="w-20 h-20 sm:w-[150px] sm:h-[150px] object-cover rounded-md"
                   />
                 </div>
                 <div className="flex-grow">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between flex-wrap gap-2">
                     <div>
-                      <h3 className="font-semibold text-lg">
+                      <h3 className="font-semibold text-lg line-clamp-2">
                         {item.productName}
                       </h3>
                       <div className="mt-2">

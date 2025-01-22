@@ -161,6 +161,12 @@ export const orderSchema = defineType({
       type: "datetime",
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: "estimatedDeliveryDate",
+      title: "Estimated Delivery Date",
+      type: "datetime",
+      validation: (Rule) => Rule.required(),
+    }),
   ],
   preview: {
     select: {

@@ -92,7 +92,6 @@ export type Order = {
   locality?: string;
   country?: string;
   phoneNumber?: string;
-  pan?: string;
   products?: Array<{
     product?: {
       _ref: string;
@@ -100,6 +99,7 @@ export type Order = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "product";
     };
+    color?: string;
     quantity?: number;
     _key: string;
   }>;
@@ -109,6 +109,7 @@ export type Order = {
   status?: "pending" | "paid" | "shipped" | "delivered" | "cancelled";
   paymentMethod?: "COD";
   orderDate?: string;
+  estimatedDeliveryDate?: string;
 };
 
 export type Review = {
@@ -235,6 +236,54 @@ export type SanityImageMetadata = {
 
 export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | Slug | Order | Review | Product | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata;
 export declare const internalGroqTypeReferenceTo: unique symbol;
+// Source: ./src/sanity/category/getAllCategories.tsx
+// Variable: ALL_CATEGORIES_QUERY
+// Query: *[_type == "product" && defined(category)] {            "category": category        } | order(category asc)
+export type ALL_CATEGORIES_QUERYResult = Array<{
+  category: string | null;
+}>;
+
+// Source: ./src/sanity/orders/getAllOrders.ts
+// Variable: ORDER_QUERY
+// Query: *[_type == "order" ] | order(orderDate asc)
+export type ORDER_QUERYResult = Array<{
+  _id: string;
+  _type: "order";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  orderNumber?: string;
+  customerName?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  addressLine3?: string;
+  postalCode?: string;
+  locality?: string;
+  country?: string;
+  phoneNumber?: string;
+  products?: Array<{
+    product?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "product";
+    };
+    color?: string;
+    quantity?: number;
+    _key: string;
+  }>;
+  totalPrice?: number;
+  currency?: string;
+  amountDiscount?: number;
+  status?: "cancelled" | "delivered" | "paid" | "pending" | "shipped";
+  paymentMethod?: "COD";
+  orderDate?: string;
+  estimatedDeliveryDate?: string;
+}>;
+
 // Source: ./src/sanity/products/getMenProducts.ts
 // Variable: MEN_PRODUCTS_QUERY
 // Query: *[_type=="product" && category match "Men*"] | order(name asc)
@@ -419,6 +468,8 @@ export type WOMEN_PRODUCTS_QUERYResult = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
+    "*[_type == \"product\" && defined(category)] {\n            \"category\": category\n        } | order(category asc)": ALL_CATEGORIES_QUERYResult;
+    "*[_type == \"order\" ] | order(orderDate asc)": ORDER_QUERYResult;
     "*[_type==\"product\" && category match \"Men*\"] | order(name asc)": MEN_PRODUCTS_QUERYResult;
     "\n                *[\n                     _type == \"product\"\n                     && category == $slug\n                 ] | order(name asc)\n            ": PRODUCT_BY_CATEGORY_QUERYResult;
     "\n             *[\n                 _type == \"product\"\n                && productName == $name\n             ][0]\n        \n        ": PRODUCT_BY_NAME_QUERYResult;
