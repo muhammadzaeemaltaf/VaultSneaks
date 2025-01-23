@@ -209,16 +209,16 @@ const Cart = () => {
               ></span>
               <p className="text-[15px]">x{item.quantity}</p>
             </div>
-              <p className="text-[15px]">₹{item.product.price ? item.product.price * item.quantity : 0}</p>
+              <p className="text-[15px]">Rs {item.product.price ? item.product.price * item.quantity : 0}</p>
             </div>
           ))}
           <div className="flex justify-between text-[15px] mb-4 ">
             <p>Subtotal</p>
-            <p>₹{calculateTotalPrice()}</p>
+            <p>Rs {calculateTotalPrice()}</p>
           </div>
           <div className="flex justify-between text-[14px] mb-6 border-b pb-6">
             <p>Total</p>
-            <p className="font-medium">₹{calculateTotalPrice()}</p>
+            <p className="font-medium">Rs {calculateTotalPrice()}</p>
           </div>
           <button className="w-full h-[60px] py-2 bg-black text-[15px] text-white font-medium rounded-full">
             <Link href={"/checkout"}>Member Checkout</Link>

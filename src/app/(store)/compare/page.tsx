@@ -145,41 +145,40 @@ export default function ComparePage({
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        setLoading(true);
-        const productName = decodeURIComponent(searchParams.product);
-        if (!productName) {
-          toast.error("Product name is undefined");
+        setLoading(true); 
+        const productTo = await getProductByName(decodeURIComponent(searchParams.product));
+        const productsWith = await getProductByCategory((productTo as Product)?.category || "");
+        if (!productTo || Array.isArray(productTo) && productTo.length === 0) {
+          toast.error("Product not found");
           setLoading(false);
           return;
         }
-        const productTo = await getProductByName(productName);
-        const productsWith = await getProductByCategory((productTo as Product)?.category || "");
-        const reviewsTo = await getProductReviews((productTo as Product)?._id);
-
+        const reviewsTo = await getProductReviews((productTo as Product)._id);
+  
         if (productTo) {
           setProductCompareTo(productTo);
         } else {
           toast.error("Product not found");
         }
-
+  
         if (productsWith) {
           setProductCompareWith(productsWith);
         } else {
           toast.error("No related products found");
         }
-
+  
         if (reviewsTo) {
           setReviewsCompareTo(reviewsTo);
         }
-
-        setLoading(false);
+  
+        setLoading(false); 
       } catch (error) {
         console.error("Error fetching products:", error);
         toast.error("Failed to load products");
         setLoading(false);
       }
     };
-
+  
     fetchProducts();
   }, [searchParams.product]);
 
@@ -191,8 +190,7 @@ export default function ComparePage({
         setLoadingSelectedProduct(true);
         setShowTable(false);
         const productData = await getProductByName(selectedProduct);
-  
-        if (productData) {
+        if (productData && (!Array.isArray(productData) || productData.length > 0)) {
           setSelectedProductData(productData);
           const reviewsWith = await getProductReviews((productData as Product)._id);
           setReviewsCompareWith(reviewsWith || []);

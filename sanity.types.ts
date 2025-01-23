@@ -382,42 +382,6 @@ export type PRODUCT_BY_CATEGORY_QUERYResult = Array<{
   }>;
 }>;
 
-// Source: ./src/sanity/products/getProductById.ts
-// Variable: GET_PRODUCTS_BY_ID_QUERY
-// Query: *[_type=="product" && _id == $id]
-export type GET_PRODUCTS_BY_ID_QUERYResult = Array<{
-  _id: string;
-  _type: "product";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  productName?: string;
-  category?: string;
-  price?: number;
-  inventory?: number;
-  colors?: Array<string>;
-  status?: string;
-  image?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
-  description?: string;
-  reviews?: Array<{
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "review";
-  }>;
-}>;
-
 // Source: ./src/sanity/products/getProductByName.ts
 // Variable: PRODUCT_BY_NAME_QUERY
 // Query: *[                 _type == "product"                && productName == $name             ][0]
@@ -526,6 +490,41 @@ export type WOMEN_PRODUCTS_QUERYResult = Array<{
   }>;
 }>;
 
+// Source: ./src/sanity/reviews/getProductReviews.ts
+// Variable: PRODUCT_REVIEW_BY_ID
+// Query: *[_type == "review" && references(^._id) && references(^._id)]
+export type PRODUCT_REVIEW_BY_IDResult = Array<{
+  _id: string;
+  _type: "review";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  product?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "product";
+  };
+  productId?: string;
+  reviewId?: string;
+  reviewerName?: string;
+  rating?: number;
+  reviewText?: string;
+  reviewDate?: string;
+  reviewPicture?: Array<{
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
+}>;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -534,9 +533,9 @@ declare module "@sanity/client" {
     "*[_type == \"order\" ] {\n     ...,\n                products[] {\n                    ...,\n                    product->\n                }}": ORDER_QUERYResult;
     "*[_type==\"product\" && category match \"Men*\"] | order(name asc)": MEN_PRODUCTS_QUERYResult;
     "\n                *[\n                     _type == \"product\"\n                     && category == $slug\n                 ] | order(name asc)\n            ": PRODUCT_BY_CATEGORY_QUERYResult;
-    "*[_type==\"product\" && _id == $id]": GET_PRODUCTS_BY_ID_QUERYResult;
     "\n             *[\n                 _type == \"product\"\n                && productName == $name\n             ][0]\n        \n        ": PRODUCT_BY_NAME_QUERYResult;
     "\n       *[_type == \"product\" && category == $category && _id != $excludeProductId]\n\n  ": RELATED_PRODUCT_BY_CATEGORY_QUERYResult;
     "*[_type==\"product\" && category match \"Women*\"] | order(name asc)": WOMEN_PRODUCTS_QUERYResult;
+    "\n      *[_type == \"review\" && references(^._id) && references(^._id)] ": PRODUCT_REVIEW_BY_IDResult;
   }
 }

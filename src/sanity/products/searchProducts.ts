@@ -1,19 +1,23 @@
+import { defineQuery } from "next-sanity";
 import { client } from "../lib/client";
 
 export const searchProducts = async (searchTerm: string) => {
-  // Define queries with parameterized placeholders
-  const SEARCH_PRODUCT_NAMES_QUERY = `
+  const SEARCH_PRODUCT_NAMES_QUERY = defineQuery(
+    `
     *[_type=="product" && (productName match $searchTerm || description match $searchTerm)]{
       productName, 
       "imageUrl": image.asset->url
     } | order(productName asc)[0...6]
-  `;
+  `
+  );
   
-  const SEARCH_PRODUCT_CATEGORY_NAME_QUERY = `
+  const SEARCH_PRODUCT_CATEGORY_NAME_QUERY = defineQuery(
+    `
     *[_type=="product" && category match $searchTerm]{
       category
     } | order(category asc)
-  `;
+  `
+  );
 
   try {
     // Fetch data using parameterized queries
