@@ -145,35 +145,41 @@ export default function ComparePage({
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        setLoading(true); 
-        const productTo = await getProductByName(decodeURIComponent(searchParams.product));
+        setLoading(true);
+        const productName = decodeURIComponent(searchParams.product);
+        if (!productName) {
+          toast.error("Product name is undefined");
+          setLoading(false);
+          return;
+        }
+        const productTo = await getProductByName(productName);
         const productsWith = await getProductByCategory((productTo as Product)?.category || "");
         const reviewsTo = await getProductReviews((productTo as Product)?._id);
-  
+
         if (productTo) {
           setProductCompareTo(productTo);
         } else {
           toast.error("Product not found");
         }
-  
+
         if (productsWith) {
           setProductCompareWith(productsWith);
         } else {
           toast.error("No related products found");
         }
-  
+
         if (reviewsTo) {
           setReviewsCompareTo(reviewsTo);
         }
-  
-        setLoading(false); 
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching products:", error);
         toast.error("Failed to load products");
         setLoading(false);
       }
     };
-  
+
     fetchProducts();
   }, [searchParams.product]);
 
