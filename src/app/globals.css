@@ -19,10 +19,10 @@ body {
 }
 
 
-.filterMenu::-webkit-scrollbar {
+.custom-scrollbar::-webkit-scrollbar {
   width: 8px;
 }
-.filterMenu::-webkit-scrollbar-thumb {
+.custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: gray;
   border-radius: 10px;
 }

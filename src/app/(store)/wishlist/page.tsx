@@ -9,16 +9,25 @@ import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { Product } from "../../../../sanity.types";
 import { toast, ToastContainer } from "react-toastify"; // Import toast
+import { useState, useEffect } from "react"; // Import useState and useEffect
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
 
 export default function WishlistPage() {
   const { items: wishlistItems, removeItem } = useWishlistStore();
   const addItemToBasket = useBasketStore((state) => state.addItem);
+  const [loading, setLoading] = useState(true); // Add loading state
+
+  useEffect(() => {
+    if (wishlistItems.length > 0) {
+      setLoading(false);
+    }
+  }, [wishlistItems]);
 
   const handleAddToCart = (product: Product) => {
     if (product.colors && product.colors.length > 0) {
       addItemToBasket(product, product.colors[0]);
       removeItem(product._id);
-      toast("Item added to cart and removed from wishlist");
+      toast(`${product.productName} added to cart and removed from wishlist`);
     }
   };
 
@@ -32,7 +41,22 @@ export default function WishlistPage() {
 
       {/* Wishlist items */}
       <div className="grid gap-6">
-        {wishlistItems.length > 0 ? (
+        {loading ? (
+          Array.from({ length: 3 }).map((_, index) => (
+            <Card key={index} className="p-6">
+              <div className="flex gap-6">
+                <div className="flex-shrink-0">
+                  <Skeleton className="w-20 h-20 sm:w-[150px] sm:h-[150px] object-cover rounded-md" />
+                </div>
+                <div className="flex-grow">
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-6 w-1/2 mb-2" />
+                  <Skeleton className="h-4 w-1/4" />
+                </div>
+              </div>
+            </Card>
+          ))
+        ) : wishlistItems.length > 0 ? (
           wishlistItems.map((item) => (
             <Card key={item._id} className="p-6">
               <div className="flex gap-6">
@@ -55,7 +79,7 @@ export default function WishlistPage() {
                       </h3>
                       <div className="mt-2">
                         <span className="font-semibold">Rs {item.price}</span>
-                      </div>
+                      </div>  
                       <p className="text-muted-foreground mt-2">
                         {item.colors?.map((color, colorIndex) => (
                           <span

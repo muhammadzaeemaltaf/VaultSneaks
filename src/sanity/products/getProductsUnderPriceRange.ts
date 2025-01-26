@@ -1,4 +1,3 @@
-import { defineQuery } from "next-sanity";
 import { client } from "../lib/client";
 
 export const getProductsUnderPriceRange = async (priceRange: string) => {
@@ -13,12 +12,10 @@ export const getProductsUnderPriceRange = async (priceRange: string) => {
     priceCondition = "price > 5000";
   }
 
-  // Construct the query string only if a valid price condition exists
-  const query = defineQuery(
-    priceCondition
-      ? `*[_type=="product" && ${priceCondition}] | order(name asc)`
-      : `*[_type=="product"] | order(name asc)`
-  );
+  // Construct the query string manually
+  const query = priceCondition
+    ? `*[_type=="product" && ${priceCondition}] | order(name asc)`
+    : `*[_type=="product"] | order(name asc)`;
 
   try {
     // Fetch the products using the constructed query

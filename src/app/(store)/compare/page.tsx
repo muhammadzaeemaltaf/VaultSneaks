@@ -146,7 +146,7 @@ export default function ComparePage({
     const fetchProducts = async () => {
       try {
         setLoading(true); 
-        const productTo = await getProductByName(decodeURIComponent(searchParams.product));
+        const productTo: any = await getProductByName(decodeURIComponent(searchParams.product));
         const categoryName = productTo?.categoryName;
         const productsWith = await getProductByCategory([categoryName]);
         if (!productTo || Array.isArray(productTo) && productTo.length === 0) {
@@ -193,6 +193,7 @@ export default function ComparePage({
         const productData = await getProductByName(selectedProduct);
         if (productData && (!Array.isArray(productData) || productData.length > 0)) {
           setSelectedProductData(productData);
+          console.log(productData)
           const reviewsWith = await getProductReviews((productData as Product)._id);
           setReviewsCompareWith(reviewsWith || []);
           setShowTable(true);
@@ -329,7 +330,7 @@ export default function ComparePage({
                 </tr>
               </thead>
               <tbody>
-                {["category", "price"].map((feature, index) => (
+                {["categoryName", "price"].map((feature, index) => (
                   <tr
                     key={index}
                     className={index % 2 === 0 ? "bg-gray-50" : ""}

@@ -13,9 +13,9 @@ export const searchProducts = async (searchTerm: string) => {
   
   const SEARCH_PRODUCT_CATEGORY_NAME_QUERY = defineQuery(
     `
-    *[_type=="product" && category match $searchTerm]{
-      category
-    } | order(category asc)
+    *[_type=="category" && categoryName match $searchTerm]{
+      categoryName
+    } | order(categoryName asc)
   `
   );
 
@@ -25,7 +25,7 @@ export const searchProducts = async (searchTerm: string) => {
     const categoryDetail = await client.fetch(SEARCH_PRODUCT_CATEGORY_NAME_QUERY, { searchTerm: `*${searchTerm}*` });
 
     // Process and return unique categories
-    const uniqueCategories = Array.from(new Set(categoryDetail.map((item: { category: string }) => item.category)));
+    const uniqueCategories = Array.from(new Set(categoryDetail.map((item: { categoryName: string | null }) => item.categoryName || '')));
 
     return { productDetail, categoryDetail: uniqueCategories };
   } catch (error) {

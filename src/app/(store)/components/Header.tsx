@@ -48,7 +48,7 @@ const Header = () => {
       if (productDetail.length === 0 && categoryDetail.length === 0) {
         setNoResults(true);
       } else {
-        setSearchResults(productDetail);
+        setSearchResults(productDetail.filter(product => product.productName && product.imageUrl) as { productName: string; imageUrl: string }[]);
         setCategoryResults(categoryDetail as string[]);
       }
     } else {
@@ -56,6 +56,22 @@ const Header = () => {
       setCategoryResults([]);
       setNoResults(false);
     }
+  };
+
+  const highlightText = (text: string, highlight: string) => {
+    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+    return (
+      <>
+        {parts.map((part, index) => (
+          <span
+            key={index}
+            className={part.toLowerCase() === highlight.toLowerCase() ? 'bg-yellow-200' : ''}
+          >
+            {part}
+          </span>
+        ))}
+      </>
+    );
   };
 
   useEffect(() => {
@@ -141,7 +157,7 @@ const Header = () => {
                   className="bg-themeGray h-[40px] w-[180px] rounded-full p-2 pl-10"
                 />
                 {loading && (
-                  <ul className="absolute z-10 bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
+                  <ul className="absolute z-50 bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
                     {Array.from({ length: 6 }, (_, index) => (
                       <li key={index} className="p-2 flex items-center gap-2">
                         <div className="w-8 h-8 bg-gray-300 rounded-sm animate-pulse"></div>
@@ -151,14 +167,14 @@ const Header = () => {
                   </ul>
                 )}
                 {!loading && noResults && (
-                  <ul className="absolute z-10 bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
+                  <ul className="absolute z-50 bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
                     <li className="p-2 text-center text-sm">
                       No products found
                     </li>
                   </ul>
                 )}
                 {!loading && (searchResults.length > 0 || categoryResults.length > 0) && (
-                  <ul className="absolute z-10 bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
+                  <ul className="absolute z-50 bg-white border border-gray-300 mt-1 w-full rounded-md shadow-lg">
                     {searchResults.length > 0 && (
                       <>
                         {searchResults.map((result, index) => (
@@ -181,7 +197,7 @@ const Header = () => {
                                 handleSearch("");
                               }}
                             >
-                              {result.productName}
+                              {highlightText(result.productName, searchTerm)}
                             </Link>
                           </li>
                         ))}
@@ -197,7 +213,7 @@ const Header = () => {
                               setSearchResults([]);
                               handleSearch("");
                             }}
-                            >{category} </Link>
+                            >{highlightText(category, searchTerm)} </Link>
                           </li>
                         ))}
                       </>
@@ -277,7 +293,7 @@ const Header = () => {
                                 handleSearch("");
                               }}
                             >
-                              {result.productName}
+                              {highlightText(result.productName, searchTerm)}
                             </Link>
                           </li>
                         ))}
@@ -293,7 +309,7 @@ const Header = () => {
                               setSearchResults([]);
                               handleSearch("");
                             }}
-                            >{category} </Link>
+                            >{highlightText(category, searchTerm)} </Link>
                           </li>
                         ))}
                       </>

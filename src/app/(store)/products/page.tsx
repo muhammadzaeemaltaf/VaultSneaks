@@ -245,7 +245,7 @@ const Page = () => {
           {/* Filter Sidebar */}
           <div
             ref={menuRef}
-            className={`w-[260px] filterMenu fixed z-20 top-0 pt-20 lg:pt-0 pl-3 lg:pl-0 bg-white lg:relative lg:!left-0 transition-all duration-300 ${
+            className={`w-[260px] custom-scrollbar fixed z-20 top-0 pt-20 lg:pt-0 pl-3 lg:pl-0 bg-white lg:relative lg:!left-0 transition-all duration-300 ${
               isFilterOpen ? "left-0" : "-left-full"
             } overflow-y-scroll h-screen pb-[400px]`}
           >

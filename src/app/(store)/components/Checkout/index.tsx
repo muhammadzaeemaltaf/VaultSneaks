@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -37,8 +38,16 @@ const Checkout = () => {
   const [errors, setErrors] = useState<any>({});
   const [processing, setProcessing] = useState(false);
   const [currency, setCurrency] = useState("PKR");
+  const [loading, setLoading] = useState(true);
   const groupItems = useBasketStore((state) => state.getGroupedItems());
   const router = useRouter();
+
+  useEffect(() => {
+    // Simulate loading delay
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
 
   const calculateTotalPrice = () => {
     return groupItems.reduce((total, item) => total + (item.product.price || 0) * item.quantity, 0);
@@ -50,17 +59,15 @@ const Checkout = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name === "phoneNumber" && !/^03\d{9}$/.test(value)) {
+    if (name === "phoneNumber" && !/^03\d{0,9}$/.test(value)) {
       setErrors((prevErrors: { [key: string]: string }) => ({ ...prevErrors, [name]: "Invalid phone number" }));
-      return;
-    }
-    if (name === "email" && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+    } else if (name === "email" && !/^[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]*\.[a-zA-Z]{0,}$/.test(value)) {
       setErrors((prevErrors: { [key: string]: string }) => ({ ...prevErrors, [name]: "Invalid email address" }));
-      return;
+    } else {
+      setErrors((prevErrors: { [key: string]: string }) => ({ ...prevErrors, [name]: "" }));
     }
     setFormData((prevData) => ({ ...prevData, [name]: value }));
     handleFormChange({ ...formData, [name]: value });
-    setErrors((prevErrors: { [key: string]: string }) => ({ ...prevErrors, [name]: "" }));
   };
 
   const handleCountryChange = (value: string) => {
@@ -129,7 +136,7 @@ const Checkout = () => {
 
     try {
       const orderId = await createOrderInSanity(orderData);
-      router.push(`/success?orderId=${orderId._id}`);
+      router.push(`/success?orderId=${orderId.orderNumber}`);
     } catch (error) {
       console.error("Failed to create order:", error);
       setProcessing(false);
@@ -328,25 +335,29 @@ const Checkout = () => {
               <h2 className="text-[21px] font-medium">Order Summary</h2>
             </div>
             <div className="space-y-6">
-              {groupItems.map((item, index) => (
-                <div className="flex justify-between items-center mb-4" key={index}>
-                  <div className="flex items-center gap-3">
-                    <Image
-                      src={item.product.image ? urlFor(item.product.image).url() : ""}
-                      alt={item.product.productName || "Product Image"}
-                      className="w-[50px] h-[50px] object-cover"
-                      height={50}
-                      width={50}
-                    />
-                      <span
-                      className="w-4 h-4 rounded-full border"
-                      style={{ backgroundColor: item.selectedColor }}
-                    ></span>
-                    <p className="text-[15px]">x{item.quantity}</p>
+              {loading ? (
+                <Skeleton className="h-[50px] w-full" />
+              ) : (
+                groupItems.map((item, index) => (
+                  <div className="flex justify-between items-center mb-4" key={index}>
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src={item.product.image ? urlFor(item.product.image).url() : ""}
+                        alt={item.product.productName || "Product Image"}
+                        className="w-[50px] h-[50px] object-cover"
+                        height={50}
+                        width={50}
+                      />
+                        <span
+                        className="w-4 h-4 rounded-full border"
+                        style={{ backgroundColor: item.selectedColor }}
+                      ></span>
+                      <p className="text-[15px]">x{item.quantity}</p>
+                    </div>
+                    <p className="text-[15px]">{currency} {item.product.price ? item.product.price * item.quantity : 0}</p>
                   </div>
-                  <p className="text-[15px]">{currency} {item.product.price ? item.product.price * item.quantity : 0}</p>
-                </div>
-              ))}
+                ))
+              )}
               <div className="space-y-2">
                 <div className="flex justify-between text-[14px] text-[#8D8D8D]">
                   <span className="text-muted-foreground">Subtotal</span>

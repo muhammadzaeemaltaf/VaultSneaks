@@ -7,10 +7,19 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { getAllOrders } from "@/sanity/orders/getAllOrders";
-import { Order, ORDER_QUERYResult } from "../../../../sanity.types";
+import { ORDER_QUERYResult } from "../../../../sanity.types";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
+
+const statusColors = {
+  pending: "!bg-yellow-100 text-yellow-800",
+  paid: "!bg-green-100 text-green-800",
+  shipped: "!bg-blue-100 text-blue-800",
+  delivered: "!bg-purple-100 text-purple-800",
+  cancelled: "!bg-red-100 text-red-800",
+}
+
 
 export default function OrderPage() {
   const [orders, setOrders] = useState<ORDER_QUERYResult>([]);
@@ -40,7 +49,61 @@ export default function OrderPage() {
 
       {/* Orders List */}
       {loading ? (
-        <p>Loading...</p>
+        <div className="grid gap-6">
+          <Card className="p-6 animate-pulse">
+              <div className="flex flex-col gap-6">
+                <div className="flex justify-between items-start flex-wrap gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-6 bg-gray-300 rounded w-36"></div>
+                      <div className="h-6 bg-gray-300 rounded w-16"></div>
+                    </div>
+                    <div className="h-4 bg-gray-300 rounded w-32 mt-2"></div>
+                  </div>
+                  <div className="h-10 bg-gray-300 rounded w-24"></div>
+                </div>
+
+                <div className="flex gap-4 items-center text-sm flex-wrap">
+                  <div className="h-4 bg-gray-300 rounded w-20"></div>
+                  <div className="h-4 bg-gray-300 rounded w-20"></div>
+                  <div className="h-4 bg-gray-300 rounded w-40"></div>
+                </div>
+
+                <Separator />
+
+                <div className="grid gap-4 max-h-52 overflow-auto custom-scrollbar">
+                  {[1, 2].map((_, index) => (
+                    <div key={index} className="flex gap-4 items-center">
+                      <div className="h-14 w-14 sm:h-16 sm:w-16 bg-gray-300 rounded-md"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-gray-300 rounded w-32"></div>
+                        <div className="h-4 bg-gray-300 rounded w-20 mt-2"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <Separator />
+
+                <div className="flex justify-between text-sm">
+                  <div className="grid gap-1">
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                  </div>
+                  <div className="grid gap-1 text-right">
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+        </div>
       ) : orders.length > 0 ? (
         <div className="grid gap-6">
           {orders.map((order) => (
@@ -52,7 +115,7 @@ export default function OrderPage() {
                       <h3 className="font-semibold text-lg">
                         Order #{order.orderNumber}
                       </h3>
-                      <Badge>{order.status}</Badge>
+                      <Badge className={statusColors[order.status as keyof typeof statusColors]}>{order.status}</Badge>
                     </div>
                     <p className="text-muted-foreground text-sm">
                       Placed on{" "}
@@ -89,7 +152,7 @@ export default function OrderPage() {
                 <Separator />
 
                 {/* Products Section */}
-                <div className="grid gap-4">
+                <div className="grid gap-4 max-h-52 overflow-auto custom-scrollbar">
                   {order.products?.map((product) => (
                     <div key={product.product?._id} className="flex gap-4 items-center">
                      {product.product?.image && (

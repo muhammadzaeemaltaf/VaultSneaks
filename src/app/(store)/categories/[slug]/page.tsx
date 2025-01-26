@@ -11,6 +11,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getMenProducts } from "@/sanity/products/getMenProducts";
 import { getWomenProducts } from "@/sanity/products/getWomenProducts";
+import { getProductByCategory } from "@/sanity/products/getProductByCategory";
 
 const SkeletonLoader = () => (
   <div className="animate-pulse w-full">
@@ -48,6 +49,8 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
         fetchedProducts = await getMenProducts();
       } else if (decodedSlug.toLowerCase() === "women") {
         fetchedProducts = await getWomenProducts();
+      }else{
+        fetchedProducts = await getProductByCategory([decodedSlug]);
       }
       setProducts(fetchedProducts);
       setLoading(false);
