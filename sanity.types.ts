@@ -151,7 +151,13 @@ export type Product = {
   _updatedAt: string;
   _rev: string;
   productName?: string;
-  category?: string;
+  categoryName?:string;
+  category?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "category";
+  };
   price?: number;
   inventory?: number;
   colors?: Array<string>;
@@ -234,13 +240,27 @@ export type SanityImageMetadata = {
   isOpaque?: boolean;
 };
 
-export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | Slug | Order | Review | Product | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata;
+export type Category = {
+  _id: string;
+  _type: "category";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  categoryName?: string;
+};
+
+export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | Slug | Order | Review | Product | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata | Category;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/sanity/category/getAllCategories.tsx
 // Variable: ALL_CATEGORIES_QUERY
-// Query: *[_type == "product" && defined(category)] {            "category": category        } | order(category asc)
+// Query: *[_type == "category"] | order(categoryName asc)
 export type ALL_CATEGORIES_QUERYResult = Array<{
-  category: string | null;
+  _id: string;
+  _type: "category";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  categoryName?: string;
 }>;
 
 // Source: ./src/sanity/orders/getAllOrders.ts
@@ -272,7 +292,12 @@ export type ORDER_QUERYResult = Array<{
       _updatedAt: string;
       _rev: string;
       productName?: string;
-      category?: string;
+      category?: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "category";
+      };
       price?: number;
       inventory?: number;
       colors?: Array<string>;
@@ -313,38 +338,7 @@ export type ORDER_QUERYResult = Array<{
 // Source: ./src/sanity/products/getMenProducts.ts
 // Variable: MEN_PRODUCTS_QUERY
 // Query: *[_type=="product" && category match "Men*"] | order(name asc)
-export type MEN_PRODUCTS_QUERYResult = Array<{
-  _id: string;
-  _type: "product";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  productName?: string;
-  category?: string;
-  price?: number;
-  inventory?: number;
-  colors?: Array<string>;
-  status?: string;
-  image?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
-  description?: string;
-  reviews?: Array<{
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "review";
-  }>;
-}>;
+export type MEN_PRODUCTS_QUERYResult = Array<never>;
 
 // Source: ./src/sanity/products/getProductByCategory.ts
 // Variable: PRODUCT_BY_CATEGORY_QUERY
@@ -356,7 +350,12 @@ export type PRODUCT_BY_CATEGORY_QUERYResult = Array<{
   _updatedAt: string;
   _rev: string;
   productName?: string;
-  category?: string;
+  category?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "category";
+  };
   price?: number;
   inventory?: number;
   colors?: Array<string>;
@@ -392,7 +391,12 @@ export type PRODUCT_BY_NAME_QUERYResult = {
   _updatedAt: string;
   _rev: string;
   productName?: string;
-  category?: string;
+  category?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "category";
+  };
   price?: number;
   inventory?: number;
   colors?: Array<string>;
@@ -428,7 +432,12 @@ export type RELATED_PRODUCT_BY_CATEGORY_QUERYResult = Array<{
   _updatedAt: string;
   _rev: string;
   productName?: string;
-  category?: string;
+  category?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "category";
+  };
   price?: number;
   inventory?: number;
   colors?: Array<string>;
@@ -457,37 +466,24 @@ export type RELATED_PRODUCT_BY_CATEGORY_QUERYResult = Array<{
 // Source: ./src/sanity/products/getWomenProducts.ts
 // Variable: WOMEN_PRODUCTS_QUERY
 // Query: *[_type=="product" && category match "Women*"] | order(name asc)
-export type WOMEN_PRODUCTS_QUERYResult = Array<{
-  _id: string;
-  _type: "product";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  productName?: string;
-  category?: string;
-  price?: number;
-  inventory?: number;
-  colors?: Array<string>;
-  status?: string;
-  image?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
-  description?: string;
-  reviews?: Array<{
+export type WOMEN_PRODUCTS_QUERYResult = Array<never>;
+
+// Source: ./src/sanity/products/searchProducts.ts
+// Variable: SEARCH_PRODUCT_NAMES_QUERY
+// Query: *[_type=="product" && (productName match $searchTerm || description match $searchTerm)]{      productName,       "imageUrl": image.asset->url    } | order(productName asc)[0...6]
+export type SEARCH_PRODUCT_NAMES_QUERYResult = Array<{
+  productName: string | null;
+  imageUrl: string | null;
+}>;
+// Variable: SEARCH_PRODUCT_CATEGORY_NAME_QUERY
+// Query: *[_type=="product" && category match $searchTerm]{      category    } | order(category asc)
+export type SEARCH_PRODUCT_CATEGORY_NAME_QUERYResult = Array<{
+  category: {
     _ref: string;
     _type: "reference";
     _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "review";
-  }>;
+    [internalGroqTypeReferenceTo]?: "category";
+  } | null;
 }>;
 
 // Source: ./src/sanity/reviews/getProductReviews.ts
@@ -529,13 +525,15 @@ export type PRODUCT_REVIEW_BY_IDResult = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "*[_type == \"product\" && defined(category)] {\n            \"category\": category\n        } | order(category asc)": ALL_CATEGORIES_QUERYResult;
+    "\n        *[_type == \"category\"] | order(categoryName asc)\n    ": ALL_CATEGORIES_QUERYResult;
     "*[_type == \"order\" ] {\n     ...,\n                products[] {\n                    ...,\n                    product->\n                }}": ORDER_QUERYResult;
     "*[_type==\"product\" && category match \"Men*\"] | order(name asc)": MEN_PRODUCTS_QUERYResult;
     "\n                *[\n                     _type == \"product\"\n                     && category == $slug\n                 ] | order(name asc)\n            ": PRODUCT_BY_CATEGORY_QUERYResult;
     "\n             *[\n                 _type == \"product\"\n                && productName == $name\n             ][0]\n        \n        ": PRODUCT_BY_NAME_QUERYResult;
     "\n       *[_type == \"product\" && category == $category && _id != $excludeProductId]\n\n  ": RELATED_PRODUCT_BY_CATEGORY_QUERYResult;
     "*[_type==\"product\" && category match \"Women*\"] | order(name asc)": WOMEN_PRODUCTS_QUERYResult;
+    "\n    *[_type==\"product\" && (productName match $searchTerm || description match $searchTerm)]{\n      productName, \n      \"imageUrl\": image.asset->url\n    } | order(productName asc)[0...6]\n  ": SEARCH_PRODUCT_NAMES_QUERYResult;
+    "\n    *[_type==\"product\" && category match $searchTerm]{\n      category\n    } | order(category asc)\n  ": SEARCH_PRODUCT_CATEGORY_NAME_QUERYResult;
     "\n      *[_type == \"review\" && references(^._id) && references(^._id)] ": PRODUCT_REVIEW_BY_IDResult;
   }
 }

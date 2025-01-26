@@ -89,7 +89,7 @@ const Page = ({ params }: { params: { name: string } }) => {
       if (productData && !Array.isArray(productData)) {
         setProduct(productData as Product);
         const relatedProductsData = await getRelatedProducts(
-          productData.category || "",
+          productData.category?._ref || "",
           productData._id
         );
         setRelatedProducts(relatedProductsData);
@@ -162,7 +162,7 @@ const Page = ({ params }: { params: { name: string } }) => {
                 {product.description}
               </p>
               <p className="">
-                Category: <strong>{product.category}</strong>
+                Category: <strong>{product.categoryName || "Unknown"}</strong>
               </p>
             </div>
             <span className="block cursor-pointer w-6 h-6 mt-5">

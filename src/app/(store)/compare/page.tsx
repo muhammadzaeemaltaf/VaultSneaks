@@ -147,7 +147,8 @@ export default function ComparePage({
       try {
         setLoading(true); 
         const productTo = await getProductByName(decodeURIComponent(searchParams.product));
-        const productsWith = await getProductByCategory((productTo as Product)?.category || "");
+        const categoryName = productTo?.categoryName;
+        const productsWith = await getProductByCategory([categoryName]);
         if (!productTo || Array.isArray(productTo) && productTo.length === 0) {
           toast.error("Product not found");
           setLoading(false);
@@ -242,7 +243,7 @@ export default function ComparePage({
         <p className="text-lg sm:text-xl font-bold mb-4">${product.price}</p>
         <div className="w-full max-w-md space-y-2">
           <p>
-            <strong>Category:</strong> {product.category}
+            <strong>Category:</strong> {product.categoryName || "N/A"}
           </p>
           <p>
             <strong>Description:</strong> {product.description}

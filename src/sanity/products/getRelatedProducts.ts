@@ -12,7 +12,7 @@ function shuffleArray(array: any[]) {
 
 export const getRelatedProducts = async (category: string, excludeProductId: string) => {
   const RELATED_PRODUCT_BY_CATEGORY_QUERY = defineQuery(`
-       *[_type == "product" && category == $category && _id != $excludeProductId]
+       *[_type == "product" && category._ref == $category && _id != $excludeProductId]
 
   `);
 

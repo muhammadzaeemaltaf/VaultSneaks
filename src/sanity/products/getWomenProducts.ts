@@ -3,7 +3,7 @@ import { client } from "../lib/client";
 
 export const getWomenProducts = async () => {
   const WOMEN_PRODUCTS_QUERY = defineQuery(
-    `*[_type=="product" && category match "Women*"] | order(name asc)`
+    `*[_type=="product" && category->categoryName match "*Women*"] | order(name asc)`
   );
   try {
     const products = await client.fetch(WOMEN_PRODUCTS_QUERY);

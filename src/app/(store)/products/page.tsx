@@ -20,7 +20,7 @@ import {
 import { ChevronDown, ChevronLeft, ChevronRight, HeartIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import { Product } from "../../../../sanity.types";
+import { Category, Product } from "../../../../sanity.types";
 import { getAllProducts } from "@/sanity/products/getAllProducts";
 import { getProductByCategory } from "@/sanity/products/getProductByCategory";
 import { getProductsUnderPriceRange } from "@/sanity/products/getProductsUnderPriceRange";
@@ -81,8 +81,8 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [sortLoading, setSortLoading] = useState(true);
   const [sortBy, setSortBy] = useState("name");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [Categories, setCategories] = useState<string[] | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [Categories, setCategories] = useState<Category[] | null>(null);
   const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(
     null
   );
@@ -106,12 +106,12 @@ const Page = () => {
     const fetchProducts = async () => {
       setSortLoading(true);
       let data;
-      if (selectedCategory) {
-        data = await getProductByCategory(selectedCategory);
+      if (selectedCategories.length > 0) {
+        data = await getProductByCategory(selectedCategories);
       } else if (selectedPriceRange) {
         data = await getProductsUnderPriceRange(selectedPriceRange);
       } else if (selectedGender) {
-        data = await getProductByCategory(selectedGender);
+        data = await getProductByCategory([selectedGender]);
       } else {
         data = await getAllProducts(sortBy);
       }
@@ -122,7 +122,7 @@ const Page = () => {
       }, 500);
     };
     fetchProducts();
-  }, [sortBy, selectedCategory, selectedPriceRange, selectedGender]);
+  }, [sortBy, selectedCategories, selectedPriceRange, selectedGender]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -142,14 +142,14 @@ const Page = () => {
     setCurrentPage(page);
   };
 
-  const handleCategoryChange = (value: string | null) => {
-    if (selectedCategory === value) {
-      setSelectedCategory(null);
-    } else {
-      setSelectedCategory(value);
-      setSelectedPriceRange(null);
-      setSelectedGender(null);
-    }
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(value)
+        ? prev.filter((category) => category !== value)
+        : [...prev, value]
+    );
+    setSelectedPriceRange(null);
+    setSelectedGender(null);
   };
 
   const handlePriceRangeChange = (value: string | null) => {
@@ -157,7 +157,7 @@ const Page = () => {
       setSelectedPriceRange(null);
     } else {
       setSelectedPriceRange(value);
-      setSelectedCategory(null);
+      setSelectedCategories([]);
       setSelectedGender(null);
     }
   };
@@ -167,7 +167,7 @@ const Page = () => {
       setSelectedGender(null);
     } else {
       setSelectedGender(value);
-      setSelectedCategory(null);
+      setSelectedCategories([]);
       setSelectedPriceRange(null);
     }
   };
@@ -210,7 +210,7 @@ const Page = () => {
         {/* Header Section */}
         <div className="flex justify-end lg:justify-between items-center">
           <div className="w-[260px] text-2xl font-medium hidden lg:block">
-            New ({Products.length})
+            All ({Products.length})
           </div>
           <div className="flex gap-3">
             <p
@@ -265,14 +265,14 @@ const Page = () => {
                     Categories.map((category, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <Checkbox
-                          id={category || ""}
-                          checked={selectedCategory === category}
+                          id={category.categoryName || ""}
+                          checked={selectedCategories.includes(category.categoryName || "")}
                           onCheckedChange={() =>
-                            handleCategoryChange(category || null)
+                            handleCategoryChange(category.categoryName || "")
                           }
                         />
-                        <label htmlFor={category || ""} className="text-sm">
-                          {category}
+                        <label htmlFor={category.categoryName || ""} className="text-sm">
+                          {category.categoryName}
                         </label>
                       </div>
                     ))}
@@ -332,6 +332,8 @@ const Page = () => {
             </div>
             {sortLoading ? (
               <SkeletonLoader />
+            ) : Products.length === 0 ? (
+              <div className="text-center py-10">No product found</div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {/* Product cards */}
@@ -367,7 +369,7 @@ const Page = () => {
 
                         {sortBy === "category" && (
                           <div className="text-lightColor text-[15px] absolute z-10 top-2 left-2 bg-white px-2 py-1 rounded">
-                            {product.category}
+                            {product.categoryName! || "Unknown Category"}
                           </div>
                         )}
                       </div>

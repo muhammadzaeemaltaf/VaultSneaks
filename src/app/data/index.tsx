@@ -37,11 +37,11 @@ export const HeaderLinks = [
   },
   {
     title: "Men",
-    link: "/categories/Men's Shoes",
+    link: "/categories/Men",
   },
   {
     title: "Women",
-    link: "/categories/Women's Shoes",
+    link: "/categories/Women",
   },
   {
     title: "Help",

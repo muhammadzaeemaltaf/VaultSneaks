@@ -1,17 +1,17 @@
 import { defineQuery } from "next-sanity";
-import { client } from "../lib/client";
+import { client } from "@/sanity/lib/client";
 
-export const getProductByCategory = async (slug: string) => {
+export const getProductByCategory = async (slugs: string[]) => {
   const PRODUCT_BY_CATEGORY_QUERY = defineQuery(`
                 *[
                      _type == "product"
-                     && category == $slug
+                     && category->categoryName in $slugs
                  ] | order(name asc)
             `);
 
   try {
     const products = await client.fetch(PRODUCT_BY_CATEGORY_QUERY, {
-      slug,
+      slugs,
     });
 
     return products || [];

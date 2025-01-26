@@ -1,15 +1,19 @@
-import { defineQuery } from "next-sanity";
 import { client } from "../lib/client";
 
 export const getMenProducts = async () => {
-  const MEN_PRODUCTS_QUERY = defineQuery(
-    `*[_type=="product" && category match "Men*"] | order(name asc)`
-  );
+  const MEN_PRODUCTS_QUERY = `
+    *[_type == "product" && 
+      category->categoryName match "*Men*" && 
+      !(category->categoryName match "*Women*")
+    ] | order(name asc)
+  `;
+
   try {
+    // Fetch the products using the Sanity client
     const products = await client.fetch(MEN_PRODUCTS_QUERY);
     return products || [];
   } catch (error) {
-    console.error("Error fetching products", error);
+    console.error("Error fetching products:", error);
     return [];
   }
 };

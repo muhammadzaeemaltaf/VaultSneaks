@@ -1,7 +1,6 @@
 "use client";
 
 import { urlFor } from "@/sanity/lib/image";
-import { getProductByCategory } from "@/sanity/products/getProductByCategory";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -10,6 +9,8 @@ import { Product } from "../../../../../sanity.types";
 import { HeartIcon } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getMenProducts } from "@/sanity/products/getMenProducts";
+import { getWomenProducts } from "@/sanity/products/getWomenProducts";
 
 const SkeletonLoader = () => (
   <div className="animate-pulse w-full">
@@ -42,7 +43,12 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
     const fetchProducts = async () => {
       const decodedSlug = decodeURIComponent(params.slug);
       setDecodeSlug(decodedSlug);
-      const fetchedProducts = await getProductByCategory(decodedSlug);
+      let fetchedProducts = [];
+      if (decodedSlug.toLowerCase() === "men") {
+        fetchedProducts = await getMenProducts();
+      } else if (decodedSlug.toLowerCase() === "women") {
+        fetchedProducts = await getWomenProducts();
+      }
       setProducts(fetchedProducts);
       setLoading(false);
     };

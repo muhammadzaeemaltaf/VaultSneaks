@@ -1,4 +1,3 @@
-import { defineQuery } from "next-sanity";
 import { client } from "../lib/client";
 
 export const getAllProducts = async (sortBy = "productName") => {
@@ -6,16 +5,21 @@ export const getAllProducts = async (sortBy = "productName") => {
   if (sortBy === "price") {
     sortField = "price";
   } else if (sortBy === "category") {
-    sortField = "category";
+    sortField = "category->categoryName";
   } else {
     sortField = "productName";
   }
-  
-  const ALL_PRODUCTS_QUERY = defineQuery(
-    `*[_type=="product"] | order(${sortField} asc)`
-  );
-  
+
+  // Correctly format the query as a string
+  const ALL_PRODUCTS_QUERY = `
+    *[_type == "product"] | order(${sortField} asc) {
+      ...,
+      "categoryName": category->categoryName
+    }
+  `;
+
   try {
+    // Fetch products using the query string directly
     const products = await client.fetch(ALL_PRODUCTS_QUERY);
     return products || [];
   } catch (error) {
