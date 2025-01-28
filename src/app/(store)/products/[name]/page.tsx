@@ -11,7 +11,7 @@ import { getRelatedProducts } from "@/sanity/products/getRelatedProducts";
 import { urlFor } from "@/sanity/lib/image";
 import { Product, Review } from "../../../../../sanity.types";
 import RelatedProducts from "../../components/RelatedProducts";
-import { useBasketStore, useWishlistStore } from "../../../../../store";
+import { useBasketStore, useWishlistStore, useCompareStore } from "../../../../../store";
 import { ReviewSection } from "../../components/ReviewForm/ReviewSection";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -56,6 +56,7 @@ const Page = ({ params }: { params: { name: string } }) => {
   const wishlistItems = getWishlistItems();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [averageRating, setAverageRating] = useState<number | null>(null);
+  const { setProductCompareTo } = useCompareStore();
 
   const handleAddToCart = (product: Product) => {
     if (!selectedColor) {
@@ -229,6 +230,7 @@ const Page = ({ params }: { params: { name: string } }) => {
               <Button
                 className="rounded-full w-auto px-6 bg-gray-500 ml-4"
                 size="lg"
+                onClick={() => setProductCompareTo(product)}
               >
                 <Link
                   href={`/comparision?product=${encodeURIComponent(product.productName || "")}`}

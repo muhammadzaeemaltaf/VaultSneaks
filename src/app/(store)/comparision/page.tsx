@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import {ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,15 +11,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getProductByName } from "@/sanity/products/getProductByName";
 import { urlFor } from "@/sanity/lib/image";
-import { Product, PRODUCT_BY_NAME_QUERYResult, Review } from "../../../../sanity.types";
+import { Product, Review } from "../../../../sanity.types";
 import { CartIcon2 } from "@/app/data";
-import { useBasketStore } from "../../../../store";
+import { useBasketStore, useCompareStore } from "../../../../store";
 import { getProductByCategory } from "@/sanity/products/getProductByCategory";
 import { getProductReviews } from "@/sanity/reviews/getProductReviews";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getProductByName } from "@/sanity/products/getProductByName";
 
 const SkeletonLoader = ({ single }: { single: boolean }) => (
   <div className="py-10">
@@ -131,7 +131,7 @@ export default function ComparePage({
 }: {
   searchParams: { product: string };
 }) {
-  const [productCompareTo, setProductCompareTo] = useState<Product | any>(null);
+  const { productCompareTo, setProductCompareTo } = useCompareStore();
   const [productCompareWith, setProductCompareWith] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<string>("");
   const [selectedProductData, setSelectedProductData] = useState<Product | any>(null);
@@ -146,21 +146,17 @@ export default function ComparePage({
     const fetchProducts = async () => {
       try {
         setLoading(true); 
-        const productTo = await getProductByName(decodeURIComponent(searchParams.product)) as PRODUCT_BY_NAME_QUERYResult | PRODUCT_BY_NAME_QUERYResult[];
-       console.log("first", productTo)
-        const categoryName = Array.isArray(productTo) ? productTo[0]?.categoryName : productTo?.categoryName;
-        const productsWith = await getProductByCategory([categoryName || ""]);
-        console.log("first", productsWith)
-        if (!productTo || Array.isArray(productTo) && productTo.length === 0) {
+        const categoryName = productCompareTo?.categoryName;
+        const productsWith = await getProductByCategory([categoryName] as string[]);
+        if (!productCompareTo || Array.isArray(productCompareTo) && productCompareTo.length === 0) {
           toast.error("Product not found");
           setLoading(false);
           return;
         }
-        const reviewsTo = productTo ? await getProductReviews(Array.isArray(productTo) ? productTo[0]!._id : productTo._id || "") : [];
-        console.log("first", reviewsTo)
+        const reviewsTo = await getProductReviews((productCompareTo as Product)._id);
   
-        if (productTo) {
-          setProductCompareTo(productTo);
+        if (productCompareTo) {
+          setProductCompareTo(productCompareTo);
         } else {
           toast.error("Product not found");
         }
@@ -184,7 +180,7 @@ export default function ComparePage({
     };
   
     fetchProducts();
-  }, [searchParams.product]);
+  }, [productCompareTo, setProductCompareTo]);
 
   useEffect(() => {
     const fetchSelectedProduct = async () => {
@@ -194,12 +190,9 @@ export default function ComparePage({
         setLoadingSelectedProduct(true);
         setShowTable(false);
         const productData = await getProductByName(selectedProduct);
-        console.log(productData)
         if (productData && (!Array.isArray(productData) || productData.length > 0)) {
           setSelectedProductData(productData);
-          console.log(productData)
           const reviewsWith = await getProductReviews((productData as Product)._id);
-          console.log(reviewsWith)
           setReviewsCompareWith(reviewsWith || []);
           setShowTable(true);
         } else {
@@ -304,7 +297,7 @@ export default function ComparePage({
                         height={30}
                         className="rounded-lg"
                       />
-                      {product.productName}
+                      <span>{product.productName}</span>
                     </div>
                   </SelectItem>
                 ))}
@@ -344,16 +337,16 @@ export default function ComparePage({
                     <td className="border p-2 text-sm sm:text-base text-center">
                       {feature === "price"
                         ? renderPriceComparison(
-                            productCompareTo.price,
-                            selectedProductData.price
+                            productCompareTo.price ?? 0,
+                            selectedProductData.price ?? 0
                           )
-                        : productCompareTo[feature as keyof Product]}
+                        : String(productCompareTo[feature as keyof Product])}
                     </td>
                     <td className="border p-2 text-sm sm:text-base text-center">
                       {feature === "price"
                         ? renderPriceComparison(
                             selectedProductData.price,
-                            productCompareTo.price
+                            productCompareTo?.price ?? 0
                           )
                         : selectedProductData[feature as keyof Product]}
                     </td>

@@ -15,8 +15,12 @@ export const getProductByCategory = async (slugs: string[]) => {
     });
 
     return products || [];
-  } catch (error) {
-    console.error("Error fetching products by category", error);
+  } catch (error: any) {
+    if (error.name === 'FetchError') {
+      console.error("Network error fetching products by category", error);
+    } else {
+      console.error("Error fetching products by category", error);
+    }
     return [];
   }
 };

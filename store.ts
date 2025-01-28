@@ -130,3 +130,19 @@ export const useWishlistStore = create<WishlistState>()(
     }
   )
 );
+interface CompareState {
+  productCompareTo: Product | null;
+  setProductCompareTo: (product: Product) => void;
+}
+
+export const useCompareStore = create<CompareState>()(
+  persist(
+    (set) => ({
+      productCompareTo: null,
+      setProductCompareTo: (product) => set({ productCompareTo: product }),
+    }),
+    {
+      name: "compare-store",
+    }
+  )
+);

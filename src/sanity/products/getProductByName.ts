@@ -21,7 +21,7 @@ export const getProductByName = async (name: string) => {
 
     return product || [];
   } catch (error) {
-    console.error("Error fetching product by slug", error);
+    console.error("Error fetching product by name", error);
     return [];
   }
 };
