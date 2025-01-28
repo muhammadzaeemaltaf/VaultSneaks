@@ -231,7 +231,7 @@ const Page = ({ params }: { params: { name: string } }) => {
                 size="lg"
               >
                 <Link
-                  href={`/compare?product=${encodeURIComponent(product.productName || "")}`}
+                  href={`/comparision?product=${encodeURIComponent(product.productName || "")}`}
                 >
                   Compare
                 </Link>

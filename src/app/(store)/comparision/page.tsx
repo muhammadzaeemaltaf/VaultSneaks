@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { getProductByName } from "@/sanity/products/getProductByName";
 import { urlFor } from "@/sanity/lib/image";
-import { Product, Review } from "../../../../sanity.types";
+import { Product, PRODUCT_BY_NAME_QUERYResult, Review } from "../../../../sanity.types";
 import { CartIcon2 } from "@/app/data";
 import { useBasketStore } from "../../../../store";
 import { getProductByCategory } from "@/sanity/products/getProductByCategory";
@@ -146,15 +146,18 @@ export default function ComparePage({
     const fetchProducts = async () => {
       try {
         setLoading(true); 
-        const productTo: any = await getProductByName(decodeURIComponent(searchParams.product));
-        const categoryName = productTo?.categoryName;
-        const productsWith = await getProductByCategory([categoryName]);
+        const productTo = await getProductByName(decodeURIComponent(searchParams.product)) as PRODUCT_BY_NAME_QUERYResult | PRODUCT_BY_NAME_QUERYResult[];
+       console.log("first", productTo)
+        const categoryName = Array.isArray(productTo) ? productTo[0]?.categoryName : productTo?.categoryName;
+        const productsWith = await getProductByCategory([categoryName || ""]);
+        console.log("first", productsWith)
         if (!productTo || Array.isArray(productTo) && productTo.length === 0) {
           toast.error("Product not found");
           setLoading(false);
           return;
         }
-        const reviewsTo = await getProductReviews((productTo as Product)._id);
+        const reviewsTo = productTo ? await getProductReviews(Array.isArray(productTo) ? productTo[0]!._id : productTo._id || "") : [];
+        console.log("first", reviewsTo)
   
         if (productTo) {
           setProductCompareTo(productTo);
@@ -191,10 +194,12 @@ export default function ComparePage({
         setLoadingSelectedProduct(true);
         setShowTable(false);
         const productData = await getProductByName(selectedProduct);
+        console.log(productData)
         if (productData && (!Array.isArray(productData) || productData.length > 0)) {
           setSelectedProductData(productData);
           console.log(productData)
           const reviewsWith = await getProductReviews((productData as Product)._id);
+          console.log(reviewsWith)
           setReviewsCompareWith(reviewsWith || []);
           setShowTable(true);
         } else {
