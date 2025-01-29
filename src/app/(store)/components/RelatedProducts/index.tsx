@@ -5,7 +5,7 @@ import { Product } from "../../../../../sanity.types";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
-import { useWishlistStore } from "../../../../../store";
+import { useUserStore, useWishlistStore } from "../../../../../store";
 import { HeartIcon } from "lucide-react";
 
 interface RelatedProductsProps {
@@ -35,6 +35,7 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
 
   const { addItem, removeItem, getItems } = useWishlistStore();
   const wishlistItems = getItems();
+  const user = useUserStore((state) => state.user);
 
   const toggleWishlist = (product: Product) => {
     if (wishlistItems.find((item) => item._id === product._id)) {
@@ -88,16 +89,22 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
                   className="object-cover"
                 />
                 <span className="absolute top-2 right-2 z-10 cursor-pointer w-6 h-6">
-                  <HeartIcon
-                    className={` active:animate-ping ${
-                      wishlistItems.find(
-                        (wishlistItem) => wishlistItem._id === product._id
-                      )
-                        ? "fill-gray-500 "
-                        : "text-gray-500"
-                    }`}
-                    onClick={() => toggleWishlist(product)}
-                  />
+                  {user ? (
+                    <HeartIcon
+                      className={` active:animate-ping ${
+                        wishlistItems.find(
+                          (wishlistItem) => wishlistItem._id === product._id
+                        )
+                          ? "fill-gray-500 "
+                          : "text-gray-500"
+                      }`}
+                      onClick={() => toggleWishlist(product)}
+                    />
+                  ) : (
+                    <Link href={`/login`}>
+                      <HeartIcon className={` active:animate-ping`} />
+                    </Link>
+                  )}
                 </span>
               </div>
               <div className="py-4">
@@ -121,7 +128,7 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
                   ))}
                 </div>
                 <div className="text-[15px] font-[600] mt-1">
-                Rs: <span>{product.price}</span>
+                  Rs: <span>{product.price}</span>
                 </div>
               </div>
             </div>

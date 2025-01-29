@@ -146,3 +146,22 @@ export const useCompareStore = create<CompareState>()(
     }
   )
 );
+
+
+interface UserState {
+  user: any;
+  setUser: (user: any) => void;
+}
+
+export const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      user: null,
+      setUser: (user: any) => set({ user }),
+    }),
+    {
+      name: "loggedIn-user-store",
+    }
+  )
+);
+

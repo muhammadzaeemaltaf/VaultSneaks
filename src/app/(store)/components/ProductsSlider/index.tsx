@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Product } from "../../../../../sanity.types";
 import { urlFor } from "@/sanity/lib/image";
-import { useWishlistStore } from "../../../../../store";
+import { useUserStore, useWishlistStore } from "../../../../../store";
 import { HeartIcon } from "lucide-react";
 
 const SkeletonLoader = ({ half }: { half?: boolean }) => (
@@ -53,6 +53,7 @@ const ProductSlider = ({
   const [loading, setLoading] = useState(true);
   const { addItem, removeItem, getItems } = useWishlistStore();
   const wishlistItems = getItems();
+  const user = useUserStore((state) => state.user);
 
   const toggleWishlist = (product: Product) => {
     if (wishlistItems.find((item) => item._id === product._id)) {
@@ -137,17 +138,23 @@ const ProductSlider = ({
                         </div>
                       </Link>
                       <span className="absolute top-8 right-2 z-[100] cursor-pointer w-6 h-6">
-                        <HeartIcon
-                          className={` active:animate-ping ${
-                          wishlistItems.find(
-                            (wishlistItem) => wishlistItem._id === item._id
-                          )
-                            ? "fill-gray-500 "
-                            : "text-gray-500"
-                          }`}
-                          onClick={() => toggleWishlist(item)}
-                        />
-                        </span>
+                        {user ? (
+                          <HeartIcon
+                            className={` active:animate-ping ${
+                              wishlistItems.find(
+                                (wishlistItem) => wishlistItem._id === item._id
+                              )
+                                ? "fill-gray-500 "
+                                : "text-gray-500"
+                            }`}
+                            onClick={() => toggleWishlist(item)}
+                          />
+                        ) : (
+                          <Link href={`/login`}>
+                            <HeartIcon className={` active:animate-ping`} />
+                          </Link>
+                        )}
+                      </span>
                     </div>
                   </CarouselItem>
                 ))}
@@ -198,18 +205,24 @@ const ProductSlider = ({
                           </div>
                         </div>
                       </Link>
-                        <span className="absolute top-8 right-2 z-[100] cursor-pointer w-6 h-6">
-                        <HeartIcon
-                          className={` active:animate-ping ${
-                          wishlistItems.find(
-                            (wishlistItem) => wishlistItem._id === item._id
-                          )
-                            ? "fill-gray-500 "
-                            : "text-gray-500"
-                          }`}
-                          onClick={() => toggleWishlist(item)}
-                        />
-                        </span>
+                      <span className="absolute top-8 right-2 z-[100] cursor-pointer w-6 h-6">
+                        {user ? (
+                          <HeartIcon
+                            className={` active:animate-ping ${
+                              wishlistItems.find(
+                                (wishlistItem) => wishlistItem._id === item._id
+                              )
+                                ? "fill-gray-500 "
+                                : "text-gray-500"
+                            }`}
+                            onClick={() => toggleWishlist(item)}
+                          />
+                        ) : (
+                          <Link href={`/login`}>
+                            <HeartIcon className={` active:animate-ping`} />
+                          </Link>
+                        )}
+                      </span>
                     </div>
                   </CarouselItem>
                 ))}

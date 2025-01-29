@@ -20,6 +20,11 @@ export default function WishlistPage() {
   useEffect(() => {
     if (wishlistItems.length > 0) {
       setLoading(false);
+    } else {
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 5000);
+      return () => clearTimeout(timer);
     }
   }, [wishlistItems]);
 

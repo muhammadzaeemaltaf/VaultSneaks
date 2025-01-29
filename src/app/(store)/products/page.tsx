@@ -26,7 +26,7 @@ import { getProductByCategory } from "@/sanity/products/getProductByCategory";
 import { getProductsUnderPriceRange } from "@/sanity/products/getProductsUnderPriceRange";
 import { urlFor } from "@/sanity/lib/image";
 import { getAllCategories } from "@/sanity/category/getAllCategories";
-import { useWishlistStore } from "../../../../store";
+import { useUserStore, useWishlistStore } from "../../../../store";
 
 const genderOptions = ["Men", "Women", "Unisex"];
 const priceRanges = ["Under Rs 2,500.00", "Rs 2,501.00 - Rs 5,000.00", "Rs 5,001.00+"];
@@ -93,6 +93,8 @@ const Page = () => {
 
   const { addItem, removeItem, getItems } = useWishlistStore();
   const wishlistItems = getItems();
+  const user = useUserStore((state) => state.user);
+
 
   const toggleWishlist = (product: Product) => {
     if (wishlistItems.find((item) => item._id === product._id)) {
@@ -354,7 +356,8 @@ const Page = () => {
                         />
 
                         <span className="absolute top-2 right-2 z-10  cursor-pointer w-6 h-6">
-                          <HeartIcon
+                        {user ? (
+                            <HeartIcon
                             className={` active:animate-ping ${
                               wishlistItems.find(
                                 (wishlistItem) =>
@@ -365,6 +368,11 @@ const Page = () => {
                             }`}
                             onClick={() => toggleWishlist(product)}
                           />
+                        ) : (
+                          <Link href={`/login`}>
+                            <HeartIcon className={` active:animate-ping`} />
+                          </Link>
+                        )}
                         </span>
 
                         {sortBy === "category" && (

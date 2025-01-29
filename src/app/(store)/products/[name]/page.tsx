@@ -11,7 +11,12 @@ import { getRelatedProducts } from "@/sanity/products/getRelatedProducts";
 import { urlFor } from "@/sanity/lib/image";
 import { Product, Review } from "../../../../../sanity.types";
 import RelatedProducts from "../../components/RelatedProducts";
-import { useBasketStore, useWishlistStore, useCompareStore } from "../../../../../store";
+import {
+  useBasketStore,
+  useWishlistStore,
+  useCompareStore,
+  useUserStore,
+} from "../../../../../store";
 import { ReviewSection } from "../../components/ReviewForm/ReviewSection";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -57,6 +62,7 @@ const Page = ({ params }: { params: { name: string } }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [averageRating, setAverageRating] = useState<number | null>(null);
   const { setProductCompareTo } = useCompareStore();
+  const user = useUserStore((state) => state.user);
 
   const handleAddToCart = (product: Product) => {
     if (!selectedColor) {
@@ -76,8 +82,10 @@ const Page = ({ params }: { params: { name: string } }) => {
   };
 
   const handleNewReview = (newReview: Review) => {
-    setReviews(prevReviews => [...prevReviews, newReview]);
-    const totalRating = reviews.reduce((sum, review) => sum + (review.rating ?? 0), 0) + (newReview.rating ?? 0);
+    setReviews((prevReviews) => [...prevReviews, newReview]);
+    const totalRating =
+      reviews.reduce((sum, review) => sum + (review.rating ?? 0), 0) +
+      (newReview.rating ?? 0);
     setAverageRating(totalRating / (reviews.length + 1));
   };
 
@@ -167,16 +175,22 @@ const Page = ({ params }: { params: { name: string } }) => {
               </p>
             </div>
             <span className="block cursor-pointer w-6 h-6 mt-5">
-              <HeartIcon
-                className={`active:animate-ping ${
-                  wishlistItems.find(
-                    (wishlistItem) => wishlistItem._id === product._id
-                  )
-                    ? "fill-gray-500"
-                    : "text-gray-500"
-                }`}
-                onClick={() => toggleWishlist(product)}
-              />
+              {user ? (
+                <HeartIcon
+                  className={` active:animate-ping ${
+                    wishlistItems.find(
+                      (wishlistItem) => wishlistItem._id === product._id
+                    )
+                      ? "fill-gray-500 "
+                      : "text-gray-500"
+                  }`}
+                  onClick={() => toggleWishlist(product)}
+                />
+              ) : (
+                <Link href={`/login`}>
+                  <HeartIcon className={` active:animate-ping`} />
+                </Link>
+              )}
             </span>
             <div className="flex items-center gap-1">
               <span className="text-lg text-muted-foreground text-balance mt-2">

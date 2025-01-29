@@ -4,7 +4,7 @@ import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useWishlistStore } from "../../../../../store";
+import { useUserStore, useWishlistStore } from "../../../../../store";
 import { Product } from "../../../../../sanity.types";
 import { HeartIcon } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
@@ -31,7 +31,6 @@ const SkeletonLoader = () => (
   </div>
 );
 
-
 const CategoryPage = ({ params }: { params: { slug: string } }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [decodeSlug, setDecodeSlug] = useState<string>("");
@@ -39,6 +38,7 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
 
   const { addItem, removeItem, getItems } = useWishlistStore();
   const wishlistItems = getItems();
+  const user = useUserStore((state) => state.user);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -49,7 +49,7 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
         fetchedProducts = await getMenProducts();
       } else if (decodedSlug.toLowerCase() === "women") {
         fetchedProducts = await getWomenProducts();
-      }else{
+      } else {
         fetchedProducts = await getProductByCategory([decodedSlug]);
       }
       setProducts(fetchedProducts);
@@ -98,16 +98,22 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
                     className=" object-cover"
                   />
                   <span className="absolute top-2 right-2 z-10  cursor-pointer w-6 h-6">
-                    <HeartIcon
-                      className={` active:animate-ping ${
-                        wishlistItems.find(
-                          (wishlistItem) => wishlistItem._id === product._id
-                        )
-                          ? "fill-gray-500 "
-                          : "text-gray-500"
-                      }`}
-                      onClick={() => toggleWishlist(product)}
-                    />
+                    {user ? (
+                      <HeartIcon
+                        className={` active:animate-ping ${
+                          wishlistItems.find(
+                            (wishlistItem) => wishlistItem._id === product._id
+                          )
+                            ? "fill-gray-500 "
+                            : "text-gray-500"
+                        }`}
+                        onClick={() => toggleWishlist(product)}
+                      />
+                    ) : (
+                      <Link href={`/login`}>
+                        <HeartIcon className={` active:animate-ping`} />
+                      </Link>
+                    )}
                   </span>
                 </div>
                 <div className="py-4">
@@ -139,7 +145,7 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
           ))}
         </div>
       )}
-      <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 };
