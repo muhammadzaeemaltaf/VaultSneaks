@@ -151,13 +151,15 @@ export const useCompareStore = create<CompareState>()(
 interface UserState {
   user: any;
   setUser: (user: any) => void;
+  getUser: () => any; // New method to get user state
 }
 
 export const useUserStore = create<UserState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       setUser: (user: any) => set({ user }),
+      getUser: () => get().user, 
     }),
     {
       name: "loggedIn-user-store",

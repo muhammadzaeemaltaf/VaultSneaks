@@ -60,7 +60,7 @@ async function createUserInSanity(userData: User) {
 
     const result = await client.create(newUser);
     console.log('User created successfully:', result);
-    return { success: true, result };
+    return { success: true, userId: result._id };
   } catch (error) {
     console.error('Failed to create user:', error);
     return { success: false, message: "Registration failed. Please try again." };

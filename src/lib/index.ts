@@ -5,6 +5,7 @@ export async function createOrderInSanity(orderData: any) {
   const order = await client.create({
     _type: "order",
     orderNumber: orderData.orderNumber,
+    userId: orderData.userId, // Include user ID
     customerName: orderData.firstName + " " + orderData.lastName,
     email: orderData.email,
     firstName: orderData.firstName,
@@ -32,4 +33,24 @@ export async function createOrderInSanity(orderData: any) {
   });
 
   return order;
+}
+
+export async function activateUserInSanity(userId: string) {
+  const updatedUser = await client.patch(userId).set({ isActive: true }).commit();
+  return updatedUser;
+}
+
+export async function sendEmail() {
+  const response = await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+          to: "recipient@example.com",
+          subject: "Hello from Next.js",
+          text: "This is a test email using Next.js Route Handlers!",
+      }),
+  });
+
+  const data = await response.json();
+  alert(data.message);
 }

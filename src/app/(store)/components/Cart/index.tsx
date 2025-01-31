@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { DeleteIcon} from "@/app/data";
 import Link from "next/link";
-import { useBasketStore, useWishlistStore } from "../../../../../store";
+import { useBasketStore, useUserStore, useWishlistStore } from "../../../../../store";
 import { urlFor } from "@/sanity/lib/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -67,6 +67,7 @@ const Cart = () => {
   const increaseQuantity = useBasketStore((state) => state.increaseQuantity);
   const decreaseQuantity = useBasketStore((state) => state.decreaseQuantity);
   const wishlistItems = useWishlistStore((state) => state.getItems());
+  const user = useUserStore((state) => state.user);
 
   const calculateTotalPrice = () => {
     return groupItems.reduce((total, item) => total + (item.product.price || 0) * item.quantity, 0);
@@ -221,7 +222,13 @@ const Cart = () => {
             <p className="font-medium">Rs {calculateTotalPrice()}</p>
           </div>
           <button className="w-full h-[60px] py-2 bg-black text-[15px] text-white font-medium rounded-full">
-            <Link href={"/checkout"}>Member Checkout</Link>
+           {
+              user ? (
+                <Link href={"/checkout"}>Member Checkout</Link>
+              ) : (
+                <Link href={"/login"}>Login to Checkout</Link>
+              )
+           }
           </button>
         </div>
       </div>

@@ -6,11 +6,12 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
-import { getAllOrders } from "@/sanity/orders/getAllOrders";
+import { getOrdersByUserId } from "@/sanity/orders/getAllOrders";
 import { ORDER_QUERYResult } from "../../../../sanity.types";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
+import { useUserStore } from "../../../../store";
 
 const statusColors = {
   pending: "!bg-yellow-100 text-yellow-800",
@@ -20,15 +21,16 @@ const statusColors = {
   cancelled: "!bg-red-100 text-red-800",
 }
 
-
 export default function OrderPage() {
   const [orders, setOrders] = useState<ORDER_QUERYResult>([]);
   const [loading, setLoading] = useState(true);
+  const user = useUserStore((state) => state.getUser()); // Get user state
 
   useEffect(() => {
     async function fetchOrders() {
+      if (!user) return;
       try {
-        const fetchedOrders = await getAllOrders();
+        const fetchedOrders = await getOrdersByUserId(user._id);
         setOrders(fetchedOrders);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -37,7 +39,7 @@ export default function OrderPage() {
       }
     }
     fetchOrders();
-  }, []);
+  }, [user]);
 
   return (
     <div className="container mx-auto px-4 py-8">

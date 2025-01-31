@@ -68,5 +68,12 @@ export const UserSchema = {
       },
       validation: (Rule: any) => Rule.required().error("Profile picture is required"),
     },
+    {
+      name: "isActive",
+      type: "boolean",
+      title: "Is Active",
+      initialValue: false,
+      description: "Indicates whether the user account is active.",
+    },
   ],
 };

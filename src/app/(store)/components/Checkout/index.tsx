@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
-import { useBasketStore } from "../../../../../store";
+import { useBasketStore, useUserStore } from "../../../../../store"; // Import useUserStore
 import { useRouter } from "next/navigation";
 import { createOrderInSanity } from "@/lib/index";
 import { DeliveredIcon } from "@/app/data";
@@ -40,7 +40,26 @@ const Checkout = () => {
   const [currency, setCurrency] = useState("PKR");
   const [loading, setLoading] = useState(true);
   const groupItems = useBasketStore((state) => state.getGroupedItems());
+  const user = useUserStore((state) => state.getUser()); 
   const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        addressLine1: user.addressLine1 || "",
+        addressLine2: user.addressLine2 || "",
+        addressLine3: user.addressLine3 || "",
+        postalCode: user.postalCode || "",
+        locality: user.locality || "",
+        country: user.country || "Pakistan",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        pan: user.pan || "",
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     // Simulate loading delay
@@ -115,6 +134,7 @@ const Checkout = () => {
 
     const orderData = {
       orderNumber: `ORD-${Date.now()}`,
+      userId: user?._id || "", // Include user ID
       ...formData,
       products: groupItems.map(item => ({
         _key: crypto.randomUUID(),

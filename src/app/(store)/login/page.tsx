@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useUserStore } from "../../../../store";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { toast } from "react-toastify"; // Import toast for notifications
 
 const page = () => {
   const [email, setEmail] = useState("");
@@ -39,7 +40,7 @@ const page = () => {
   return (
     <div>
       <div className="py-14">
-        <div className="max-w-[380px] h-[489px] mx-auto space-y-6">
+        <div className="max-w-[380px] min-h-[489px] mx-auto space-y-6">
           <div className="flex justify-center">
             <Image
               src={"/VaultSneak_Logo-01.png"}
@@ -56,7 +57,7 @@ const page = () => {
               </h1>
             </div>
           </div>
-          <div className="max-w-[324px] mx-auto space-y-4 text-[#BCBCBC]">
+          <div className="max-w-[324px] mx-auto space-y-4">
             {error && <div className="text-red-500 text-center">{error}</div>}
             <Input
               className="h-[40px] border shadow-none border-[#E5E5E5]"

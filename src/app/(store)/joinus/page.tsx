@@ -18,6 +18,7 @@ import { Eye, EyeOff } from "lucide-react";
 import LoadingSpinner from "../components/Spinner";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 export default function Login() {
   const [country, setCountry] = useState("India"); // Default value
@@ -52,9 +53,20 @@ export default function Login() {
     const response: any = await createUserInSanity(user);
 
     if (response.success) {
-      toast.success(response.message);
-      console.log(response.message);
-      router.push("/login");
+      toast.success("Your account is created. You have received an activation email.");
+      await axios.post("/api/send-email", {
+        to: email,
+        subject: "Activate Your Account",
+        text: "Please click the button below to activate your account.",
+        userId: response.userId, 
+      }, {withCredentials: true});
+      setEmail("");
+      setPassword("");
+      setFirstName("");
+      setLastName("");
+      setDateOfBirth("");
+      setCountry("India");
+      setGender("");
     } else {
       toast.error(response.message);
     }

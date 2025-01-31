@@ -29,6 +29,7 @@
     "lucide-react": "^0.468.0",
     "next": "^14.2.23",
     "next-sanity": "^9.8.37",
+    "nodemailer": "^6.10.0",
     "react": "^18",
     "react-dom": "^18",
     "react-toastify": "^11.0.3",
@@ -41,6 +42,7 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "postcss": "^8",

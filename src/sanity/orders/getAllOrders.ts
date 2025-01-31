@@ -18,3 +18,22 @@ export const getAllOrders = async () => {
     return [];
   }
 };
+
+export const getOrdersByUserId = async (userId: string) => {
+  const ORDER_QUERY = defineQuery(
+    `*[_type == "order" && userId == $userId] {
+     ...,
+     products[] {
+       ...,
+       product->
+     }
+    }`
+  );
+  try {
+    const orders = await client.fetch(ORDER_QUERY, { userId });
+    return orders || [];
+  } catch (error) {
+    console.error("Error fetching orders", error);
+    return [];
+  }
+};

@@ -21,6 +21,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Invalid email or password" }, { status: 401 });
     }
 
+    if (!user.isActive) {
+      return NextResponse.json({ message: "Your account is not activated. Please check your email to activate your account." }, { status: 403 });
+    }
+
     const response = NextResponse.json(user);
 
     if (keepSignedIn) {
