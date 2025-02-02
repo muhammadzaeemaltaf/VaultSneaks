@@ -11,12 +11,11 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useUserStore } from "../../../../store";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { toast } from "react-toastify"; // Import toast for notifications
+import { toast, ToastContainer } from "react-toastify"; // Import toast for notifications
 
 const page = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [keepSignedIn, setKeepSignedIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
@@ -27,8 +26,9 @@ const page = () => {
     setLoading(true);
     setError("");
     try {
-      const user = await loginUser(email, password, keepSignedIn);
+      const user = await loginUser(email, password);
       setUser(user);
+      toast.success("Login successful!"); 
       router.push("/");
     } catch (error: any) {
       setError("Login failed: " + error.message);
@@ -39,6 +39,7 @@ const page = () => {
 
   return (
     <div>
+      <ToastContainer />
       <div className="py-14">
         <div className="max-w-[380px] min-h-[489px] mx-auto space-y-6">
           <div className="flex justify-center">
@@ -86,15 +87,6 @@ const page = () => {
               </div>
             </div>
             <div className="text-xs flex items-center justify-between">
-              <div className="flex items-center gap-3 py-3">
-                <Checkbox
-                  id="check"
-                  className="border-[#8D8D8D]"
-                  checked={keepSignedIn}
-                  onCheckedChange={(checked) => setKeepSignedIn(checked === true)}
-                />
-                <Label htmlFor="check">Keep me signed in</Label>
-              </div>
               <Link href={"#"}>Forgotten your password?</Link>
             </div>
             <div className="max-w-[280px] mx-auto">

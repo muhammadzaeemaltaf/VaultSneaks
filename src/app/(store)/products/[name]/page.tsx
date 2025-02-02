@@ -151,15 +151,15 @@ const Page = ({ params }: { params: { name: string } }) => {
 
   return (
     <div className="py-10">
-      <div className="max-w-[1200px] mx-auto pr-3">
+      <div className="max-w-[1200px] mx-auto">
         <div className="flex justify-between flex-wrap gap-8 items-start ">
-          <div className="bg-[#F8F8F8] mx-auto  md:w-[600px] md:h-[600px] rounded-lg flex items-center justify-center relative">
+          <div className="overflow-hidden mx-auto w-full px-3  md:w-[600px] md:h-[600px] rounded-lg flex items-center justify-center relative">
             <Image
               src={product.image ? urlFor(product.image).url() : ""}
               alt={product.productName || "Product Image"}
               width={1000}
               height={1000}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover rounded-lg"
             />
           </div>
           <div className="space-y-6 max-w-[400px] px-4 lg:px-1 lg:py-1 mx-auto">

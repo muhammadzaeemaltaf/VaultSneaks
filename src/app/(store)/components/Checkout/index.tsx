@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
@@ -19,6 +19,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getUserFromSanity } from "@/sanity/user/updateUserInSanity";
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -40,8 +41,26 @@ const Checkout = () => {
   const [currency, setCurrency] = useState("PKR");
   const [loading, setLoading] = useState(true);
   const groupItems = useBasketStore((state) => state.getGroupedItems());
-  const user = useUserStore((state) => state.getUser()); 
+  const { getUser, setUser: setUserStore } = useUserStore();
+  const storedUser = getUser();
+  const [user, setUser] = useState(storedUser);
   const router = useRouter();
+
+  const fetchUserData = async () => {
+    try {
+      const data = await getUserFromSanity(user._id);
+      setUser(data);
+      setUserStore(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (user && user._id) {
+      fetchUserData();
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -62,14 +81,16 @@ const Checkout = () => {
   }, [user]);
 
   useEffect(() => {
-    // Simulate loading delay
     setTimeout(() => {
       setLoading(false);
     }, 2000);
   }, []);
 
   const calculateTotalPrice = () => {
-    return groupItems.reduce((total, item) => total + (item.product.price || 0) * item.quantity, 0);
+    return groupItems.reduce(
+      (total, item) => total + (item.product.price || 0) * item.quantity,
+      0
+    );
   };
 
   const handleFormChange = (data: any) => {
@@ -79,11 +100,23 @@ const Checkout = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === "phoneNumber" && !/^03\d{0,9}$/.test(value)) {
-      setErrors((prevErrors: { [key: string]: string }) => ({ ...prevErrors, [name]: "Invalid phone number" }));
-    } else if (name === "email" && !/^[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]*\.[a-zA-Z]{0,}$/.test(value)) {
-      setErrors((prevErrors: { [key: string]: string }) => ({ ...prevErrors, [name]: "Invalid email address" }));
+      setErrors((prevErrors: { [key: string]: string }) => ({
+        ...prevErrors,
+        [name]: "Invalid phone number",
+      }));
+    } else if (
+      name === "email" &&
+      !/^[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]*\.[a-zA-Z]{0,}$/.test(value)
+    ) {
+      setErrors((prevErrors: { [key: string]: string }) => ({
+        ...prevErrors,
+        [name]: "Invalid email address",
+      }));
     } else {
-      setErrors((prevErrors: { [key: string]: string }) => ({ ...prevErrors, [name]: "" }));
+      setErrors((prevErrors: { [key: string]: string }) => ({
+        ...prevErrors,
+        [name]: "",
+      }));
     }
     setFormData((prevData) => ({ ...prevData, [name]: value }));
     handleFormChange({ ...formData, [name]: value });
@@ -117,11 +150,17 @@ const Checkout = () => {
     const newErrors: any = {};
     if (!formData.firstName) newErrors.firstName = "First name is required";
     if (!formData.lastName) newErrors.lastName = "Last name is required";
-    if (!formData.addressLine1) newErrors.addressLine1 = "Address Line 1 is required";
+    if (!formData.addressLine1)
+      newErrors.addressLine1 = "Address Line 1 is required";
     if (!formData.postalCode) newErrors.postalCode = "Postal Code is required";
     if (!formData.locality) newErrors.locality = "Locality is required";
-    if (!formData.email || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)) newErrors.email = "Invalid email address";
-    if (!formData.phoneNumber || !/^03\d{9}$/.test(formData.phoneNumber)) newErrors.phoneNumber = "Invalid phone number";
+    if (
+      !formData.email ||
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)
+    )
+      newErrors.email = "Invalid email address";
+    if (!formData.phoneNumber || !/^03\d{9}$/.test(formData.phoneNumber))
+      newErrors.phoneNumber = "Invalid phone number";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -134,9 +173,9 @@ const Checkout = () => {
 
     const orderData = {
       orderNumber: `ORD-${Date.now()}`,
-      userId: user?._id || "", // Include user ID
+      userId: user?._id || "",
       ...formData,
-      products: groupItems.map(item => ({
+      products: groupItems.map((item) => ({
         _key: crypto.randomUUID(),
         product: {
           _type: "reference",
@@ -151,7 +190,9 @@ const Checkout = () => {
       status: "pending",
       paymentMethod: "COD",
       orderDate: new Date().toISOString(),
-      estimatedDeliveryDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
+      estimatedDeliveryDate: new Date(
+        Date.now() + 4 * 24 * 60 * 60 * 1000
+      ).toISOString(),
     };
 
     try {
@@ -160,12 +201,25 @@ const Checkout = () => {
     } catch (error) {
       console.error("Failed to create order:", error);
       setProcessing(false);
-    } 
+    }
   };
 
   return (
-    <div className='py-10 mb-8'>
-      <div className="max-w-[880px] mx-auto">
+    <div className="py-10 mb-8">
+      <div className="max-w-[880px] mx-auto px-4">
+        {!user?.isActive && (
+          <div
+            className="w-full mb-10 text-center bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
+            <strong className="font-bold">Warning:</strong>
+            <span className="block sm:inline">
+              {" "}
+              Your account is not activated. Please activate your account to
+              checkout process.
+            </span>
+          </div>
+        )}
         <div className="flex flex-col px-2 gap-6 lg:flex-row lg:gap-0 lg:px-0">
           <div className="space-y-10">
             <div className="lg:max-w-[440px] space-y-4">
@@ -173,13 +227,14 @@ const Checkout = () => {
                 How would you like to get your order?
               </h1>
               <p className="text-[15px] text-[#757575] pr-8">
-                Customs regulation for India require a copy of the recipient's KYC.
-                The address on the KYC needs to match the shipping address. Our
-                courier will contact you via SMS/email to obtain a copy of your KYC.
-                The KYC will be stored securely and used solely for the purpose of
-                clearing customs (including sharing it with customs officials) for all
-                orders and returns. If your KYC does not match your shipping address,
-                please click the link for more information. Learn More
+                Customs regulation for India require a copy of the recipient's
+                KYC. The address on the KYC needs to match the shipping address.
+                Our courier will contact you via SMS/email to obtain a copy of
+                your KYC. The KYC will be stored securely and used solely for
+                the purpose of clearing customs (including sharing it with
+                customs officials) for all orders and returns. If your KYC does
+                not match your shipping address, please click the link for more
+                information. Learn More
               </p>
               <div className="h-[82px] border border-black rounded-xl flex items-center gap-4 p-6 !mt-8">
                 <span>{DeliveredIcon}</span>
@@ -200,7 +255,11 @@ const Checkout = () => {
                   onChange={handleChange}
                   className=" h-[56px] rounded shadow-none"
                 />
-                {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
+                {errors.firstName && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.firstName}
+                  </p>
+                )}
                 <Input
                   type="text"
                   placeholder="Last Name"
@@ -209,7 +268,9 @@ const Checkout = () => {
                   onChange={handleChange}
                   className=" h-[56px] rounded shadow-none"
                 />
-                {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
+                {errors.lastName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+                )}
                 <div>
                   <Input
                     type="text"
@@ -219,7 +280,11 @@ const Checkout = () => {
                     onChange={handleChange}
                     className=" h-[56px] rounded shadow-none"
                   />
-                  {errors.addressLine1 && <p className="text-red-500 text-sm mt-1">{errors.addressLine1}</p>}
+                  {errors.addressLine1 && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.addressLine1}
+                    </p>
+                  )}
                   <p className="text-[11px] text-[#757575] px-4">
                     We do not ship to P.O. boxes
                   </p>
@@ -241,18 +306,22 @@ const Checkout = () => {
                   className=" h-[56px] rounded shadow-none"
                 />
                 <div className="flex gap-4">
-                 <div className='w-1/2'>
-                 <Input
-                    type="number"
-                    placeholder="Postal Code"
-                    name="postalCode"
-                    value={formData.postalCode}
-                    onChange={handleChange}
-                    className=" h-[56px] rounded shadow-none"
-                  />
-                  {errors.postalCode && <p className="text-red-500 text-sm mt-1">{errors.postalCode}</p>}
-                 </div>
-                 
+                  <div className="w-1/2">
+                    <Input
+                      type="number"
+                      placeholder="Postal Code"
+                      name="postalCode"
+                      value={formData.postalCode}
+                      onChange={handleChange}
+                      className=" h-[56px] rounded shadow-none"
+                    />
+                    {errors.postalCode && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.postalCode}
+                      </p>
+                    )}
+                  </div>
+
                   <Input
                     type="text"
                     placeholder="Locality"
@@ -295,7 +364,10 @@ const Checkout = () => {
                 </div>
                 <div className="space-y-4">
                   <div className="flex gap-2">
-                    <Checkbox id="ap" className="border-[#CCCCCC] shadow-none" />
+                    <Checkbox
+                      id="ap"
+                      className="border-[#CCCCCC] shadow-none"
+                    />
                     <Label className="text-[15px] cursor-pointer" htmlFor="ap">
                       Save this address to my profile
                     </Label>
@@ -327,7 +399,9 @@ const Checkout = () => {
                     onChange={handleChange}
                     className=" h-[56px] rounded shadow-none"
                   />
-                  {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                  )}
                   <p className="text-[11px] text-[#757575] px-4">
                     A confirmation email will be sent after checkout.
                   </p>
@@ -341,7 +415,11 @@ const Checkout = () => {
                     onChange={handleChange}
                     className=" h-[56px] rounded shadow-none"
                   />
-                  {errors.phoneNumber && <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>}
+                  {errors.phoneNumber && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.phoneNumber}
+                    </p>
+                  )}
                   <p className="text-[11px] text-[#757575] px-4">
                     A carrier might contact you to confirm delivery.
                   </p>
@@ -359,55 +437,76 @@ const Checkout = () => {
                 <Skeleton className="h-[50px] w-full" />
               ) : (
                 groupItems.map((item, index) => (
-                  <div className="flex justify-between items-center mb-4" key={index}>
+                  <div
+                    className="flex justify-between items-center mb-4"
+                    key={index}
+                  >
                     <div className="flex items-center gap-3">
                       <Image
-                        src={item.product.image ? urlFor(item.product.image).url() : ""}
+                        src={
+                          item.product.image
+                            ? urlFor(item.product.image).url()
+                            : ""
+                        }
                         alt={item.product.productName || "Product Image"}
                         className="w-[50px] h-[50px] object-cover"
                         height={50}
                         width={50}
                       />
-                        <span
+                      <span
                         className="w-4 h-4 rounded-full border"
                         style={{ backgroundColor: item.selectedColor }}
                       ></span>
                       <p className="text-[15px]">x{item.quantity}</p>
                     </div>
-                    <p className="text-[15px]">{currency} {item.product.price ? item.product.price * item.quantity : 0}</p>
+                    <p className="text-[15px]">
+                      {currency}{" "}
+                      {item.product.price
+                        ? item.product.price * item.quantity
+                        : 0}
+                    </p>
                   </div>
                 ))
               )}
               <div className="space-y-2">
                 <div className="flex justify-between text-[14px] text-[#8D8D8D]">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>{currency} {calculateTotalPrice()}</span>
+                  <span>
+                    {currency} {calculateTotalPrice()}
+                  </span>
                 </div>
                 <div className="flex justify-between text-[14px] text-[#8D8D8D]">
-                  <span className="text-muted-foreground">Delivery/Shipping</span>
+                  <span className="text-muted-foreground">
+                    Delivery/Shipping
+                  </span>
                   <span>Free</span>
                 </div>
                 <Separator className="my-2" />
                 <div className="flex justify-between font-medium">
                   <span>Total</span>
-                  <span>{currency} {calculateTotalPrice()}</span>
+                  <span>
+                    {currency} {calculateTotalPrice()}
+                  </span>
                 </div>
                 <Separator className="my-2" />
                 <p className="text-[9px]  mt-1">
-                  (The total reflects the price of your order, including all duties
-                  and taxes)
+                  (The total reflects the price of your order, including all
+                  duties and taxes)
                 </p>
               </div>
 
               <div className="space-y-1 text-sm">
                 <p className="font-bold text-[15px]">
-                  Estimated Delivery Date: {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toDateString()}
+                  Estimated Delivery Date:{" "}
+                  {new Date(
+                    Date.now() + 4 * 24 * 60 * 60 * 1000
+                  ).toDateString()}
                 </p>
               </div>
-              <button 
-                onClick={handleCheckout} 
-                className="w-full h-[60px] py-2 bg-black text-[15px] text-white font-medium rounded-full"
-                disabled={processing}
+              <button
+                onClick={handleCheckout}
+                className="w-full h-[60px] py-2 bg-black text-[15px] text-white font-medium rounded-full disabled:opacity-65"
+                disabled={processing || !user?.isActive}
               >
                 {processing ? "Processing..." : "Checkout"}
               </button>
@@ -416,6 +515,6 @@ const Checkout = () => {
         </div>
       </div>
     </div>
-  )
-}
-export default Checkout
+  );
+};
+export default Checkout;

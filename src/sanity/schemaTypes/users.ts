@@ -75,5 +75,12 @@ export const UserSchema = {
       initialValue: false,
       description: "Indicates whether the user account is active.",
     },
+    {
+      name: "unactiveByAdmin",
+      type: "boolean",
+      title: "Unactive By Admin",
+      initialValue: false,
+      description: "Indicates if the account was deactivated by an admin."
+    },
   ],
 };

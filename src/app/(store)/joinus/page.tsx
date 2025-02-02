@@ -67,6 +67,7 @@ export default function Login() {
       setDateOfBirth("");
       setCountry("India");
       setGender("");
+      router.push("/login");
     } else {
       toast.error(response.message);
     }

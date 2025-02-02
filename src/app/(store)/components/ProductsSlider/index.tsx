@@ -196,11 +196,11 @@ const ProductSlider = ({
                           />
                         </div>
                         <div className="py-4">
-                          <div className="flex justify-between text-[15px] font-[500] pr-4">
-                            <p className="">{item.productName}</p>
-                            <p>Rs {item.price}</p>
+                          <div className="flex flex-col md:flex-row justify-between text-[14px] md:text-lg font-[500] pr-4">
+                            <p className="flex-1">{item.productName}</p>
+                            <p className="flex-1 md:text-end">Rs {item.price}</p>
                           </div>
-                          <div className="text-lightColor text-[15px] line-clamp-2 w-[80%]">
+                          <div className="text-lightColor text-[14px] sm:text-[16px] line-clamp-2 w-[80%]">
                             {item.description}
                           </div>
                         </div>

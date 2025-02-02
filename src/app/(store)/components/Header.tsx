@@ -158,7 +158,7 @@ const Header = () => {
               {user ? (
                 <>
                   <Link
-                    href={"/account"}
+                    href={"/profile"}
                     className="flex-1 text-center px-2 md:px-3 whitespace-nowrap"
                   >
                     Account
@@ -339,17 +339,17 @@ const Header = () => {
 
                   {isUserMenuOpen && (
                     <div
-                      className={`absolute top-full right-0 bg-white shadow-lg rounded-md mt-2 w-48`}
+                      className={`absolute top-full right-0 bg-white shadow-lg rounded-md mt-2 w-48 z-50`}
                     >
                       <Link
-                        href={"/account"}
+                        href={"/profile"}
                         className="flex items-center  gap-2 px-4 py-2 text-sm hover:bg-gray-500/20"
                       >
                         <User className="scale-75 -ml-1.5" />
                         Manage My Account
                       </Link>
                       <Link
-                        href={"#"}
+                        href={"/orders"}
                         className="flex items-center  gap-2 px-4 py-2 text-sm hover:bg-gray-500/20"
                       >
                         <ShoppingBasket className="scale-75 -ml-1.5" />

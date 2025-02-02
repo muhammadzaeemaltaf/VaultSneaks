@@ -70,7 +70,7 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen p-4">
+    <div className="flex flex-col items-center justify-start min-h-screen p-1 md:px-6">
       <h1 className="text-3xl font-bold my-6 text-center">
         {decodeSlug
           .split("-")
@@ -81,7 +81,7 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
       {loading ? (
         <SkeletonLoader />
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-6 md:p-10">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 p-1">
           {products.map((product, index) => (
             <div key={index}>
               <div className="p-1 relative">
@@ -117,10 +117,10 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
                   </span>
                 </div>
                 <div className="py-4">
-                  <div className="text-[15px] font-[500]">
+                  <div className="text-[10px] md:text-[15px] font-[500]">
                     {product.productName}
                   </div>
-                  <div className="text-lightColor text-[15px] line-clamp-2">
+                  <div className="text-lightColor text-[10px] md:text-[15px] line-clamp-2">
                     {product.description}
                   </div>
                   <div className="flex gap-2">
@@ -136,7 +136,7 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
                       </span>
                     ))}
                   </div>
-                  <div className="text-[15px] font-[600] mt-1">
+                  <div className="text-[10px] md:text-[15px] font-[600] mt-1">
                     MRP : <span>{product.price}</span>
                   </div>
                 </div>

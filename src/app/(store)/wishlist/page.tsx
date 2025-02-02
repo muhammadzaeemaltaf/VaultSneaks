@@ -79,9 +79,9 @@ export default function WishlistPage() {
                 <div className="flex-grow">
                   <div className="flex justify-between flex-wrap gap-2">
                     <div>
-                      <h3 className="font-semibold text-lg line-clamp-2">
+                      <Link href={`/products/${item.productName}`} className="font-semibold text-lg line-clamp-2">
                         {item.productName}
-                      </h3>
+                      </Link>
                       <div className="mt-2">
                         <span className="font-semibold">Rs {item.price}</span>
                       </div>  

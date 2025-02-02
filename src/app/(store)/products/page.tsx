@@ -251,7 +251,7 @@ const Page = () => {
               isFilterOpen ? "left-0" : "-left-full"
             } overflow-y-scroll h-screen pb-[400px]`}
           >
-            <div className="w-[192px] space-y-4 ">
+            <div className="space-y-4 ">
               <div className="text-2xl font-medium block lg:hidden">
                 New ({Products.length})
               </div>
@@ -337,7 +337,7 @@ const Page = () => {
             ) : Products.length === 0 ? (
               <div className="text-center py-10">No product found</div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 mt-4">
                 {/* Product cards */}
                 {displayedProducts.map((product, index) => (
                   <div key={index}>
@@ -381,18 +381,18 @@ const Page = () => {
                           </div>
                         )}
                       </div>
-                      <div className="py-2">
-                      <span className="text-[#9E3500] text-[15px] font-[500]">
+                      <div className="md:py-2">
+                      <span className="text-[#9E3500] text-[10px] sm:text-[15px] font-[500]">
                         {product.status}
                       </span>
-                        <div className="text-[15px] font-[600] mt-2">
+                        <div className="text-[10px] sm:text-[15px] font-[600] mt-2">
                           {product.productName}
                         </div>
 
-                        <div className="text-lightColor text-[15px] line-clamp-2">
+                        <div className="text-lightColor text-[10px] sm:text-[15px] line-clamp-2">
                           {product.description}
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 mt-1 md:mt-0">
                           {product.colors?.map((color, colorIndex) => (
                             <span
                               key={colorIndex}

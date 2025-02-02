@@ -4,9 +4,9 @@ import React from "react";
 const Banner = () => {
   return (
     <div>
-      <div className="bg-themeGray h-[44px] flex flex-col items-center justify-end gap-1 pt-1">
-        <h4 className="text-[15px] font-[500] h-[17px]">Hello VAULTSNEAK App</h4>
-        <p className="text-[11px] h-[24px]">
+      <div className="bg-themeGray flex flex-col items-center justify-end gap-1 py-4">
+        <h4 className="text-[15px] font-[500]">Hello VAULTSNEAK App</h4>
+        <p className="text-[11px] text-center">
           Download the app to access everything VAULTSNEAK. Get Your Great
         </p>
       </div>

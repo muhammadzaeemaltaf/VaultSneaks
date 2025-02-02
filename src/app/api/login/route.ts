@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, keepSignedIn } = await req.json();
+    const { email, password } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json({ message: "Email and password are required" }, { status: 400 });
@@ -21,23 +21,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Invalid email or password" }, { status: 401 });
     }
 
-    if (!user.isActive) {
-      return NextResponse.json({ message: "Your account is not activated. Please check your email to activate your account." }, { status: 403 });
-    }
-
     const response = NextResponse.json(user);
 
-    if (keepSignedIn) {
-      const token = jwt.sign({ id: user._id, email: user.email }, process.env.NODE_ENV, { expiresIn: "7d" });
-      response.cookies.set({
-        name: "vaultSneak_token",
-        value: token,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 7 * 24 * 60 * 60, 
-        path: "/",
-      });
-    }
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.NODE_ENV, { expiresIn: "7d" });
+    response.cookies.set({
+      name: "vaultSneak_token",
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60, 
+      path: "/",
+    });
 
     return response;
   } catch (error) {

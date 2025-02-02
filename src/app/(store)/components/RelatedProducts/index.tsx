@@ -72,7 +72,7 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
   return (
     <div className="py-10">
       <h2 className="text-2xl font-bold mb-6 px-4">Related Products</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-6 md:p-10">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-1 p-2">
         {products.map((product, index) => (
           <div key={index}>
             <div className="p-1 relative">
@@ -108,10 +108,10 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
                 </span>
               </div>
               <div className="py-4">
-                <div className="text-[15px] font-[500]">
+                <div className="text-[10px] sm:text-[15px] font-[500]">
                   {product.productName}
                 </div>
-                <div className="text-lightColor text-[15px] line-clamp-2">
+                <div className="text-lightColor text-[10px] sm:text-[15px] line-clamp-2">
                   {product.description}
                 </div>
                 <div className="flex space-x-1 mt-2">
@@ -127,7 +127,7 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
                     </span>
                   ))}
                 </div>
-                <div className="text-[15px] font-[600] mt-1">
+                <div className="text-[10px] sm:text-[15px] font-[600] mt-1">
                   Rs: <span>{product.price}</span>
                 </div>
               </div>

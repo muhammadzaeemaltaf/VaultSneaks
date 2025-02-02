@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { HeartIcon } from "lucide-react";
 
 const SkeletonLoader = () => (
-  <div className="animate-pulse container">
+  <div className="animate-pulse md:w-full">
     <div className="flex gap-3 flex-col lg:flex-row">
       <div className="flex flex-wrap lg:w-[80%]">
         <div className="flex-1">
@@ -19,11 +19,11 @@ const SkeletonLoader = () => (
             <div className="h-4 bg-gray-300 rounded w-1/3"></div>
             <div className="h-4 bg-gray-300 rounded w-2/3"></div>
           </div>
-    <div className="h-8 bg-gray-300 rounded w-1/4 mb-6"></div>
+    <div className="h-8 bg-gray-300 rounded w-1/4 mb-6 ml-3 "></div>
           {Array.from({ length: 2 }).map((_, index) => (
             <div
               key={index}
-              className="flex items-start justify-between border-b pb-4 mb-6"
+              className="flex items-start justify-between border-b pb-4 mb-6 px-3"
             >
               <div className="w-[150px] h-[150px] bg-gray-300 rounded"></div>
               <div className="flex-1 ml-4 space-y-1">
@@ -41,21 +41,21 @@ const SkeletonLoader = () => (
         </div>
       </div>
       <div className="flex-1">
-        <div className="h-8 bg-gray-300 rounded w-[150px] mb-4"></div>
+        <div className="h-8 bg-gray-300 rounded w-[150px] mb-4 px-4"></div>
         {Array.from({ length: 2 }).map((_, index) => (
           <div className="flex gap-10 justify-between items-center" key={index}>
-            <div className="h-4 bg-gray-300 rounded w-[250px] mb-4"></div>
-            <div className="h-4 bg-gray-300 rounded w-[50px] mb-4"></div>
+            <div className="h-4 bg-gray-300 rounded w-[240px] mb-4 "></div>
+            <div className="h-4 bg-gray-300 rounded w-[50px] mb-4 "></div>
           </div>
         ))}
-        <div className="flex justify-between text-[15px] py-4 border-y border-gray-100">
+        <div className="flex justify-between text-[15px] py-4 border-y border-gray-100 ">
           <div className="h-4 bg-gray-300 rounded w-[150px] mb-4"></div>
           <div className="h-4 bg-gray-300 rounded w-[50px] mb-4"></div>
         </div>
         <div className="h-14 bg-gray-300 w-full rounded-full mt-4"></div>
       </div>
     </div>
-    <div className="h-8 bg-gray-300 rounded w-1/4 mb-4"></div>
+    <div className="h-8 bg-gray-300 rounded w-1/4 mb-4 mt-4"></div>
     <div className="h-4 bg-gray-300 rounded w-1/2"></div>
   </div>
 );
@@ -241,7 +241,7 @@ const Cart = () => {
           There are no items saved to your favourites.
         </p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1 mt-6">
           {wishlistItems.map((product, index) => (
             <div key={index} className="p-1 relative">
               <Link href={`/products/${product.productName}`} className="absolute inset-0 z-10" />

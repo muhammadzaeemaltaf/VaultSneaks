@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +19,12 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
   const [video, setVideo] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const user = useUserStore((state) => state.user);
+
+  useEffect(() => {
+    if (user) {
+      setUsername(`${user.firstName}${user.lastName}`);
+    }
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,81 +57,89 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
   return (
     <div>
       {user ? (
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="username"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Your Name
-          </label>
-          <Input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your name"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Rating
-          </label>
-          <div className="flex items-center">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star
-                key={star}
-                className={`w-6 h-6 cursor-pointer ${
-                  star <= rating
-                    ? "text-yellow-400 fill-current"
-                    : "text-gray-300"
-                }`}
-                onClick={() => setRating(star)}
-              />
-            ))}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Your Name
+            </label>
+            <Input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your name"
+              required
+            />
           </div>
-        </div>
-        <div>
-          <label
-            htmlFor="comment"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Your Review
-          </label>
-          <Textarea
-            id="comment"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Write your review here"
-            required
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="pictures"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Upload Pictures
-          </label>
-          <Input
-            id="pictures"
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={(e) =>
-              setPictures(e.target.files ? Array.from(e.target.files) : [])
-            }
-          />
-        </div>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Submit Review"}
-        </Button>
-      </form>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Rating
+            </label>
+            <div className="flex items-center">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-6 h-6 cursor-pointer ${
+                    star <= rating
+                      ? "text-yellow-400 fill-current"
+                      : "text-gray-300"
+                  }`}
+                  onClick={() => setRating(star)}
+                />
+              ))}
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="comment"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Your Review
+            </label>
+            <Textarea
+              id="comment"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Write your review here"
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="pictures"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Upload Pictures
+            </label>
+            <Input
+              id="pictures"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) =>
+                setPictures(e.target.files ? Array.from(e.target.files) : [])
+              }
+            />
+          </div>
+          {!user.isActive ? (
+            <Button type="submit" disabled>
+              Activate your account to submit a review 
+          </Button>
+          ) : (
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit Review"}
+            </Button>
+          )}
+        </form>
       ) : (
         <>
-        <p className="font-bold text-lg">Please login to submit a review</p>
-        <Button className="px-8 py-3 mt-4 rounded-3xl"><Link href="/login">Login</Link></Button>
+          <p className="font-bold text-lg">Please login to submit a review</p>
+          <Button className="px-8 py-3 mt-4 rounded-3xl">
+            <Link href="/login">Login</Link>
+          </Button>
         </>
       )}
     </div>

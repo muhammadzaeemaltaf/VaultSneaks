@@ -76,7 +76,7 @@ async function sendSuccessEmail({ to, fullName }: {to: string, fullName: string}
                 </div>
                 <div style="background: #fff; padding: 20px; text-align: center;">
                     <h2 style="color: #333;">Account Activated Successfully!</h2>
-                    <p style="color: #555; font-size: 16px;">Dear ${fullName}, your account has been activated successfully. You can now log in and start using our services.</p>
+                    <p style="color: #555; font-size: 16px;">Dear ${fullName}, your account has been activated successfully. You can start using our services.</p>
                 </div>
                 <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #888;">
                     <p>If you did not request this email, please ignore it.</p>
