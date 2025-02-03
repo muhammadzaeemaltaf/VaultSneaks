@@ -7,7 +7,7 @@ import { urlFor } from "@/sanity/lib/image";
 import { useBasketStore, useUserStore } from "../../../../../store"; // Import useUserStore
 import { useRouter } from "next/navigation";
 import { createOrderInSanity } from "@/lib/index";
-import { DeliveredIcon } from "@/app/data";
+import {  DeliveredIcon, StripeIcon } from "@/app/data";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -20,6 +20,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUserFromSanity } from "@/sanity/user/updateUserInSanity";
+import {
+  createCheckoutSession,
+  Metadata,
+} from "../../../../../actions/createCheckoutSession";
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -38,6 +42,7 @@ const Checkout = () => {
 
   const [errors, setErrors] = useState<any>({});
   const [processing, setProcessing] = useState(false);
+  const [processingButton, setProcessingButton] = useState<string | null>(null); // Added state to track which button is processing
   const [currency, setCurrency] = useState("PKR");
   const [loading, setLoading] = useState(true);
   const groupItems = useBasketStore((state) => state.getGroupedItems());
@@ -45,6 +50,7 @@ const Checkout = () => {
   const storedUser = getUser();
   const [user, setUser] = useState(storedUser);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchUserData = async () => {
     try {
@@ -170,6 +176,7 @@ const Checkout = () => {
     if (!validateFormData()) return;
 
     setProcessing(true);
+    setProcessingButton("COD"); // Set processing button to COD
 
     const orderData = {
       orderNumber: `ORD-${Date.now()}`,
@@ -197,10 +204,61 @@ const Checkout = () => {
 
     try {
       const orderId = await createOrderInSanity(orderData);
+
+      // Send order confirmation email
+      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/send-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: formData.email,
+          subject: "Order Confirmation",
+          text: "Your order has been placed with Cash On Delivery.",
+          userId: user?._id,
+          isOrderEmail: true,
+          fullName: formData.firstName + " " + formData.lastName,
+          orderNumber: orderData.orderNumber,
+        }),
+      });
+
       router.push(`/success?orderId=${orderId.orderNumber}`);
     } catch (error) {
       console.error("Failed to create order:", error);
       setProcessing(false);
+      setProcessingButton(null); // Reset processing button
+    }
+  };
+
+  const handleOnlineCheckout = async () => {
+    if (!validateFormData()) return;
+    if (!user) return;
+    setIsLoading(true);
+    setProcessingButton("Online"); // Set processing button to Online
+
+    try {
+      const metadata: Metadata = {
+        orderNumber: `ORD-${Date.now()}`,
+        customerName: user.firstName + " " + user.lastName,
+        customerEmail: user.email ?? "Unknown",
+        userId: user._id,
+        paymentMethod: "Online",
+        currency: currency, // Pass selected currency
+        addressLine1: formData.addressLine1,
+        addressLine2: formData.addressLine2,
+        addressLine3: formData.addressLine3,
+        postalCode: formData.postalCode,
+        locality: formData.locality,
+        country: formData.country,
+        phoneNumber: formData.phoneNumber,
+      };
+
+      const checkoutUrl = await createCheckoutSession(groupItems, metadata);
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      }
+    } catch (error) {
+      console.error("Checkout session error: ", error);
+      setIsLoading(false);
+      setProcessingButton(null); // Reset processing button
     }
   };
 
@@ -505,10 +563,28 @@ const Checkout = () => {
               </div>
               <button
                 onClick={handleCheckout}
-                className="w-full h-[60px] py-2 bg-black text-[15px] text-white font-medium rounded-full disabled:opacity-65"
+                className="w-full h-[60px] py-2 bg-black text-[15px] text-white font-medium rounded-xl disabled:opacity-65"
                 disabled={processing || !user?.isActive}
               >
-                {processing ? "Processing..." : "Checkout"}
+                {processingButton === "COD" ? "Processing..." : "Checkout"}
+              </button>
+              <div className="flex items-center justify-center gap-4">
+                <div className="w-full h-[1px] bg-black rounded-full" />
+                <span>OR</span>
+                <div className="w-full h-[1px] bg-black rounded-full" />
+              </div>
+              <button
+                onClick={handleOnlineCheckout}
+                className="w-full h-[60px] bg-white border-2 border-[#6772E5] text-[#6772E5] hover:text-white hover:bg-[#6772E5] transition-all duration-150 text-[15px] font-semibold rounded-xl disabled:opacity-65"
+                disabled={processing || !user?.isActive}
+              >
+                {processingButton === "Online" ? (
+                  "Processing..."
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    Payment with {StripeIcon}
+                  </span>
+                )}
               </button>
             </div>
           </div>

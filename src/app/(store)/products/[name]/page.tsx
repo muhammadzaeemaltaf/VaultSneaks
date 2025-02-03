@@ -65,7 +65,7 @@ const Page = ({ params }: { params: { name: string } }) => {
   const user = useUserStore((state) => state.user);
 
   const handleAddToCart = (product: Product) => {
-    if (!selectedColor) {
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
       toast.error("Please select a color");
       return;
     }
@@ -113,6 +113,11 @@ const Page = ({ params }: { params: { name: string } }) => {
           setAverageRating(totalRating / fetchedReviews.length);
         } else {
           setAverageRating(null);
+        }
+
+        // Automatically select the color if there is only one color available
+        if (productData.colors && productData.colors.length === 1) {
+          setSelectedColor(productData.colors[0]);
         }
       } else {
         setProduct(null);

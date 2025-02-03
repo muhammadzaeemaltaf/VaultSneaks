@@ -36,6 +36,7 @@
     "react-dom": "^18",
     "react-toastify": "^11.0.3",
     "sanity": "^3.70.0",
+    "stripe": "^17.6.0",
     "styled-components": "^6.1.14",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",

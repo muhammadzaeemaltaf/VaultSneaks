@@ -1,7 +1,6 @@
 "use client";
 
-import React, { Suspense } from "react";
-import { useEffect } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -11,13 +10,32 @@ import { useBasketStore } from "../../../../store";
 const SearchParamsComponent = () => {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
+  const sessionId = searchParams.get("session_id");
   const clearBasket = useBasketStore((state) => state.clearBasket);
+  const [orderStatus, setOrderStatus] = useState<string>("");
 
   useEffect(() => {
-    if (orderId) {
-      clearBasket();
-    }
+    if (orderId) clearBasket();
   }, [orderId, clearBasket]);
+
+  useEffect(() => {
+    if (sessionId) {
+      // Call the new endpoint to confirm and create the order in Sanity.
+      fetch(`/api/confirm-order?session_id=${sessionId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.order) {
+            setOrderStatus("Order successfully created.");
+          } else {
+            setOrderStatus("Order creation failed.");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          setOrderStatus("Order creation failed.");
+        });
+    }
+  }, [sessionId]);
 
   return (
     <>
@@ -25,7 +43,9 @@ const SearchParamsComponent = () => {
       <h1 className="text-4xl font-bold mb-6 text-center">
         Thank you for your order!
       </h1>
-
+      {orderStatus && (
+        <p className="text-center mb-4 text-sm">{orderStatus}</p>
+      )}
       <div className="border-t border-b border-gray-200 py-6 mb-6">
         <p className="text-lg text-gray-700 mb-4 text-center">
           Your order has been confirmed and will be shipped shortly.
@@ -44,10 +64,9 @@ const SearchParamsComponent = () => {
           )}
         </div>
       </div>
-
       <div className="space-y-4 px-4">
         <p className="text-gray-600 text-center">
-          A confirmation email has been sent to your email address.
+        You will receive a confirmation email shortly.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild className="bg-black hover:bg-gray-900">

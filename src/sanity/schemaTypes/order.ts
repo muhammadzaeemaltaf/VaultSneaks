@@ -152,7 +152,10 @@ export const orderSchema = defineType({
       type: "string",
       validation: (Rule) => Rule.required(),
       options: {
-        list: [{ title: "Cash on Delivery", value: "COD" }],
+        list: [
+          { title: "Cash on Delivery", value: "COD" },
+          { title: "Online", value: "Online" } // Added Online option
+        ],
       },
     }),
     defineField({

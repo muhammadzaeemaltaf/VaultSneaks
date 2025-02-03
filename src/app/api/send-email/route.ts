@@ -89,9 +89,51 @@ async function sendSuccessEmail({ to, fullName }: {to: string, fullName: string}
     await transporter.sendMail(successMailOptions);
 }
 
+async function sendOrderEmail({ to, fullName, orderNumber }: { to: string, fullName: string, orderNumber: string }) {
+    const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        logger: true,
+        debug: true,
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+        tls: {
+            rejectUnauthorized: true,
+        }
+    });
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to,
+        subject: "Order Placed Successfully",
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+             <div style="text-align: center;">
+                    <img src="https://vaultsneaks.vercel.app/_next/image?url=%2FVaultSneak_Logo-01.png&w=1080&q=75" 
+                         alt="VaultSneak Logo" 
+                         style="width: 150px; height: auto; margin-bottom: 20px;" />
+                </div>  
+            <div style="text-align: center;">
+                    <h2 style="color: #333;">Order Placed</h2>
+                </div>
+                <div style="background: #fff; padding: 20px; text-align: center;">
+                    <p style="color: #555; font-size: 16px;">Dear ${fullName}, your order has been placed successfully with order number: ${orderNumber}.</p>
+                </div>
+                <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #888;">
+                    <p>Thank you for shopping with us.</p>
+                    <p>&copy; ${new Date().getFullYear()} VaultSneak. All rights reserved.</p>
+                </div>
+            </div>
+        `
+    };
+    await transporter.sendMail(mailOptions);
+}
+
 export async function POST(req: any) {
     try {
-        const { to, subject, text, userId, isActivationSuccess, fullName } = await req.json();
+        const { to, subject, text, userId, isActivationSuccess, fullName, isOrderEmail, orderNumber } = await req.json();
 
         if (!to || !subject || !text || (!isActivationSuccess && !userId) || (isActivationSuccess && !fullName)) {
             const missingFields = [];
@@ -104,7 +146,9 @@ export async function POST(req: any) {
             return Response.json({ message: "All fields are required" }, { status: 400 });
         }
 
-        if (!isActivationSuccess) {
+        if (isOrderEmail && fullName) {
+            await sendOrderEmail({ to, fullName, orderNumber });
+        } else if (!isActivationSuccess) {
             await sendActivationEmail({ to, subject, text, userId });
         } else {
             await sendSuccessEmail({ to, fullName });
