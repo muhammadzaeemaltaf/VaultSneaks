@@ -60,7 +60,6 @@ export const createCheckoutSession = async (
       customer: customerId,
       customer_creation: customerId ? undefined : "always",
       customer_email: !customerId ? metadata.customerEmail : undefined,
-      // Include the complete metadata including paymentMethod
       metadata,
       mode: "payment",
       allow_promotion_codes: true,

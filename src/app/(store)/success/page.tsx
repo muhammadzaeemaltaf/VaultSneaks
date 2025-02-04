@@ -21,19 +21,19 @@ const SearchParamsComponent = () => {
   useEffect(() => {
     if (sessionId) {
       // Call the new endpoint to confirm and create the order in Sanity.
-      fetch(`/api/confirm-order?session_id=${sessionId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.order) {
-            setOrderStatus("Order successfully created.");
-          } else {
-            setOrderStatus("Order creation failed.");
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          setOrderStatus("Order creation failed.");
-        });
+      // fetch(`/api/confirm-order?session_id=${sessionId}`)
+      //   .then((res) => res.json())
+      //   .then((data) => {
+      //     if (data.order) {
+      //       setOrderStatus("Order successfully created.");
+      //     } else {
+      //       setOrderStatus("Order creation failed.");
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.error(err);
+      //     setOrderStatus("Order creation failed.");
+      //   });
     }
   }, [sessionId]);
 

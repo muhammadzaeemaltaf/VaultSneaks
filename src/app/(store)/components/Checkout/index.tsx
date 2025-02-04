@@ -241,7 +241,7 @@ const Checkout = () => {
         customerEmail: user.email ?? "Unknown",
         userId: user._id,
         paymentMethod: "Online",
-        currency: currency, // Pass selected currency
+        currency: currency, 
         addressLine1: formData.addressLine1,
         addressLine2: formData.addressLine2,
         addressLine3: formData.addressLine3,
