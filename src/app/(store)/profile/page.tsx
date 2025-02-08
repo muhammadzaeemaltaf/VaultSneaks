@@ -50,11 +50,11 @@ export default function AccountPage() {
     }
   };
 
-  useEffect(() => {
-    if (user && user._id) {
-      fetchUserData();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (user && user._id) {
+  //     fetchUserData();
+  //   }
+  // }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -104,9 +104,9 @@ export default function AccountPage() {
       setUserStore(updatedUser);
       toast.success("Profile updated successfully.");
       await delay(2000);
-      await fetchUserData();
-      await delay(2000);
-      await fetchUserData();
+      // await fetchUserData();
+      // await delay(2000);
+      // await fetchUserData();
     } catch (error: any) {
       toast.error("User update error.");
     } finally {
@@ -157,6 +157,12 @@ export default function AccountPage() {
       setIsUpdating(false);
     }
   };
+
+  function handleDiscard() {
+    setUser(storedUser);
+    setSelectedFile(null);
+    setIsEditing(false);
+  }
 
   if (!user || isLoading) {
     return (
@@ -408,12 +414,17 @@ export default function AccountPage() {
                   Activate Account
                 </Button>
               ) : isEditing ? (
-                <Button onClick={handleSave} disabled={isLoading}>
-                  {isLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : null}
-                  Save Changes
-                </Button>
+                <div className="space-x-2">
+                  <Button onClick={handleSave} disabled={isLoading}>
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
+                    Save Changes
+                  </Button>
+                  <Button onClick={handleDiscard} variant={"outline"} disabled={isLoading}>
+                    Discard
+                  </Button>
+                </div>
               ) : (
                 // When account is active and not editing, show Edit and Deactivate buttons
                 <>

@@ -12,7 +12,7 @@ const Banner = () => {
       </div>
       <div className="container  md:px-[40px]">
         <Image 
-            src={'/banner.png'}
+            src={'/banner.jpg'}
             alt="Banner"
             height={1000}
             width={1000}

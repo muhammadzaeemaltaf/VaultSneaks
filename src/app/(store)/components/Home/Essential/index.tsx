@@ -13,7 +13,7 @@ const Essential = () => {
             <div className="overflow-hidden">
               <div className="p-0 relative sm:w-[440px] md:w-auto">
                 <Image
-                  src="/e1.png"
+                  src="/e2.png"
                   alt="Men's essentials featuring sneakers and clothing"
                   width={400}
                   height={400}
@@ -30,7 +30,7 @@ const Essential = () => {
             <div className="overflow-hidden">
               <div className="p-0 relative sm:w-[440px] md:w-auto">
                 <Image
-                  src="/e2.png"
+                  src="/e3.jpg"
                   alt="Women's essentials featuring yellow apparel"
                   width={400}
                   height={400}
@@ -47,7 +47,7 @@ const Essential = () => {
             <div className="overflow-hidden">
               <div className="p-0 relative sm:w-[440px] md:w-auto">
                 <Image
-                  src="/e3.png"
+                  src="/e2.jpg"
                   alt="Kids' essentials featuring yellow lockers"
                   width={400}
                   height={400}
