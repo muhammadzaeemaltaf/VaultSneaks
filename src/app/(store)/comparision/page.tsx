@@ -112,17 +112,17 @@ const renderPriceComparison = (price1: number, price2: number) => {
   if (price1 > price2) {
     return (
       <span className="flex justify-center items-center gap-3  w-full">
-        ${price1} <ArrowUp className="inline-block text-green-500" />
+        PKR {price1} <ArrowUp className="inline-block text-green-500" />
       </span>
     );
   } else if (price1 < price2) {
     return (
       <span className="flex justify-center items-center gap-3  w-full">
-        ${price1} <ArrowDown className="inline-block text-red-500" />
+        PKR {price1} <ArrowDown className="inline-block text-red-500" />
       </span>
     );
   } else {
-    return <span>${price1}</span>;
+    return <span>PKR {price1}</span>;
   }
 };
 
@@ -239,7 +239,7 @@ export default function ComparePage({
           className="mb-4 rounded-lg shadow-md object-cover"
         />
         <h2 className="text-xl sm:text-2xl font-semibold mb-2">{product.productName}</h2>
-        <p className="text-lg sm:text-xl font-bold mb-4">${product.price}</p>
+        <p className="text-lg sm:text-xl font-bold mb-4">PKR {product.price}</p>
         <div className="w-full max-w-md space-y-2">
           <p>
             <strong>Category:</strong> {product.categoryName || "N/A"}
