@@ -12,6 +12,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { getMenProducts } from "@/sanity/products/getMenProducts";
 import { getWomenProducts } from "@/sanity/products/getWomenProducts";
 import { getProductByCategory } from "@/sanity/products/getProductByCategory";
+import { getChildrenProducts } from "@/sanity/products/getChildrenProducts";
+import notFound from "../../not-found";
 
 const SkeletonLoader = () => (
   <div className="animate-pulse w-full">
@@ -35,12 +37,14 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [decodeSlug, setDecodeSlug] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [timedOut, setTimedOut] = useState(false);
 
   const { addItem, removeItem, getItems } = useWishlistStore();
   const wishlistItems = getItems();
   const user = useUserStore((state) => state.user);
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
     const fetchProducts = async () => {
       const decodedSlug = decodeURIComponent(params.slug);
       setDecodeSlug(decodedSlug);
@@ -49,26 +53,52 @@ const CategoryPage = ({ params }: { params: { slug: string } }) => {
         fetchedProducts = await getMenProducts();
       } else if (decodedSlug.toLowerCase() === "women") {
         fetchedProducts = await getWomenProducts();
+      } else if (decodedSlug.toLowerCase() === "children") {
+        fetchedProducts = await getChildrenProducts();
       } else {
         fetchedProducts = await getProductByCategory([decodedSlug]);
       }
       setProducts(fetchedProducts);
       setLoading(false);
+      if (fetchedProducts.length === 0) {
+        timer = setTimeout(() => {
+          setTimedOut(true);
+        }, 5000);
+      }
     };
 
     fetchProducts();
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [params.slug]);
 
-  const toggleWishlist = (product: Product) => {
-    if (wishlistItems.find((item) => item._id === product._id)) {
+  if (!loading && products.length === 0) {
+    if (timedOut) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          {notFound()}
+        </div>
+      );
+    } else {
+      return <SkeletonLoader />;
+    }
+  }
+
+  function toggleWishlist(product: Product): void {
+    const isInWishlist = wishlistItems.some(
+      (wishlistItem) => wishlistItem._id === product._id
+    );
+
+    if (isInWishlist) {
       removeItem(product._id);
-      toast.warn(`${product.productName} removed from wishlist`);
+      toast.info("Removed from wishlist");
     } else {
       addItem(product);
-      toast.success(`${product.productName} added to wishlist`);
+      toast.success("Added to wishlist");
     }
-  };
-
+  }
   return (
     <div className="flex flex-col items-center justify-start min-h-screen p-1 md:px-6">
       <h1 className="text-3xl font-bold my-6 text-center">

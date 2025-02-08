@@ -355,20 +355,20 @@ const Header = () => {
                         <ShoppingBasket className="scale-75 -ml-1.5" />
                         My Order
                       </Link>
-                      <Link
+                      {/* <Link
                         href={"#"}
                         className="flex items-center  gap-2 px-4 py-2 text-sm hover:bg-gray-500/20"
                       >
                         <CircleX className="scale-75 -ml-1.5" />
                         My Cancellation
-                      </Link>
-                      <Link
+                      </Link> */}
+                      {/* <Link
                         href={"#"}
                         className="flex items-center  gap-2 px-4 py-2 text-sm hover:bg-gray-500/20"
                       >
                         <Star className="scale-75 -ml-1.5" />
                         My Review
-                      </Link>
+                      </Link> */}
                       <button
                         onClick={handleLogout}
                         className="flex items-center w-full gap-2 px-4 py-2 text-sm hover:bg-gray-500/20"

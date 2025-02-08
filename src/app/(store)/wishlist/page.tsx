@@ -85,7 +85,7 @@ export default function WishlistPage() {
                       <div className="mt-2">
                         <span className="font-semibold">Rs {item.price}</span>
                       </div>  
-                      <p className="text-muted-foreground mt-2">
+                      <p className="text-muted-foreground mt-2 flex gap-1">
                         {item.colors?.map((color, colorIndex) => (
                           <span
                             key={colorIndex}

@@ -44,6 +44,10 @@ export const HeaderLinks = [
     link: "/categories/Women",
   },
   {
+    title: "Children",
+    link: "/categories/Children",
+  },
+  {
     title: "Help",
     link: "/contact",
   },

@@ -21,7 +21,7 @@ export const getAllOrders = async () => {
 
 export const getOrdersByUserId = async (userId: string) => {
   const ORDER_QUERY = defineQuery(
-    `*[_type == "order" && userId == $userId] {
+    `*[_type == "order" && userId == $userId] | order(orderDate desc) {
      ...,
      products[] {
        ...,

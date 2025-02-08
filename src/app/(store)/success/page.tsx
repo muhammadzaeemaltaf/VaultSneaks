@@ -57,9 +57,9 @@ const SearchParamsComponent = () => {
               <span className="font-mono text-sm text-black-600 bg-slate-200 px-2">
                 {orderId}
               </span>
-              <Button asChild variant="outline">
+              {/* <Button asChild variant="outline">
                 <Link href={`/tracking/${orderId}`}>Track Your Order</Link>
-              </Button>
+              </Button> */}
             </p>
           )}
         </div>

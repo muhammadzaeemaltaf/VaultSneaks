@@ -9,7 +9,7 @@ const Essential = () => {
         <h1 className="text-[23px] font-[500]">The Essentials</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 justify-items-center mb-12 mt-6">
-          <Link href="/mens" className="block">
+          <Link href="/categories/men" className="block">
             <div className="overflow-hidden">
               <div className="p-0 relative sm:w-[440px] md:w-auto">
                 <Image
@@ -26,7 +26,7 @@ const Essential = () => {
             </div>
           </Link>
 
-          <Link href="/womens" className="block">
+          <Link href="/categories/women" className="block">
             <div className="overflow-hidden">
               <div className="p-0 relative sm:w-[440px] md:w-auto">
                 <Image
@@ -43,7 +43,7 @@ const Essential = () => {
             </div>
           </Link>
 
-          <Link href="/kids" className="block">
+          <Link href="/categories/children" className="block">
             <div className="overflow-hidden">
               <div className="p-0 relative sm:w-[440px] md:w-auto">
                 <Image
@@ -54,7 +54,7 @@ const Essential = () => {
                   className="object-cover md:w-[440px] md:h-[540px]"
                 />
                 <div className="absolute w-[108.89px] h-[39px] flex justify-center items-center bottom-6 left-6 md:bottom-12 md:left-12 bg-white px-4 py-1 rounded-full">
-                  <span className="text-sm font-medium ">Kids'</span>
+                  <span className="text-sm font-medium ">Children's</span>
                 </div>
               </div>
             </div>

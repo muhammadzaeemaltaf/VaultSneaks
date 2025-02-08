@@ -28,7 +28,8 @@ export type groupBasketItems = {
 
 export const createCheckoutSession = async (
   items: groupBasketItems[],
-  metadata: Metadata
+  metadata: Metadata,
+  conversionRate: number  // New parameter
 ) => {
   if (
     !metadata.orderNumber ||
@@ -67,8 +68,8 @@ export const createCheckoutSession = async (
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout`,
       line_items: items.map((item) => ({
         price_data: {
-          currency: metadata.currency ? metadata.currency.toUpperCase() : 'GBP',
-          unit_amount: Math.round(item.product.price! * 100),
+          currency: metadata.currency ? metadata.currency.toUpperCase() : 'PKR',
+          unit_amount: Math.round((item.product.price! * conversionRate) * 100),
           product_data: {
             name: item.product.productName || "Unnamed Product",
             description: `Product ID: ${item.product._id}`,

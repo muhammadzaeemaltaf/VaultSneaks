@@ -1,6 +1,6 @@
 "use client";
 
-import { Package, Truck, Clock } from "lucide-react";
+import { Package, Truck, Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,17 @@ import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
 import { useUserStore } from "../../../../store";
+import { DeleteOrder } from "@/sanity/orders/deleteOrder";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 const statusColors = {
   pending: "!bg-yellow-100 text-yellow-800",
@@ -24,6 +35,9 @@ const statusColors = {
 export default function OrderPage() {
   const [orders, setOrders] = useState<ORDER_QUERYResult>([]);
   const [loading, setLoading] = useState(true);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [currentCancelOrderId, setCurrentCancelOrderId] = useState<string | null>(null);
+  const [cancelLoading, setCancelLoading] = useState(false);
   const user = useUserStore((state) => state.getUser()); // Get user state
 
   useEffect(() => {
@@ -41,12 +55,27 @@ export default function OrderPage() {
     fetchOrders();
   }, [user]);
 
+  // Handler that cancels the order after confirmation
+  const handleConfirmCancel = async () => {
+    if (!currentCancelOrderId) return;
+    setCancelLoading(true);
+    await DeleteOrder(currentCancelOrderId);
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order._id === currentCancelOrderId ? { ...order, status: "cancelled" } : order
+      )
+    );
+    setCancelLoading(false);
+    setCancelDialogOpen(false);
+    setCurrentCancelOrderId(null);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold">My Orders</h1>
-        <p className="text-muted-foreground">Track and manage your orders</p>
+        <p className="text-muted-foreground">Manage your orders</p>
       </div>
 
       {/* Orders List */}
@@ -126,7 +155,14 @@ export default function OrderPage() {
                         : "Unknown"}
                     </p>
                   </div>
-                  <Button variant="outline">Track Order</Button>
+                  {
+                    order.status === "pending" && (
+                      <Button variant="destructive" onClick={() => {
+                        setCurrentCancelOrderId(order._id);
+                        setCancelDialogOpen(true);
+                      }}>Cancel Order</Button>
+                    )
+                  }
                 </div>
 
                 <div className="flex gap-4 items-center text-sm flex-wrap">
@@ -188,7 +224,7 @@ export default function OrderPage() {
                         <p className="text-red-600 font-bold">Discount</p>
                       )
                     }
-                    <p>Subtotal</p>
+                    {/* <p>Subtotal</p> */}
                     <p>Shipping</p>
                     <p>Payment Method</p>
                     <p className="font-medium">Total</p>
@@ -199,13 +235,13 @@ export default function OrderPage() {
                         <p className="text-red-600 font-bold">{order.amountDiscount} %</p>
                       )
                     }
-                    <p>
+                    {/* <p>
                       {order.currency} {order.totalPrice}
-                    </p>
+                    </p> */}
                     <p>Free</p>
                     <p>{order.paymentMethod}</p>
                     <p className="font-medium">
-                      {order.currency} {order.totalPrice}
+                      {order.currency} {(order.totalPrice)?.toFixed(2)}
                     </p>
                   </div>
                 </div>
@@ -223,6 +259,29 @@ export default function OrderPage() {
           <Button><Link href={'/products'}>Start Shopping</Link></Button>
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Cancellation</DialogTitle>
+            <DialogDescription>
+              Do you really want to cancel this order?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline" disabled={cancelLoading}>
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button variant="destructive" onClick={handleConfirmCancel} disabled={cancelLoading}>
+              {cancelLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Yes, Cancel Order
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

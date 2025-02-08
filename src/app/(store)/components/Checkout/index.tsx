@@ -44,6 +44,7 @@ const Checkout = () => {
   const [processing, setProcessing] = useState(false);
   const [processingButton, setProcessingButton] = useState<string | null>(null); // Added state to track which button is processing
   const [currency, setCurrency] = useState("PKR");
+  const [conversionRate, setConversionRate] = useState(1); // new state for conversion factor
   const [loading, setLoading] = useState(true);
   const groupItems = useBasketStore((state) => state.getGroupedItems());
   const { getUser, setUser: setUserStore } = useUserStore();
@@ -93,10 +94,11 @@ const Checkout = () => {
   }, []);
 
   const calculateTotalPrice = () => {
-    return groupItems.reduce(
-      (total, item) => total + (item.product.price || 0) * item.quantity,
+    const total = groupItems.reduce(
+      (sum, item) => sum + (item.product.price || 0) * item.quantity,
       0
     );
+    return total * conversionRate;
   };
 
   const handleFormChange = (data: any) => {
@@ -128,28 +130,49 @@ const Checkout = () => {
     handleFormChange({ ...formData, [name]: value });
   };
 
-  const handleCountryChange = (value: string) => {
+  // New helper to fetch conversion rate from PKR to target currency
+  const fetchConversionRate = async (targetCurrency: string) => {
+    if (targetCurrency === "PKR") return 1;
+    try {
+      const res = await fetch("https://api.exchangerate-api.com/v4/latest/PKR");
+      if (!res.ok) throw new Error("Failed to fetch rate.");
+      const data = await res.json();
+      return data.rates[targetCurrency] || 1;
+    } catch (error) {
+      console.error("Conversion rate error:", error);
+      return 1;
+    }
+  };
+
+  const handleCountryChange = async (value: string) => {
+    // Update form data
     setFormData((prevData) => ({ ...prevData, country: value }));
     handleFormChange({ ...formData, country: value });
+    // Map country to currency code
+    let newCurrency = "PKR";
     switch (value) {
       case "USA":
-        setCurrency("USD");
+        newCurrency = "USD";
         break;
       case "Canada":
-        setCurrency("CAD");
+        newCurrency = "CAD";
         break;
       case "UK":
-        setCurrency("GBP");
+        newCurrency = "GBP";
         break;
       case "Australia":
-        setCurrency("AUD");
+        newCurrency = "AUD";
+        break;
+      case "India":
+        newCurrency = "INR";
         break;
       case "Pakistan":
-        setCurrency("PKR");
-        break;
       default:
-        setCurrency("INR");
+        newCurrency = "PKR";
     }
+    setCurrency(newCurrency);
+    const rate = await fetchConversionRate(newCurrency);
+    setConversionRate(rate);
   };
 
   const validateFormData = () => {
@@ -232,7 +255,7 @@ const Checkout = () => {
     if (!validateFormData()) return;
     if (!user) return;
     setIsLoading(true);
-    setProcessingButton("Online"); // Set processing button to Online
+    setProcessingButton("Online");
 
     try {
       const metadata: Metadata = {
@@ -241,7 +264,7 @@ const Checkout = () => {
         customerEmail: user.email ?? "Unknown",
         userId: user._id,
         paymentMethod: "Online",
-        currency: currency, 
+        currency: currency,
         addressLine1: formData.addressLine1,
         addressLine2: formData.addressLine2,
         addressLine3: formData.addressLine3,
@@ -251,14 +274,14 @@ const Checkout = () => {
         phoneNumber: formData.phoneNumber,
       };
 
-      const checkoutUrl = await createCheckoutSession(groupItems, metadata);
+      const checkoutUrl = await createCheckoutSession(groupItems, metadata, conversionRate);
       if (checkoutUrl) {
         window.location.href = checkoutUrl;
       }
     } catch (error) {
       console.error("Checkout session error: ", error);
       setIsLoading(false);
-      setProcessingButton(null); // Reset processing button
+      setProcessingButton(null);
     }
   };
 
@@ -519,9 +542,11 @@ const Checkout = () => {
                     </div>
                     <p className="text-[15px]">
                       {currency}{" "}
-                      {item.product.price
-                        ? item.product.price * item.quantity
-                        : 0}
+                      {(
+                        (item.product.price
+                          ? item.product.price * item.quantity
+                          : 0) * conversionRate
+                      ).toFixed(2)}
                     </p>
                   </div>
                 ))
@@ -530,7 +555,7 @@ const Checkout = () => {
                 <div className="flex justify-between text-[14px] text-[#8D8D8D]">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span>
-                    {currency} {calculateTotalPrice()}
+                    {currency} {calculateTotalPrice().toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between text-[14px] text-[#8D8D8D]">
@@ -543,7 +568,7 @@ const Checkout = () => {
                 <div className="flex justify-between font-medium">
                   <span>Total</span>
                   <span>
-                    {currency} {calculateTotalPrice()}
+                    {currency} {calculateTotalPrice().toFixed(2)}
                   </span>
                 </div>
                 <Separator className="my-2" />
