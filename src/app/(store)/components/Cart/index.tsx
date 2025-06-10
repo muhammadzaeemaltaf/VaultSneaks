@@ -76,14 +76,22 @@ const Cart = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000); // Show loader for 2 seconds
+    }, 1500); // Show loader for 1.5 seconds
 
     return () => clearTimeout(timer);
   }, []);
 
   const handleRemoveItem = (product: any) => {
     removeItem(product);
-    toast.warn(`${product.productName} removed from cart!`);
+    toast.warn(`${product.productName || "Item"} removed from cart!`, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   };
 
   if (loading) {
@@ -140,28 +148,38 @@ const Cart = () => {
                 <p className="text-[15px] text-[#757575] line-clamp-2">
                   {item.product.description}
                 </p>
-                <p className="text-[15px] text-[#757575]">
-                  {item.product.colors}
+                <p className="text-[15px] text-[#757575] flex items-center gap-2">
+                  Available Colors:
+                  {item.product.colors?.map((color, colorIndex) => (
+                    <span
+                    className="w-5 h-5 rounded-full border"
+                    style={{ backgroundColor: color }}
+                  ></span>
+                  ))}
                 </p>
                 <p className="price text-[15px] lg:hidden">
                 Rs: {item.product.price}
                 </p>
-                <div className="flex gap-4 flex-wrap">
+                <div className="flex gap-4 flex-wrap items-center">
                   <p className="text-[15px] text-[#757575]">
                     Quantity: {item.quantity}
                   </p>
                   <div className="flex items-center">
                     <button
-                      className="px-2 py-1 bg-gray-200 rounded"
+                      className="flex justify-center w-7 h-7 bg-gray-200 rounded"
                       onClick={() => decreaseQuantity(item.product)}
                     >
-                      -
+                      <span>
+                        -
+                      </span>
                     </button>
                     <button
-                      className="px-2 py-1 bg-gray-200 rounded ml-2"
+                      className="flex justify-center w-7 h-7 bg-gray-200 rounded ml-2"
                       onClick={() => increaseQuantity(item.product)}
                     >
-                      +
+                      <span className="pt-[2px]">
+                        +
+                      </span>
                     </button>
                   </div>
                 </div>

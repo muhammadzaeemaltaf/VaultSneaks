@@ -22,7 +22,7 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
 
   useEffect(() => {
     if (user) {
-      setUsername(`${user.firstName}${user.lastName}`);
+      setUsername(`${user.firstName} ${user.lastName}`);
     }
   }, [user]);
 

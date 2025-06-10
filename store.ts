@@ -48,16 +48,7 @@ export const useBasketStore = create<BasketState>()(
       },
       removeItem: (product) => {
         set((state) => ({
-          items: state.items.reduce((acc, item) => {
-            if (item.product._id === product._id) {
-              if (item.quantity > 1) {
-                acc.push({ ...item, quantity: item.quantity - 1 });
-              }
-            } else {
-              acc.push(item);
-            }
-            return acc;
-          }, [] as BasketItem[]),
+          items: state.items.filter((item) => item.product._id !== product._id),
         }));
         
       },
@@ -109,6 +100,7 @@ interface WishlistState {
   addItem: (product: Product) => void;
   removeItem: (productId: string) => void;
   getItems: () => Product[];
+  clearWishlist: () => void; // New method to clear wishlist
 }
 
 export const useWishlistStore = create<WishlistState>()(
@@ -124,6 +116,7 @@ export const useWishlistStore = create<WishlistState>()(
           items: state.items.filter((item) => item._id !== productId),
         })),
       getItems: () => get().items,
+      clearWishlist: () => set({ items: [] }), // New method to clear wishlist
     }),
     {
       name: "wishlist-store",
@@ -152,6 +145,7 @@ interface UserState {
   user: any;
   setUser: (user: any) => void;
   getUser: () => any; // New method to get user state
+  clearUser: () => void; // New method to clear user state
 }
 
 export const useUserStore = create<UserState>()(
@@ -160,6 +154,7 @@ export const useUserStore = create<UserState>()(
       user: null,
       setUser: (user: any) => set({ user }),
       getUser: () => get().user, 
+      clearUser: () => set({ user: null }), 
     }),
     {
       name: "loggedIn-user-store",

@@ -66,7 +66,7 @@ const Page = ({ params }: { params: { name: string } }) => {
 
   const handleAddToCart = (product: Product) => {
     if (product.colors && product.colors.length > 0 && !selectedColor) {
-      toast.error("Please select a color");
+      toast.error("Please select a color", { toastId: "select-color-error" });
       return;
     }
     addItem(product, selectedColor);
